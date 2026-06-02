@@ -1,0 +1,779 @@
+[
+  {
+    "id": "trees_1",
+    "title": "Invert Binary Tree",
+    "statement": "Given the root of a binary tree, invert the tree (swap left and right subtrees of all nodes), and return its root.",
+    "difficulty": "Easy",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Amazon"
+    ],
+    "pattern": "DFS Tree Traversal",
+    "bruteForce": {
+      "description": "Create a new tree by traversing the original tree and copying nodes in swapped order.",
+      "timeComplexity": "O(N)",
+      "spaceComplexity": "O(N)"
+    },
+    "optimized": {
+      "description": "Traverse the tree recursively. For each node, swap its left and right children. Recursively call invertTree on the left and right subtrees.",
+      "timeComplexity": "O(N)",
+      "spaceComplexity": "O(H) recursion stack"
+    },
+    "pythonCode": "def invertTree(root):\n    if not root:\n        return None\n    # Swap children\n    root.left, root.right = root.right, root.left\n    # Recurse\n    invertTree(root.left)\n    invertTree(root.right)\n    return root",
+    "cppCode": "TreeNode* invertTree(TreeNode* root) {\n    if (root == nullptr) return nullptr;\n    // Swap children\n    TreeNode* temp = root->left;\n    root->left = root->right;\n    root->right = temp;\n    // Recurse\n    invertTree(root->left);\n    invertTree(root->right);\n    return root;\n}",
+    "pythonExplanation": [
+      {
+        "line": "if not root: return None",
+        "explanation": "Base case: if the node is empty, return None."
+      },
+      {
+        "line": "root.left, root.right = root.right, root.left",
+        "explanation": "Swap the left and right child pointers of the current node."
+      },
+      {
+        "line": "invertTree(root.left)",
+        "explanation": "Recursively invert the new left subtree."
+      },
+      {
+        "line": "invertTree(root.right)",
+        "explanation": "Recursively invert the new right subtree."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "if (root == nullptr) return nullptr;",
+        "explanation": "Base case check for leaf or empty tree."
+      },
+      {
+        "line": "TreeNode* temp = root->left;",
+        "explanation": "Hold reference of left subtree before swap."
+      },
+      {
+        "line": "root->left = root->right;",
+        "explanation": "Assign right child pointer to left child slot."
+      },
+      {
+        "line": "root->right = temp;",
+        "explanation": "Assign stored left child pointer to right child slot."
+      },
+      {
+        "line": "invertTree(root->left);",
+        "explanation": "Recursive traversal call on left child branch."
+      },
+      {
+        "line": "invertTree(root->right);",
+        "explanation": "Recursive traversal call on right child branch."
+      }
+    ],
+    "timeComplexity": "O(N) - We visit every node in the binary tree of size N exactly once.",
+    "spaceComplexity": "O(H) - The call stack is bounded by the height of the tree H. In the worst case (skewed tree), H = O(N). In the best case (balanced tree), H = O(log N).",
+    "dryRun": [
+      "Input: root = [4, 2, 7]",
+      "At Node 4: Swap left (2) and right (7). Root becomes [4, 7, 2].",
+      "Call on Node 7: Swap its children (None, None). Returns.",
+      "Call on Node 2: Swap its children (None, None). Returns.",
+      "Result: Inverted tree root returned."
+    ],
+    "edgeCases": [
+      "Empty tree (root is None)",
+      "Skewed tree (all left or all right nodes)",
+      "Single node tree"
+    ],
+    "followUps": [
+      "Can you solve it iteratively? (Yes, using a Queue/BFS approach)"
+    ],
+    "relatedProblems": [
+      "Same Tree",
+      "Symmetric Tree"
+    ],
+    "visualization": "     4                   4\n   /   \\               /   \\\n  2     7     ==>     7     2\n / \\   / \\           / \\   / \\\n1   3 6   9         9   6 3   1",
+    "commonMistakes": [
+      "Forgetting to check the null base case, leading to NullPointerException / AttributeError."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "trees_2",
+    "title": "Maximum Depth of Binary Tree",
+    "statement": "Given the root of a binary tree, return its maximum depth. The maximum depth is the number of nodes along the longest path from the root node down to the farthest leaf node.",
+    "difficulty": "Easy",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Microsoft"
+    ],
+    "pattern": "Recursive DFS Height Tracking",
+    "bruteForce": {
+      "description": "Traverse the tree using BFS and count levels.",
+      "timeComplexity": "O(N)",
+      "spaceComplexity": "O(W) queue width"
+    },
+    "optimized": {
+      "description": "Return 0 if root is Null. Otherwise, return 1 plus the maximum of the depth of the left subtree and the depth of the right subtree.",
+      "timeComplexity": "O(N)",
+      "spaceComplexity": "O(H) recursion stack"
+    },
+    "pythonCode": "def maxDepth(root):\n    if not root:\n        return 0\n    left_depth = maxDepth(root.left)\n    right_depth = maxDepth(root.right)\n    return 1 + max(left_depth, right_depth)",
+    "cppCode": "int maxDepth(TreeNode* root) {\n    if (root == nullptr) return 0;\n    int left_depth = maxDepth(root->left);\n    int right_depth = maxDepth(root->right);\n    return 1 + max(left_depth, right_depth);\n}",
+    "pythonExplanation": [
+      {
+        "line": "if not root: return 0",
+        "explanation": "Base case: if the current node is empty, its depth is 0."
+      },
+      {
+        "line": "left_depth = maxDepth(root.left)",
+        "explanation": "Find the depth of the left child recursively."
+      },
+      {
+        "line": "right_depth = maxDepth(root.right)",
+        "explanation": "Find the depth of the right child recursively."
+      },
+      {
+        "line": "return 1 + max(left_depth, right_depth)",
+        "explanation": "Add 1 (representing the current node) to the maximum depth of the two subtrees."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "if (root == nullptr) return 0;",
+        "explanation": "Base case: an empty tree has height/depth 0."
+      },
+      {
+        "line": "int left_depth = maxDepth(root->left);",
+        "explanation": "Find the maximum depth of the left subtree recursively."
+      },
+      {
+        "line": "int right_depth = maxDepth(root->right);",
+        "explanation": "Find the maximum depth of the right subtree recursively."
+      },
+      {
+        "line": "return 1 + max(left_depth, right_depth);",
+        "explanation": "The height of the tree is 1 (current node) + max height of subtrees."
+      }
+    ],
+    "timeComplexity": "O(N) - We visit every node in the tree of size N exactly once.",
+    "spaceComplexity": "O(H) - The space used by the recursion call stack, where H is the height of the tree. Worst case is O(N) for skewed trees.",
+    "dryRun": [
+      "Input: root = [3, 9, 20, None, None, 15, 7]",
+      "At Node 3: Calls left (Node 9) and right (Node 20).",
+      "At Node 9: Children are Null -> depth = 1.",
+      "At Node 20: Calls left (15) and right (7). Both return depth 1. Node 20 depth = 1 + max(1, 1) = 2.",
+      "At Node 3: depth = 1 + max(1, 2) = 3."
+    ],
+    "edgeCases": [
+      "Empty tree",
+      "Highly unbalanced tree"
+    ],
+    "followUps": [
+      "Can you solve it iteratively? (Use BFS queue and count levels)"
+    ],
+    "relatedProblems": [
+      "Minimum Depth of Binary Tree",
+      "Balanced Binary Tree"
+    ],
+    "visualization": "     3       Level 1 (Depth 1)\n   /   \\\n  9     20   Level 2 (Depth 2)\n       /  \\\n      15   7 Level 3 (Depth 3) -> Max Depth = 3",
+    "commonMistakes": [
+      "Counting from 1 instead of 0 for base cases, or off-by-one errors in node vs. edge counting."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "trees_3",
+    "title": "Same Tree",
+    "statement": "Given the roots of two binary trees `p` and `q`, write a function to check if they are the same or not. Two binary trees are considered the same if they are structurally identical, and the nodes have the same value.",
+    "difficulty": "Easy",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Amazon"
+    ],
+    "pattern": "Recursive DFS Structure Comparison",
+    "bruteForce": {
+      "description": "Serialize both trees and compare their string representation.",
+      "timeComplexity": "O(N)",
+      "spaceComplexity": "O(N)"
+    },
+    "optimized": {
+      "description": "Use recursion. Two trees are the same if: 1. Both are Null. 2. Neither is Null and their values match, and their left subtrees match, and their right subtrees match.",
+      "timeComplexity": "O(min(N, M))",
+      "spaceComplexity": "O(min(H1, H2)) stack"
+    },
+    "pythonCode": "def isSameTree(p, q):\n    if not p and not q:\n        return True\n    if not p or not q:\n        return False\n    if p.val != q.val:\n        return False\n    return isSameTree(p.left, q.left) and isSameTree(p.right, q.right)",
+    "cppCode": "bool isSameTree(TreeNode* p, TreeNode* q) {\n    if (p == nullptr && q == nullptr) return true;\n    if (p == nullptr || q == nullptr) return false;\n    if (p->val != q->val) return false;\n    return isSameTree(p->left, q->left) && isSameTree(p->right, q->right);\n}",
+    "pythonExplanation": [
+      {
+        "line": "if not p and not q: return True",
+        "explanation": "If both nodes are Null, they are identical; return True."
+      },
+      {
+        "line": "if not p or not q: return False",
+        "explanation": "If only one node is Null, the structures differ; return False."
+      },
+      {
+        "line": "if p.val != q.val: return False",
+        "explanation": "If the values of the current nodes differ, return False."
+      },
+      {
+        "line": "return isSameTree(p.left, q.left) and isSameTree(p.right, q.right)",
+        "explanation": "Recursively verify both left and right branches."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "if (p == nullptr && q == nullptr) return true;",
+        "explanation": "Both nodes are Null, meaning they are equal."
+      },
+      {
+        "line": "if (p == nullptr || q == nullptr) return false;",
+        "explanation": "One is Null, the other is not -> mismatch."
+      },
+      {
+        "line": "if (p->val != q->val) return false;",
+        "explanation": "The node values do not match."
+      },
+      {
+        "line": "return isSameTree(p->left, q->left) && isSameTree(p->right, q->right);",
+        "explanation": "Recurse into left and right branches to ensure they are also same."
+      }
+    ],
+    "timeComplexity": "O(N) - We visit each node in the smaller tree up to N nodes.",
+    "spaceComplexity": "O(H) - Space used by the recursion call stack, where H is the height of the tree.",
+    "dryRun": [
+      "Input: p = [1, 2], q = [1, 2]",
+      "At roots: Both not Null, val = 1. Match. Call left and right.",
+      "Left child comparison: p.left=2, q.left=2. Both not Null, val = 2. Match. Call left and right -> both Null -> True.",
+      "Right child comparison: p.right=Null, q.right=Null -> both Null -> True.",
+      "Result: True"
+    ],
+    "edgeCases": [
+      "One tree is empty",
+      "Both trees empty",
+      "Structurally identical but different values"
+    ],
+    "followUps": [
+      "Can you solve it iteratively? (Yes, using a Queue to process nodes in pairs)"
+    ],
+    "relatedProblems": [
+      "Symmetric Tree",
+      "Subtree of Another Tree"
+    ],
+    "visualization": "  Tree 1:    1          Tree 2:    1\n           /   \\                 /   \\\n          2     3               2     3\n  Check root (1==1) -> check left (2==2) -> check right (3==3) -> True",
+    "commonMistakes": [
+      "Using logical OR instead of AND, or missing checks for Node structures before accessing values."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "trees_4",
+    "title": "Binary Tree Level Order Traversal",
+    "statement": "Given the root of a binary tree, return the level order traversal of its nodes' values (i.e., from left to right, level by level).",
+    "difficulty": "Medium",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Facebook"
+    ],
+    "pattern": "BFS Traversal Queue",
+    "bruteForce": {
+      "description": "Recursive DFS using a depth tracker map.",
+      "timeComplexity": "O(N)",
+      "spaceComplexity": "O(N)"
+    },
+    "optimized": {
+      "description": "Use a queue to perform a Breadth-First Search (BFS). At each step, record the size of the queue (which represents the number of nodes at the current level). Process that many nodes, append their values to a level list, and queue their children.",
+      "timeComplexity": "O(N)",
+      "spaceComplexity": "O(N) queue space"
+    },
+    "pythonCode": "from collections import deque\ndef levelOrder(root):\n    if not root:\n        return []\n    res = []\n    queue = deque([root])\n    while queue:\n        level_size = len(queue)\n        level = []\n        for _ in range(level_size):\n            node = queue.popleft()\n            level.append(node.val)\n            if node.left: queue.append(node.left)\n            if node.right: queue.append(node.right)\n        res.append(level)\n    return res",
+    "cppCode": "vector<vector<int>> levelOrder(TreeNode* root) {\n    if (root == nullptr) return {};\n    vector<vector<int>> res;\n    queue<TreeNode*> q;\n    q.push(root);\n    while (!q.empty()) {\n        int level_size = q.size();\n        vector<int> level;\n        for (int i = 0; i < level_size; ++i) {\n            TreeNode* node = q.front();\n            q.pop();\n            level.push_back(node->val);\n            if (node->left) q.push(node->left);\n            if (node->right) q.push(node->right);\n        }\n        res.push_back(level);\n    }\n    return res;\n}",
+    "pythonExplanation": [
+      {
+        "line": "queue = deque([root])",
+        "explanation": "Initialize the queue with the root node."
+      },
+      {
+        "line": "level_size = len(queue)",
+        "explanation": "Determine the number of nodes on the current level before popping."
+      },
+      {
+        "line": "node = queue.popleft()",
+        "explanation": "Pop the node from the front of the queue."
+      },
+      {
+        "line": "if node.left: queue.append(node.left)",
+        "explanation": "Add the left child to the queue if it exists for the next level."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "queue<TreeNode*> q; q.push(root);",
+        "explanation": "Create queue and insert root node."
+      },
+      {
+        "line": "int level_size = q.size();",
+        "explanation": "Store current queue size (number of nodes in current level)."
+      },
+      {
+        "line": "TreeNode* node = q.front(); q.pop();",
+        "explanation": "Pop the node from the front of the queue."
+      },
+      {
+        "line": "if (node->left) q.push(node->left);",
+        "explanation": "Enqueue the left child to process in the next iteration."
+      }
+    ],
+    "timeComplexity": "O(N) - We visit every node in the tree of size N exactly once.",
+    "spaceComplexity": "O(N) - In the worst case (perfectly balanced tree), the queue holds up to N/2 leaf nodes at the bottom level.",
+    "dryRun": [
+      "Input: root = [3, 9, 20, None, None, 15, 7]",
+      "Queue: [3]. level_size = 1. level = [3]. Queue children -> Queue: [9, 20]. res = [[3]].",
+      "Queue: [9, 20]. level_size = 2. level = [9, 20]. Node 9 has no children. Node 20 has children [15, 7]. Queue: [15, 7]. res = [[3], [9, 20]].",
+      "Queue: [15, 7]. level_size = 2. level = [15, 7]. No children. Queue: []. res = [[3], [9, 20], [15, 7]]."
+    ],
+    "edgeCases": [
+      "Empty tree (returns empty list)",
+      "Skewed tree (single node per level)"
+    ],
+    "followUps": [
+      "Can you do it in reverse order? (Bottom-up level order traversal)"
+    ],
+    "relatedProblems": [
+      "Binary Tree Level Order Traversal II",
+      "Binary Tree Zigzag Level Order Traversal"
+    ],
+    "visualization": "Queue: [3] -> pop 3 -> Level res = [3] -> Queue: [9, 20]\nQueue: [9, 20] -> pop 9, 20 -> Level res = [9, 20] -> Queue: [15, 7]\nQueue: [15, 7] -> pop 15, 7 -> Level res = [15, 7] -> Queue: []\nFinal: [[3], [9, 20], [15, 7]]",
+    "commonMistakes": [
+      "Forgetting to fix `level_size = len(queue)` before the inner loop, causing the loop to run indefinitely or process nodes from multiple levels at once."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "trees_5",
+    "title": "Lowest Common Ancestor of a Binary Tree",
+    "statement": "Given a binary tree, find the lowest common ancestor (LCA) of two given nodes `p` and `q`. The LCA is defined as the lowest node in T that has both p and q as descendants.",
+    "difficulty": "Medium",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Amazon"
+    ],
+    "pattern": "DFS Subtree Split Validation",
+    "bruteForce": {
+      "description": "Find path from root to p, and root to q, and find the last common node in paths.",
+      "timeComplexity": "O(N)",
+      "spaceComplexity": "O(N)"
+    },
+    "optimized": {
+      "description": "Traverse the tree recursively. If the current node is Null, `p`, or `q`, return it. Otherwise, recursively search in left and right subtrees. If left returns a non-null node and right returns a non-null node, the current node is the LCA. Otherwise, return the non-null result.",
+      "timeComplexity": "O(N)",
+      "spaceComplexity": "O(H) stack"
+    },
+    "pythonCode": "def lowestCommonAncestor(root, p, q):\n    if not root or root == p or root == q:\n        return root\n    left = lowestCommonAncestor(root.left, p, q)\n    right = lowestCommonAncestor(root.right, p, q)\n    if left and right:\n        return root\n    return left or right",
+    "cppCode": "TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {\n    if (root == nullptr || root == p || root == q) return root;\n    TreeNode* left = lowestCommonAncestor(root->left, p, q);\n    TreeNode* right = lowestCommonAncestor(root->right, p, q);\n    if (left != nullptr && right != nullptr) {\n        return root;\n    }\n    return left != nullptr ? left : right;\n}",
+    "pythonExplanation": [
+      {
+        "line": "if not root or root == p or root == q: return root",
+        "explanation": "If root is Null or matches p or q, we return root (found a target or hit boundary)."
+      },
+      {
+        "line": "left = lowestCommonAncestor(root.left, p, q)",
+        "explanation": "Look for p or q in the left subtree."
+      },
+      {
+        "line": "right = lowestCommonAncestor(root.right, p, q)",
+        "explanation": "Look for p or q in the right subtree."
+      },
+      {
+        "line": "if left and right: return root",
+        "explanation": "If both subtrees returned non-null, p and q are split across root. Root is the LCA!"
+      },
+      {
+        "line": "return left or right",
+        "explanation": "Otherwise, return the non-null result (meaning both are in one subtree)."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "if (root == nullptr || root == p || root == q) return root;",
+        "explanation": "Found base node p or q, or hit empty leaf node."
+      },
+      {
+        "line": "TreeNode* left = lowestCommonAncestor(root->left, p, q);",
+        "explanation": "Recursive search in the left subtree branch."
+      },
+      {
+        "line": "TreeNode* right = lowestCommonAncestor(root->right, p, q);",
+        "explanation": "Recursive search in the right subtree branch."
+      },
+      {
+        "line": "if (left != nullptr && right != nullptr) return root;",
+        "explanation": "LCA found: one node is in left subtree and one is in right."
+      },
+      {
+        "line": "return left != nullptr ? left : right;",
+        "explanation": "Propagate the found node up the call stack."
+      }
+    ],
+    "timeComplexity": "O(N) - We might traverse all nodes in the binary tree of size N in the worst case.",
+    "spaceComplexity": "O(H) - The maximum recursion stack size matches the height of the tree H.",
+    "dryRun": [
+      "Input: root = [3, 5, 1], p = 5, q = 1",
+      "At Node 3: Calls left (5) and right (1).",
+      "At Node 5: Matches p. Returns Node 5.",
+      "At Node 1: Matches q. Returns Node 1.",
+      "At Node 3: both left and right are non-null -> returns Node 3 (LCA)."
+    ],
+    "edgeCases": [
+      "One node is the ancestor of the other",
+      "Empty tree",
+      "p and q do not exist (assuming they always exist)"
+    ],
+    "followUps": [
+      "Can you solve it for a Binary Search Tree (BST)? (Yes, BST property allows O(H) search without checking both subtrees)"
+    ],
+    "relatedProblems": [
+      "Lowest Common Ancestor of a Binary Search Tree",
+      "Smallest Subtree with all the Deepest Nodes"
+    ],
+    "visualization": "      3 (LCA)         - search left of 3 finds 5\n    /   \\             - search right of 3 finds 1\n   5     1            - left & right found -> 3 is LCA\n  / \\\n 6   2",
+    "commonMistakes": [
+      "Assuming one of the nodes is always root, or forgetting to check both left and right pointers."
+    ],
+    "whenNotToUse": "If it is a BST, use the BST value properties to decide to search left or right without traversing the whole tree."
+  },
+  {
+    "id": "trees_6",
+    "title": "Construct Binary Tree from Preorder and Inorder Traversal",
+    "statement": "Given two integer arrays `preorder` and `inorder` where `preorder` is the preorder traversal of a binary tree and `inorder` is the inorder traversal of the same tree, construct and return the binary tree.",
+    "difficulty": "Medium",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Microsoft"
+    ],
+    "pattern": "HashMap Index Division",
+    "bruteForce": {
+      "description": "Exhaustively search for matching sub-segments by slicing lists recursively.",
+      "timeComplexity": "O(N^2) due to slicing",
+      "spaceComplexity": "O(N^2)"
+    },
+    "optimized": {
+      "description": "Use a hash map to store value-to-index mappings of the inorder traversal. This allows O(1) lookups of root indices. Maintain indices of the subarrays instead of copying slices of arrays. The first element of preorder is always the root. Locate it in inorder to split left and right subtrees.",
+      "timeComplexity": "O(N)",
+      "spaceComplexity": "O(N)"
+    },
+    "pythonCode": "def buildTree(preorder, inorder):\n    inorder_idx = {val: i for i, val in enumerate(inorder)}\n    preorder_iter = iter(preorder)\n    \n    def helper(start, end):\n        if start > end:\n            return None\n        root_val = next(preorder_iter)\n        root = TreeNode(root_val)\n        idx = inorder_idx[root_val]\n        \n        root.left = helper(start, idx - 1)\n        root.right = helper(idx + 1, end)\n        return root\n        \n    return helper(0, len(inorder) - 1)",
+    "cppCode": "TreeNode* buildTree(vector<int>& preorder, vector<int>& inorder) {\n    unordered_map<int, int> inorder_map;\n    for (int i = 0; i < inorder.size(); ++i) {\n        inorder_map[inorder[i]] = i;\n    }\n    int pre_idx = 0;\n    auto helper = [&](auto& self, int start, int end) -> TreeNode* {\n        if (start > end) return nullptr;\n        int root_val = preorder[pre_idx++];\n        TreeNode* root = new TreeNode(root_val);\n        int idx = inorder_map[root_val];\n        \n        root->left = self(self, start, idx - 1);\n        root->right = self(self, idx + 1, end);\n        return root;\n    };\n    return helper(helper, 0, inorder.size() - 1);\n}",
+    "pythonExplanation": [
+      {
+        "line": "inorder_idx = {val: i for i, val in enumerate(inorder)}",
+        "explanation": "Map inorder values to their indices for O(1) split location lookup."
+      },
+      {
+        "line": "root_val = next(preorder_iter)",
+        "explanation": "Get the next root element from preorder traversal."
+      },
+      {
+        "line": "root.left = helper(start, idx - 1)",
+        "explanation": "Construct left subtree using elements to the left of the root index in inorder."
+      },
+      {
+        "line": "root.right = helper(idx + 1, end)",
+        "explanation": "Construct right subtree using elements to the right of the root index in inorder."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "inorder_map[inorder[i]] = i;",
+        "explanation": "Build lookups for index bounds of subtree segments."
+      },
+      {
+        "line": "int root_val = preorder[pre_idx++];",
+        "explanation": "Read current root value from preorder and advance pointer."
+      },
+      {
+        "line": "root->left = self(self, start, idx - 1);",
+        "explanation": "Build left subtree recursively with correct partition limits."
+      },
+      {
+        "line": "root->right = self(self, idx + 1, end);",
+        "explanation": "Build right subtree recursively with remaining partition limits."
+      }
+    ],
+    "timeComplexity": "O(N) - We process each node exactly once. Hash map lookups are O(1).",
+    "spaceComplexity": "O(N) - The hash map stores N elements, and recursion stack takes O(H) space.",
+    "dryRun": [
+      "Input: preorder = [3, 9, 20, 15, 7], inorder = [9, 3, 15, 20, 7]",
+      "Map: {9:0, 3:1, 15:2, 20:3, 7:4}",
+      "Call helper(0, 4): root_val = 3. idx = 1. Create Node 3.",
+      "  Left: helper(0, 0) -> root_val = 9. idx = 0. Create Node 9. helper(0, -1) -> Null. Return Node 9.",
+      "  Right: helper(2, 4) -> root_val = 20. idx = 3. Create Node 20.",
+      "    Left: helper(2, 2) -> root_val = 15. Create Node 15. Return Node 15.",
+      "    Right: helper(4, 4) -> root_val = 7. Create Node 7. Return Node 7."
+    ],
+    "edgeCases": [
+      "Single element tree",
+      "Skewed tree (preorder matches inorder, or is reversed)"
+    ],
+    "followUps": [
+      "Can you construct it using Postorder and Inorder traversals? (Yes, root is at the end of postorder)"
+    ],
+    "relatedProblems": [
+      "Construct Binary Tree from Inorder and Postorder Traversal",
+      "Construct Binary Tree from Preorder and Postorder Traversal"
+    ],
+    "visualization": "Preorder: [ 3,  9,  20,  15,  7 ] -> Root is 3 -> Next root is 9 -> Next is 20\nInorder:  [ 9 ]  3  [ 15,  20,  7 ] -> Left is 9, Right is [15, 20, 7]\nSplit partitions recursively.",
+    "commonMistakes": [
+      "Slicing lists in Python (e.g., `preorder[1:idx+1]`) which copy sub-arrays, degrading time complexity to O(N^2). Use index pointers instead."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "trees_7",
+    "title": "Binary Tree Maximum Path Sum",
+    "statement": "A path in a binary tree is a sequence of nodes where each pair of adjacent nodes has an edge connecting them. Find the maximum path sum of any non-empty path.",
+    "difficulty": "Hard",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Amazon"
+    ],
+    "pattern": "DFS Post-Order Path Expansion",
+    "bruteForce": {
+      "description": "Compute all root-to-leaf paths and compare. (Fails because paths do not have to pass through root).",
+      "timeComplexity": "O(N log N)",
+      "spaceComplexity": "O(N)"
+    },
+    "optimized": {
+      "description": "Use recursion. Maintain a global variable `max_sum` to store the maximum path sum seen so far. At each node, calculate the maximum path sum starting from that node and going down at most one child (left path or right path, or 0 if they are negative). Update `max_sum` with `node.val + left_max + right_max` (the path through the current node as the peak). Return the max single-path sum to parent.",
+      "timeComplexity": "O(N)",
+      "spaceComplexity": "O(H) stack"
+    },
+    "pythonCode": "def maxPathSum(root):\n    max_sum = float('-inf')\n    \n    def get_max_gain(node):\n        nonlocal max_sum\n        if not node:\n            return 0\n        # Max gain from left and right subtrees. Ignore negative sums.\n        left_gain = max(get_max_gain(node.left), 0)\n        right_gain = max(get_max_gain(node.right), 0)\n        \n        # Price of new path peak through this node\n        current_path_sum = node.val + left_gain + right_gain\n        max_sum = max(max_sum, current_path_sum)\n        \n        # For recursion to parent: can only select one child\n        return node.val + max(left_gain, right_gain)\n        \n    get_max_gain(root)\n    return max_sum",
+    "cppCode": "int maxPathSum(TreeNode* root) {\n    int max_sum = INT_MIN;\n    auto get_max_gain = [&](auto& self, TreeNode* node) -> int {\n        if (node == nullptr) return 0;\n        int left_gain = max(self(self, node->left), 0);\n        int right_gain = max(self(self, node->right), 0);\n        \n        int current_path_sum = node->val + left_gain + right_gain;\n        max_sum = max(max_sum, current_path_sum);\n        \n        return node->val + max(left_gain, right_gain);\n    };\n    get_max_gain(get_max_gain, root);\n    return max_sum;\n}",
+    "pythonExplanation": [
+      {
+        "line": "left_gain = max(get_max_gain(node.left), 0)",
+        "explanation": "Recursively find the max path sum of the left child. Ignore negative branches."
+      },
+      {
+        "line": "current_path_sum = node.val + left_gain + right_gain",
+        "explanation": "Check path sum using the current node as the highest point (split path)."
+      },
+      {
+        "line": "max_sum = max(max_sum, current_path_sum)",
+        "explanation": "Update global maximum if this path sum is the largest so far."
+      },
+      {
+        "line": "return node.val + max(left_gain, right_gain)",
+        "explanation": "For the parent recursive call, return the maximum single-direction path sum."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "int left_gain = max(self(self, node->left), 0);",
+        "explanation": "Ignore negative results from left subtree to maximize sum."
+      },
+      {
+        "line": "int current_path_sum = node->val + left_gain + right_gain;",
+        "explanation": "Calculate sum if path curves through current node."
+      },
+      {
+        "line": "max_sum = max(max_sum, current_path_sum);",
+        "explanation": "Update the maximum global sum."
+      },
+      {
+        "line": "return node->val + max(left_gain, right_gain);",
+        "explanation": "Return maximum branch value to continue path building in parent caller."
+      }
+    ],
+    "timeComplexity": "O(N) - We visit every node in the binary tree exactly once.",
+    "spaceComplexity": "O(H) - The call stack is bounded by the tree height H.",
+    "dryRun": [
+      "Input: root = [-10, 9, 20, None, None, 15, 7]",
+      "At Node 9: left=0, right=0 -> returns 9. max_sum = 9.",
+      "At Node 15: left=0, right=0 -> returns 15. max_sum = max(9, 15) = 15.",
+      "At Node 7: returns 7. max_sum = 15.",
+      "At Node 20: left_gain=15, right_gain=7 -> returns 20+15 = 35. max_sum = max(15, 20+15+7) = 42.",
+      "At Node -10: left_gain=9, right_gain=35 -> returns -10+35 = 25. max_sum = max(42, -10+9+35) = 42."
+    ],
+    "edgeCases": [
+      "Tree containing all negative values (returns the maximum single node)",
+      "Single node tree",
+      "Unbalanced tree"
+    ],
+    "followUps": [
+      "Can you track the actual path nodes that sum to the maximum? (Yes, by storing child linkages during path peak updates)"
+    ],
+    "relatedProblems": [
+      "Path Sum",
+      "Sum Root to Leaf Numbers"
+    ],
+    "visualization": "     -10\n     /  \\\n    9   20 (Peak of max path)\n       /  \\\n      15   7\n  Max Path: 15 -> 20 -> 7 = 42",
+    "commonMistakes": [
+      "Forgetting to ignore negative child paths (using `max(..., 0)`). This is required since we can choose not to include a negative branch."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "trees_8",
+    "title": "Serialize and Deserialize Binary Tree",
+    "statement": "Design an algorithm to serialize and deserialize a binary tree. Serialization is the process of converting a data structure or object into a sequence of bits so that it can be stored or transmitted. Deserialization is the reverse process.",
+    "difficulty": "Hard",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Facebook"
+    ],
+    "pattern": "Preorder String Tokenization",
+    "bruteForce": {
+      "description": "Convert tree to level-order array representation with Null pointers, then reconstruct using array index mappings.",
+      "timeComplexity": "O(N)",
+      "spaceComplexity": "O(N)"
+    },
+    "optimized": {
+      "description": "Use Preorder traversal (DFS). For serialization: traverse the tree and record node values separated by commas. Use '#' or 'N' to represent Null nodes. For deserialization: split the string by commas to get list of tokens. Create an iterator and build the tree recursively using preorder rules.",
+      "timeComplexity": "O(N)",
+      "spaceComplexity": "O(N)"
+    },
+    "pythonCode": "class Codec:\n    def serialize(self, root):\n        res = []\n        def dfs(node):\n            if not node:\n                res.append('#')\n                return\n            res.append(str(node.val))\n            dfs(node.left)\n            dfs(node.right)\n        dfs(root)\n        return ','.join(res)\n\n    def deserialize(self, data):\n        vals = data.split(',')\n        iter_vals = iter(vals)\n        def dfs():\n            val = next(iter_vals)\n            if val == '#':\n                return None\n            node = TreeNode(int(val))\n            node.left = dfs()\n            node.right = dfs()\n            return node\n        return dfs()",
+    "cppCode": "class Codec {\npublic:\n    string serialize(TreeNode* root) {\n        string res = \"\";\n        auto dfs = [&](auto& self, TreeNode* node) -> void {\n            if (!node) {\n                res += \"#, \";\n                return;\n            }\n            res += to_string(node->val) + \", \";\n            self(self, node->left);\n            self(self, node->right);\n        };\n        dfs(dfs, root);\n        return res;\n    }\n\n    TreeNode* deserialize(string data) {\n        stringstream ss(data);\n        string item;\n        vector<string> tokens;\n        while (getline(ss, item, ',')) {\n            // Remove spaces\n            if (item[0] == ' ') item = item.substr(1);\n            tokens.push_back(item);\n        }\n        int idx = 0;\n        auto dfs = [&](auto& self) -> TreeNode* {\n            if (idx >= tokens.size() || tokens[idx] == \"#\") {\n                idx++;\n                return nullptr;\n            }\n            TreeNode* node = new TreeNode(stoi(tokens[idx++]));\n            node->left = self(self);\n            node->right = self(self);\n            return node;\n        };\n        return dfs(dfs);\n    }\n};",
+    "pythonExplanation": [
+      {
+        "line": "res.append('#')",
+        "explanation": "Represent empty/null nodes with a unique marker like '#'."
+      },
+      {
+        "line": "','.join(res)",
+        "explanation": "Concatenate tokens with a delimiter to simplify parsing."
+      },
+      {
+        "line": "val = next(iter_vals)",
+        "explanation": "Extract tokens one-by-one from the serialization string in preorder sequence."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "res += \"#, \";",
+        "explanation": "Append null identifier marker to represent empty tree endpoints."
+      },
+      {
+        "line": "stringstream ss(data);",
+        "explanation": "Load string into stream to parse comma-separated node tokens."
+      },
+      {
+        "line": "TreeNode* node = new TreeNode(stoi(tokens[idx++]));",
+        "explanation": "Instantiate nodes sequentially from parsed preorder integers."
+      }
+    ],
+    "timeComplexity": "O(N) - Both serialization and deserialization visit each node exactly once.",
+    "spaceComplexity": "O(N) - Storing node string elements and the recursion call stack.",
+    "dryRun": [
+      "Input: root = [1, 2, None, None, 3]",
+      "Serialize: root 1 -> 2 -> Left null '#' -> Right null '#' -> 3 -> Null '#' -> Null '#'. Output: '1,2,#,#,3,#,#'",
+      "Deserialize: Tokens: ['1', '2', '#', '#', '3', '#', '#']",
+      "Build root 1 -> Build left: Node 2 -> Build left: Null -> Build right: Null. Node 2 complete.",
+      "Build right of root 1: Node 3 -> Build left: Null -> Build right: Null. Node 3 complete.",
+      "Return root 1."
+    ],
+    "edgeCases": [
+      "Empty tree (returns '#' string)",
+      "Tree containing negative node values",
+      "Large tree height (deep recursion)"
+    ],
+    "followUps": [
+      "Can you implement this using Breadth-First Search (BFS)? (Yes, similar to LeetCode serialization style using a queue)"
+    ],
+    "relatedProblems": [
+      "Serialize and Deserialize BST",
+      "Find Duplicate Subtrees"
+    ],
+    "visualization": "Serialize: Root -> Left -> Right (Null = '#')\n  1\n / \\\n2   3  ==>  '1, 2, #, #, 3, #, #'\nReconstruct using preorder logic from tokens.",
+    "commonMistakes": [
+      "Parsing tokens incorrectly, missing delimiter separations, or off-by-one errors in index tracking during deserialization."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "trees_9",
+    "title": "Vertical Order Traversal of a Binary Tree",
+    "statement": "Given the root of a binary tree, return the vertical order traversal of its nodes' values. Nodes on the same vertical line should be ordered from top to bottom. If nodes overlap at same coordinates, sort them by value.",
+    "difficulty": "Hard",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Amazon"
+    ],
+    "pattern": "BFS Coordinate Tracking with Sorting",
+    "bruteForce": {
+      "description": "Perform standard DFS, saving nodes with column/row coordinates, then sort the global list of node metadata.",
+      "timeComplexity": "O(N log N)",
+      "spaceComplexity": "O(N)"
+    },
+    "optimized": {
+      "description": "Traverse tree using BFS to get columns and rows coordinate tuples `(col, row, val)`. Using BFS ensures nodes are naturally sorted from top to bottom. Group nodes by column index. Sort overlapping coordinates `(row, val)` to satisfy the tie-breaker requirement. Sort columns and collect results.",
+      "timeComplexity": "O(N log N) sorting step",
+      "spaceComplexity": "O(N)"
+    },
+    "pythonCode": "from collections import deque, defaultdict\ndef verticalTraversal(root):\n    if not root:\n        return []\n    # Map of column -> list of (row, val)\n    g = defaultdict(list)\n    queue = deque([(root, 0, 0)]) # (node, col, row)\n    \n    while queue:\n        node, col, row = queue.popleft()\n        g[col].append((row, node.val))\n        if node.left: queue.append((node.left, col - 1, row + 1))\n        if node.right: queue.append((node.right, col + 1, row + 1))\n        \n    res = []\n    for col in sorted(g.keys()):\n        # Sort level elements: first by row, then by value\n        nodes = sorted(g[col], key=lambda x: (x[0], x[1]))\n        res.append([val for row, val in nodes])\n    return res",
+    "cppCode": "vector<vector<int>> verticalTraversal(TreeNode* root) {\n    if (root == nullptr) return {};\n    // col -> list of pair<row, val>\n    map<int, vector<pair<int, int>>> g;\n    queue<tuple<TreeNode*, int, int>> q; // node, col, row\n    q.push({root, 0, 0});\n    \n    while (!q.empty()) {\n        auto [node, col, row] = q.front();\n        q.pop();\n        g[col].push_back({row, node->val});\n        if (node->left) q.push({node->left, col - 1, row + 1});\n        if (node->right) q.push({node->right, col + 1, row + 1});\n    }\n    \n    vector<vector<int>> res;\n    for (auto& [col, nodes] : g) {\n        // Sort nodes by row index, then by value\n        sort(nodes.begin(), nodes.end(), [](const pair<int, int>& a, const pair<int, int>& b) {\n            if (a.first != b.first) return a.first < b.first;\n            return a.second < b.second;\n        });\n        vector<int> level;\n        for (auto& p : nodes) level.push_back(p.second);\n        res.push_back(level);\n    }\n    return res;\n}",
+    "pythonExplanation": [
+      {
+        "line": "g = defaultdict(list)",
+        "explanation": "Create a hash map to group nodes by their column index coordinates."
+      },
+      {
+        "line": "queue.append((node.left, col - 1, row + 1))",
+        "explanation": "Left child moves 1 unit left (col - 1) and 1 unit down (row + 1)."
+      },
+      {
+        "line": "nodes = sorted(g[col], key=lambda x: (x[0], x[1]))",
+        "explanation": "Sort nodes at the same column index first by row, then by node value for tie-breakers."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "map<int, vector<pair<int, int>>> g;",
+        "explanation": "Use a sorted map to automatically keep columns sorted in ascending order."
+      },
+      {
+        "line": "auto [node, col, row] = q.front();",
+        "explanation": "Extract tree node and its grid coordinates from BFS queue."
+      },
+      {
+        "line": "sort(nodes.begin(), nodes.end(), ...);",
+        "explanation": "Custom lambda comparator to sort first by row, then by value."
+      }
+    ],
+    "timeComplexity": "O(N log N) - Traversal takes O(N) time. The sorting step per column takes O(K log K) where K is number of nodes in a column. Overall sorting is bounded by O(N log N).",
+    "spaceComplexity": "O(N) - Queue storage and map tracking size.",
+    "dryRun": [
+      "Input: root = [3, 9, 20, None, None, 15, 7]",
+      "Queue: [(3, 0, 0)] -> col 0 gets (0, 3). Queue: [(9, -1, 1), (20, 1, 1)]",
+      "Pop 9: col -1 gets (1, 9). No children.",
+      "Pop 20: col 1 gets (1, 20). Queue: [(15, 0, 2), (7, 2, 2)]",
+      "Pop 15: col 0 gets (2, 15). No children.",
+      "Pop 7: col 2 gets (2, 7). No children.",
+      "Columns map: {-1: [(1,9)], 0: [(0,3), (2,15)], 1: [(1,20)], 2: [(2,7)]}",
+      "Sorted Output: [[9], [3, 15], [20], [7]]"
+    ],
+    "edgeCases": [
+      "Overlap of nodes at same col and row coordinate",
+      "Empty tree",
+      "Skewed tree (single vertical line direction)"
+    ],
+    "followUps": [
+      "Can you implement it using DFS? (Yes, but row-order sorting is critical as DFS doesn't visit top-to-bottom naturally)"
+    ],
+    "relatedProblems": [
+      "Binary Tree Vertical Order Traversal",
+      "Top View of Binary Tree"
+    ],
+    "visualization": "       3 (0,0)         - Col -1: [9]\n     /   \\             - Col  0: [3, 15]\n  9(-1,1) 20(1,1)      - Col  1: [20]\n         /   \\         - Col  2: [7]\n      15(0,2) 7(2,2)",
+    "commonMistakes": [
+      "Forgetting to sort overlapping node values at the same coordinate, causing incorrect test output orders."
+    ],
+    "whenNotToUse": "None"
+  }
+]

@@ -1,0 +1,733 @@
+[
+  {
+    "id": "dp_1",
+    "title": "Climbing Stairs",
+    "statement": "You are climbing a staircase. It takes `n` steps to reach the top. Each time you can either climb 1 or 2 steps. In how many distinct ways can you climb to the top?",
+    "difficulty": "Easy",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Amazon"
+    ],
+    "pattern": "Fibonacci DP State Compression",
+    "bruteForce": {
+      "description": "Recursively calculate ways: `climb(n) = climb(n-1) + climb(n-2)`. (Slow, causes TLE).",
+      "timeComplexity": "O(2^N)",
+      "spaceComplexity": "O(N) stack"
+    },
+    "optimized": {
+      "description": "Notice that the number of ways to reach step `i` is the sum of ways to reach `i-1` and `i-2`. Maintain two variables `prev1` (ways to reach i-1) and `prev2` (ways to reach i-2) to compute the next step in O(1) space.",
+      "timeComplexity": "O(N)",
+      "spaceComplexity": "O(1)"
+    },
+    "pythonCode": "def climbStairs(n):\n    if n <= 2:\n        return n\n    prev2, prev1 = 1, 2\n    for i in range(3, n + 1):\n        curr = prev1 + prev2\n        prev2 = prev1\n        prev1 = curr\n    return prev1",
+    "cppCode": "int climbStairs(int n) {\n    if (n <= 2) return n;\n    int prev2 = 1, prev1 = 2;\n    for (int i = 3; i <= n; ++i) {\n        int curr = prev1 + prev2;\n        prev2 = prev1;\n        prev1 = curr;\n    }\n    return prev1;\n}",
+    "pythonExplanation": [
+      {
+        "line": "if n <= 2: return n",
+        "explanation": "If steps are 1 or 2, there are exactly 1 or 2 ways to reach the top."
+      },
+      {
+        "line": "prev2, prev1 = 1, 2",
+        "explanation": "Seed variables with base cases: 1 way for step 1, 2 ways for step 2."
+      },
+      {
+        "line": "curr = prev1 + prev2",
+        "explanation": "State transition: ways(i) = ways(i-1) + ways(i-2)."
+      },
+      {
+        "line": "prev2 = prev1",
+        "explanation": "Slide variables forward: prev2 becomes i-1's value."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "if (n <= 2) return n;",
+        "explanation": "Check base cases: n=1 and n=2."
+      },
+      {
+        "line": "int prev2 = 1, prev1 = 2;",
+        "explanation": "Initialize previous state variables."
+      },
+      {
+        "line": "int curr = prev1 + prev2;",
+        "explanation": "Sum the two previous steps to find the current step ways."
+      },
+      {
+        "line": "prev2 = prev1; prev1 = curr;",
+        "explanation": "Shift previous pointers forward to reuse space."
+      }
+    ],
+    "timeComplexity": "O(N) - Single loop running from 3 to N.",
+    "spaceComplexity": "O(1) - Constant auxiliary space is used since we only maintain state variables.",
+    "dryRun": [
+      "Input: n = 4",
+      "i = 3: curr = prev1(2) + prev2(1) = 3. prev2=2, prev1=3.",
+      "i = 4: curr = prev1(3) + prev2(2) = 5. prev2=3, prev1=5.",
+      "Result: 5"
+    ],
+    "edgeCases": [
+      "Steps count n = 1 or n = 2",
+      "Large steps values (integer overflow check in C++)"
+    ],
+    "followUps": [
+      "Can you solve it in O(log N) time? (Yes, using Matrix Exponentiation)"
+    ],
+    "relatedProblems": [
+      "Fibonacci Number",
+      "Min Cost Climbing Stairs"
+    ],
+    "visualization": "Step:   0   1   2   3   4\nWays:   1   1   2   3   5\n        -   -   -   -   -\n  Each step is the sum of the two preceding steps.",
+    "commonMistakes": [
+      "Confusing indices, leading to off-by-one errors (e.g. returning `prev2` instead of `prev1`)."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "dp_2",
+    "title": "Min Cost Climbing Stairs",
+    "statement": "You are given an integer array `cost` where `cost[i]` is the cost of `i`th step on a staircase. Once you pay the cost, you can either climb one or two steps. Find the minimum cost to reach the top.",
+    "difficulty": "Easy",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Amazon"
+    ],
+    "pattern": "In-Place DP Accumulation",
+    "bruteForce": {
+      "description": "Recursively check all climb path costs. (O(2^N) time).",
+      "timeComplexity": "O(2^N)",
+      "spaceComplexity": "O(N)"
+    },
+    "optimized": {
+      "description": "Maintain the minimum cost to reach the last two steps. Update variables: `curr = cost[i] + min(prev1, prev2)`. Alternatively, modify the input cost array in-place to store the minimum cost to reach step `i`: `cost[i] += min(cost[i-1], cost[i-2])`.",
+      "timeComplexity": "O(N)",
+      "spaceComplexity": "O(1)"
+    },
+    "pythonCode": "def minCostClimbingStairs(cost):\n    n = len(cost)\n    # Compute minimum cost to reach each step in-place\n    for i in range(2, n):\n        cost[i] += min(cost[i - 1], cost[i - 2])\n    return min(cost[n - 1], cost[n - 2])",
+    "cppCode": "int minCostClimbingStairs(vector<int>& cost) {\n    int n = cost.size();\n    for (int i = 2; i < n; ++i) {\n        cost[i] += min(cost[i - 1], cost[i - 2]);\n    }\n    return min(cost[n - 1], cost[n - 2]);\n}",
+    "pythonExplanation": [
+      {
+        "line": "cost[i] += min(cost[i - 1], cost[i - 2])",
+        "explanation": "The min cost to step out from index i is the current cost plus the cheaper route of the last two steps."
+      },
+      {
+        "line": "return min(cost[n - 1], cost[n - 2])",
+        "explanation": "The top of the stairs can be reached from either the last step or the second-to-last step."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "cost[i] += min(cost[i - 1], cost[i - 2]);",
+        "explanation": "Accumulate minimal step costs in-place."
+      },
+      {
+        "line": "return min(cost[n - 1], cost[n - 2]);",
+        "explanation": "Top of staircase is reachable by taking a step size of 1 or 2 from the last two indices."
+      }
+    ],
+    "timeComplexity": "O(N) - Single loop traversing the cost array of size N.",
+    "spaceComplexity": "O(1) - Constant auxiliary space is used since calculations are done in-place.",
+    "dryRun": [
+      "Input: cost = [10, 15, 20]",
+      "i = 2: cost[2] += min(cost[1], cost[0]) = 20 + min(15, 10) = 30.",
+      "Returns min(cost[2], cost[1]) = min(30, 15) = 15."
+    ],
+    "edgeCases": [
+      "Staircase with only 2 steps",
+      "Negative costs (assuming costs are non-negative)"
+    ],
+    "followUps": [
+      "Can you solve it without modifying the input array? (Yes, by keeping two variables for space optimization)"
+    ],
+    "relatedProblems": [
+      "Climbing Stairs",
+      "House Robber"
+    ],
+    "visualization": "Step:     0    1    2 (Top)\nCost:    10   15   20\nMinCost: 10   15   min(10,15) + 20 = 30\nTop is min(15, 30) = 15",
+    "commonMistakes": [
+      "Adding the cost of the starting step unnecessarily (you can start at either index 0 or 1)."
+    ],
+    "whenNotToUse": "If input modification is forbidden, use temporary variables `prev1` and `prev2` to track states in O(1) space."
+  },
+  {
+    "id": "dp_3",
+    "title": "House Robber",
+    "statement": "You are a professional robber planning to rob houses along a street. Each house has a certain amount of money stashed. Return the maximum amount of money you can rob tonight without alerting the police (cannot rob adjacent houses).",
+    "difficulty": "Easy",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Amazon"
+    ],
+    "pattern": "Rob / Don't Rob State Compression",
+    "bruteForce": {
+      "description": "Recursively try all combinations of houses to find the maximum sum. (O(2^N) time).",
+      "timeComplexity": "O(2^N)",
+      "spaceComplexity": "O(N)"
+    },
+    "optimized": {
+      "description": "For each house, we have two options: rob it (which means we can't rob the previous house, so sum is `money[i] + max_rob(i-2)`) or skip it (sum is `max_rob(i-1)`). Keep track of these two state totals in two variables (`rob1`, `rob2`) and iterate.",
+      "timeComplexity": "O(N)",
+      "spaceComplexity": "O(1)"
+    },
+    "pythonCode": "def rob(nums):\n    rob1, rob2 = 0, 0\n    # [rob1, rob2, n, n+1, ...]\n    for n in nums:\n        temp = max(rob1 + n, rob2)\n        rob1 = rob2\n        rob2 = temp\n    return rob2",
+    "cppCode": "int rob(vector<int>& nums) {\n    int rob1 = 0, rob2 = 0;\n    for (int n : nums) {\n        int temp = max(rob1 + n, rob2);\n        rob1 = rob2;\n        rob2 = temp;\n    }\n    return rob2;\n}",
+    "pythonExplanation": [
+      {
+        "line": "rob1, rob2 = 0, 0",
+        "explanation": "Initialize maximum money robbed up to i-2 (rob1) and i-1 (rob2) to 0."
+      },
+      {
+        "line": "temp = max(rob1 + n, rob2)",
+        "explanation": "Transition state: decide whether to rob house n (adding to rob1) or skip it (keeping rob2)."
+      },
+      {
+        "line": "rob1 = rob2",
+        "explanation": "Slide variable rob1 forward to represent the previous rob2 value."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "int rob1 = 0, rob2 = 0;",
+        "explanation": "Declare state accumulators for two step intervals."
+      },
+      {
+        "line": "int temp = max(rob1 + n, rob2);",
+        "explanation": "Choose the maximum value between robbing current house or skipping."
+      },
+      {
+        "line": "rob1 = rob2; rob2 = temp;",
+        "explanation": "Update state pointers for the next iteration."
+      }
+    ],
+    "timeComplexity": "O(N) - We iterate through the houses list of size N exactly once.",
+    "spaceComplexity": "O(1) - Constant auxiliary space is used.",
+    "dryRun": [
+      "Input: nums = [1, 2, 3, 1]",
+      "n = 1: temp = max(0+1, 0) = 1. rob1 = 0, rob2 = 1.",
+      "n = 2: temp = max(0+2, 1) = 2. rob1 = 1, rob2 = 2.",
+      "n = 3: temp = max(1+3, 2) = 4. rob1 = 2, rob2 = 4.",
+      "n = 1: temp = max(2+1, 4) = 4. rob1 = 4, rob2 = 4.",
+      "Result: 4"
+    ],
+    "edgeCases": [
+      "Empty house listing (returns 0)",
+      "Single house",
+      "Houses with 0 money"
+    ],
+    "followUps": [
+      "Can you solve it if houses are arranged in a circle? (House Robber II)"
+    ],
+    "relatedProblems": [
+      "House Robber II",
+      "House Robber III",
+      "Delete and Earn"
+    ],
+    "visualization": "nums = [ 1,   2,   3,   1 ]\n  i=0: rob current (1) vs skip (0) -> max = 1\n  i=1: rob current (2+0) vs skip (1) -> max = 2\n  i=2: rob current (3+1) vs skip (2) -> max = 4 (Rob 1 & 3)\n  i=3: rob current (1+2) vs skip (4) -> max = 4",
+    "commonMistakes": [
+      "Attempting to use an array of size N when variable state compression is easily doable, increasing memory usage."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "dp_4",
+    "title": "Longest Common Subsequence",
+    "statement": "Given two strings `text1` and `text2`, return the length of their longest common subsequence. If there is no common subsequence, return 0.",
+    "difficulty": "Medium",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Amazon"
+    ],
+    "pattern": "2D Grid DP Grid Matching",
+    "bruteForce": {
+      "description": "Recursively check all subsequence combinations. (O(2^(M+N)) time).",
+      "timeComplexity": "O(2^(M+N))",
+      "spaceComplexity": "O(M+N)"
+    },
+    "optimized": {
+      "description": "Create a 2D grid `dp` of size `(M+1) x (N+1)` where `dp[i][j]` represents the LCS length of `text1[i:]` and `text2[j:]`. Loop backwards: if `text1[i] == text2[j]`, `dp[i][j] = 1 + dp[i+1][j+1]`. Otherwise, `dp[i][j] = max(dp[i+1][j], dp[i][j+1])`.",
+      "timeComplexity": "O(M * N)",
+      "spaceComplexity": "O(M * N)"
+    },
+    "pythonCode": "def longestCommonSubsequence(text1, text2):\n    m, n = len(text1), len(text2)\n    dp = [[0] * (n + 1) for _ in range(m + 1)]\n    \n    for i in range(m - 1, -1, -1):\n        for j in range(n - 1, -1, -1):\n            if text1[i] == text2[j]:\n                dp[i][j] = 1 + dp[i+1][j+1]\n            else:\n                dp[i][j] = max(dp[i+1][j], dp[i][j+1])\n                \n    return dp[0][0]",
+    "cppCode": "int longestCommonSubsequence(string text1, string text2) {\n    int m = text1.size(), n = text2.size();\n    vector<vector<int>> dp(m + 1, vector<int>(n + 1, 0));\n    \n    for (int i = m - 1; i >= 0; --i) {\n        for (int j = n - 1; j >= 0; --j) {\n            if (text1[i] == text2[j]) {\n                dp[i][j] = 1 + dp[i + 1][j + 1];\n            } else {\n                dp[i][j] = max(dp[i + 1][j], dp[i][j + 1]);\n            }\n        }\n    }\n    return dp[0][0];\n}",
+    "pythonExplanation": [
+      {
+        "line": "dp = [[0] * (n + 1) for _ in range(m + 1)]",
+        "explanation": "Initialize a 2D matrix of size (m+1) x (n+1) with 0s to represent base cases (empty suffix matches)."
+      },
+      {
+        "line": "if text1[i] == text2[j]: dp[i][j] = 1 + dp[i+1][j+1]",
+        "explanation": "If letters match, LCS increases by 1 plus the diagonal sub-problem result."
+      },
+      {
+        "line": "else: dp[i][j] = max(dp[i+1][j], dp[i][j+1])",
+        "explanation": "If letters mismatch, take the best result of skipping a character in text1 or text2."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "vector<vector<int>> dp(m + 1, vector<int>(n + 1, 0));",
+        "explanation": "Declare a 2D vector initialized to 0."
+      },
+      {
+        "line": "if (text1[i] == text2[j])",
+        "explanation": "Check if character match occurs."
+      },
+      {
+        "line": "dp[i][j] = 1 + dp[i + 1][j + 1];",
+        "explanation": "Move diagonally and add 1 on match."
+      },
+      {
+        "line": "dp[i][j] = max(dp[i + 1][j], dp[i][j + 1]);",
+        "explanation": "Find max value between dropping first character of text1 or text2."
+      }
+    ],
+    "timeComplexity": "O(M * N) - Two nested loops iterating over the lengths of text1 (M) and text2 (N).",
+    "spaceComplexity": "O(M * N) - Grid size required to store subproblem values. (Can be optimized to O(min(M, N)) space by keeping only two rows).",
+    "dryRun": [
+      "Input: text1 = 'abc', text2 = 'ac'",
+      "dp grid size: 4x3.",
+      "i = 2 (c), j = 1 (c): Match! dp[2][1] = 1 + dp[3][2] = 1.",
+      "i = 1 (b), j = 0 (a): Mismatch -> max(dp[2][0]=1, dp[1][1]=1) = 1.",
+      "i = 0 (a), j = 0 (a): Match! dp[0][0] = 1 + dp[1][1](c vs c = 1) = 2.",
+      "Result: 2"
+    ],
+    "edgeCases": [
+      "One or both strings are empty",
+      "No common characters exist",
+      "Strings are identical"
+    ],
+    "followUps": [
+      "Can you optimize space to O(N)? (Yes, since we only need the current row and the next row to calculate state values)"
+    ],
+    "relatedProblems": [
+      "Longest Palindromic Subsequence",
+      "Edit Distance"
+    ],
+    "visualization": "DP Grid for 'abc' and 'ac':\n    a  c  \na   2  1  0\nb   1  1  0\nc   1  1  0\n  0  0  0\nMatching cells move diagonally + 1. Mismatch takes max(right, down).",
+    "commonMistakes": [
+      "Confusing Subsequence with Substring (substrings must be contiguous, subsequences do not need to be)."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "dp_5",
+    "title": "Coin Change",
+    "statement": "Given an integer array `coins` representing coins of different denominations and an integer `amount` representing a total amount of money, return the fewest number of coins that you need to make up that amount. If it cannot be made up, return -1.",
+    "difficulty": "Medium",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Amazon"
+    ],
+    "pattern": "1D Memoization Array Minimization",
+    "bruteForce": {
+      "description": "Recursively try all combinations of coins to reach target amount. (O(C^A) time).",
+      "timeComplexity": "O(C^A)",
+      "spaceComplexity": "O(A)"
+    },
+    "optimized": {
+      "description": "Create a 1D DP array of size `amount + 1` initialized to a large value (e.g. `amount + 1`). `dp[0] = 0`. For each index `i` from 1 to `amount`, check each coin `c`: if `i - c >= 0`, update `dp[i] = min(dp[i], 1 + dp[i-c])`. Return `dp[amount]` if it was updated, else -1.",
+      "timeComplexity": "O(N * C)",
+      "spaceComplexity": "O(N)"
+    },
+    "pythonCode": "def coinChange(coins, amount):\n    # Initialize dp array with maximum possible value\n    dp = [amount + 1] * (amount + 1)\n    dp[0] = 0\n    \n    for i in range(1, amount + 1):\n        for coin in coins:\n            if i - coin >= 0:\n                dp[i] = min(dp[i], 1 + dp[i - coin])\n                \n    return dp[amount] if dp[amount] != amount + 1 else -1",
+    "cppCode": "int coinChange(vector<int>& coins, int amount) {\n    vector<int> dp(amount + 1, amount + 1);\n    dp[0] = 0;\n    \n    for (int i = 1; i <= amount; ++i) {\n        for (int coin : coins) {\n            if (i - coin >= 0) {\n                dp[i] = min(dp[i], 1 + dp[i - coin]);\n            }\n        }\n    }\n    return dp[amount] == amount + 1 ? -1 : dp[amount];\n}",
+    "pythonExplanation": [
+      {
+        "line": "dp = [amount + 1] * (amount + 1)",
+        "explanation": "Create DP array initialized to infinity (amount + 1 acts as infinity here)."
+      },
+      {
+        "line": "dp[0] = 0",
+        "explanation": "Base case: 0 coins are needed to make 0 amount."
+      },
+      {
+        "line": "if i - coin >= 0:",
+        "explanation": "If the current coin denomination fits in amount i, check this option."
+      },
+      {
+        "line": "dp[i] = min(dp[i], 1 + dp[i - coin])",
+        "explanation": "Update fewest coins: minimum of keeping current or using 1 coin plus the remainder solution."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "vector<int> dp(amount + 1, amount + 1);",
+        "explanation": "Build DP state vector populated with infinity defaults."
+      },
+      {
+        "line": "dp[0] = 0;",
+        "explanation": "Zero coins required to fulfill zero sum."
+      },
+      {
+        "line": "if (i - coin >= 0)",
+        "explanation": "Check if current coin can be subtracted from amount subproblem."
+      },
+      {
+        "line": "dp[i] = min(dp[i], 1 + dp[i - coin]);",
+        "explanation": "Update index with the optimal min coin counts."
+      }
+    ],
+    "timeComplexity": "O(A * C) - Double loop iterating over amount A and the number of coins C.",
+    "spaceComplexity": "O(A) - Auxiliary space required to store the DP array of size A.",
+    "dryRun": [
+      "Input: coins = [1, 2], amount = 3",
+      "dp = [0, 4, 4, 4]",
+      "i = 1: coin=1 -> dp[1] = min(4, 1+dp[0]=1) = 1. dp = [0, 1, 4, 4]",
+      "i = 2: coin=1 -> dp[2]=min(4, 1+dp[1]=2)=2. coin=2 -> dp[2]=min(2, 1+dp[0]=1)=1. dp = [0, 1, 1, 4]",
+      "i = 3: coin=1 -> dp[3]=min(4, 1+dp[2]=2)=2. coin=2 -> dp[3]=min(2, 1+dp[1]=2)=2. dp = [0, 1, 1, 2]",
+      "Result: 2"
+    ],
+    "edgeCases": [
+      "Amount is 0 (returns 0)",
+      "No combinations exist (returns -1)",
+      "Large amount causing memory limits"
+    ],
+    "followUps": [
+      "Can you return the actual coins used? (Yes, by tracking selected coin indices in a parent array)"
+    ],
+    "relatedProblems": [
+      "Combination Sum II",
+      "Coin Change II"
+    ],
+    "visualization": "dp[i] represents fewest coins to make amount i\ndp: [ 0,  1,  1,  2 ]  (coins = [1, 2])\n      -   -   -   -\n  i:  0   1   2   3\n  dp[3] = min(1+dp[2], 1+dp[1]) = 2",
+    "commonMistakes": [
+      "Using a greedy approach (e.g. always picking the largest coin). Greedy fails for cases like coins=[1,3,4], amount=6 (greedy gives 4+1+1=3 coins, optimal is 3+3=2 coins)."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "dp_6",
+    "title": "Longest Increasing Subsequence",
+    "statement": "Given an integer array `nums`, return the length of the longest strictly increasing subsequence.",
+    "difficulty": "Medium",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Amazon"
+    ],
+    "pattern": "Patience Sorting / Binary Search O(N log N)",
+    "bruteForce": {
+      "description": "Recursively find all subset configurations and check if they are increasing. (O(2^N) time).",
+      "timeComplexity": "O(2^N)",
+      "spaceComplexity": "O(N)"
+    },
+    "optimized": {
+      "description": "Use a dynamic list `sub`. Iterate through `nums`: find the insert position of `num` in `sub` using binary search. If it can be appended, do so. Otherwise, replace the element at the insert position with `num`. The length of `sub` is the LIS length. (Standard DP is O(N^2), binary search optimizes it to O(N log N)).",
+      "timeComplexity": "O(N log N)",
+      "spaceComplexity": "O(N)"
+    },
+    "pythonCode": "import bisect\ndef lengthOfLIS(nums):\n    if not nums:\n        return 0\n    sub = []\n    for num in nums:\n        idx = bisect.bisect_left(sub, num)\n        if idx == len(sub):\n            sub.append(num)\n        else:\n            sub[idx] = num\n    return len(sub)",
+    "cppCode": "int lengthOfLIS(vector<int>& nums) {\n    if (nums.empty()) return 0;\n    vector<int> sub;\n    for (int num : nums) {\n        auto it = lower_bound(sub.begin(), sub.end(), num);\n        if (it == sub.end()) {\n            sub.push_back(num);\n        } else {\n            *it = num;\n        }\n    }\n    return sub.size();\n}",
+    "pythonExplanation": [
+      {
+        "line": "sub = []",
+        "explanation": "Initialize a dynamic list to store the active increasing subsequence tails."
+      },
+      {
+        "line": "idx = bisect.bisect_left(sub, num)",
+        "explanation": "Find the insertion index for num using binary search (O(log N))."
+      },
+      {
+        "line": "sub.append(num)",
+        "explanation": "If num is larger than all elements in sub, extend our subsequence."
+      },
+      {
+        "line": "sub[idx] = num",
+        "explanation": "Otherwise, overwrite the element at index idx to keep values as small as possible."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "vector<int> sub;",
+        "explanation": "Vector to track the smallest tail values of active increasing subsequences."
+      },
+      {
+        "line": "auto it = lower_bound(sub.begin(), sub.end(), num);",
+        "explanation": "Binary search: find first element >= num."
+      },
+      {
+        "line": "sub.push_back(num);",
+        "explanation": "If not found, append to active sub list (increases length)."
+      },
+      {
+        "line": "*it = num;",
+        "explanation": "Otherwise, update existing slot to optimize future sequence additions."
+      }
+    ],
+    "timeComplexity": "O(N log N) - We iterate N times, and binary search (bisect/lower_bound) takes O(log N) time per iteration.",
+    "spaceComplexity": "O(N) - Storing the LIS sequence representation inside the sub vector.",
+    "dryRun": [
+      "Input: nums = [10, 9, 2, 5, 3, 7]",
+      "num = 10: sub = [10]",
+      "num = 9: replaces 10. sub = [9]",
+      "num = 2: replaces 9. sub = [2]",
+      "num = 5: appends. sub = [2, 5]",
+      "num = 3: replaces 5. sub = [2, 3]",
+      "num = 7: appends. sub = [2, 3, 7]",
+      "Result: 3"
+    ],
+    "edgeCases": [
+      "Empty array",
+      "Strictly decreasing values (returns 1)",
+      "Array with duplicates (must be strictly increasing)"
+    ],
+    "followUps": [
+      "Can you return the actual LIS sequence? (Yes, maintain parent pointer arrays during binary search updates)"
+    ],
+    "relatedProblems": [
+      "Longest Common Subsequence",
+      "Number of Longest Increasing Subsequence"
+    ],
+    "visualization": "Array: [10, 9, 2, 5, 3, 7]\nSteps: [10] -> [9] -> [2] -> [2, 5] -> [2, 3] -> [2, 3, 7]\nLength = 3",
+    "commonMistakes": [
+      "Using `bisect_right` instead of `bisect_left`. `bisect_left` is required for strictly increasing checks."
+    ],
+    "whenNotToUse": "If N is small (e.g. < 1000), standard O(N^2) DP (double loop) is simpler to write."
+  },
+  {
+    "id": "dp_7",
+    "title": "Edit Distance",
+    "statement": "Given two strings `word1` and `word2`, return the minimum number of operations required to convert `word1` to `word2`. You have the three operations: Insert, Delete, or Replace.",
+    "difficulty": "Hard",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Amazon"
+    ],
+    "pattern": "2D Grid Alignment DP Matrix",
+    "bruteForce": {
+      "description": "Use recursion with backtracking to try all combinations of operations. (O(3^N) time).",
+      "timeComplexity": "O(3^N)",
+      "spaceComplexity": "O(N)"
+    },
+    "optimized": {
+      "description": "Create a 2D grid `dp` of size `(M+1) x (N+1)` where `dp[i][j]` is the edit distance of `word1[i:]` and `word2[j:]`. Base cases: if one string is empty, cost is the length of the other. Loop backwards: if `word1[i] == word2[j]`, `dp[i][j] = dp[i+1][j+1]`. Otherwise, `dp[i][j] = 1 + min(dp[i+1][j], dp[i][j+1], dp[i+1][j+1])`.",
+      "timeComplexity": "O(M * N)",
+      "spaceComplexity": "O(M * N)"
+    },
+    "pythonCode": "def minDistance(word1, word2):\n    m, n = len(word1), len(word2)\n    dp = [[0] * (n + 1) for _ in range(m + 1)]\n    \n    # Initialize boundary cases\n    for i in range(m + 1): dp[i][n] = m - i\n    for j in range(n + 1): dp[m][j] = n - j\n    \n    for i in range(m - 1, -1, -1):\n        for j in range(n - 1, -1, -1):\n            if word1[i] == word2[j]:\n                dp[i][j] = dp[i + 1][j + 1]\n            else:\n                dp[i][j] = 1 + min(dp[i + 1][j],      # Delete\n                                   dp[i][j + 1],      # Insert\n                                   dp[i + 1][j + 1])  # Replace\n                                   \n    return dp[0][0]",
+    "cppCode": "int minDistance(string word1, string word2) {\n    int m = word1.size(), n = word2.size();\n    vector<vector<int>> dp(m + 1, vector<int>(n + 1, 0));\n    \n    for (int i = 0; i <= m; ++i) dp[i][n] = m - i;\n    for (int j = 0; j <= n; ++j) dp[m][j] = n - j;\n    \n    for (int i = m - 1; i >= 0; --i) {\n        for (int j = n - 1; j >= 0; --j) {\n            if (word1[i] == word2[j]) {\n                dp[i][j] = dp[i + 1][j + 1];\n            } else {\n                dp[i][j] = 1 + min({dp[i + 1][j],      // Delete\n                                    dp[i][j + 1],      // Insert\n                                    dp[i + 1][j + 1]}); // Replace\n            }\n        }\n    }\n    return dp[0][0];\n}",
+    "pythonExplanation": [
+      {
+        "line": "dp[i][n] = m - i",
+        "explanation": "If word2 is empty, we must delete all remaining characters of word1."
+      },
+      {
+        "line": "if word1[i] == word2[j]: dp[i][j] = dp[i + 1][j + 1]",
+        "explanation": "If characters match, no operations are needed; carry diagonal value."
+      },
+      {
+        "line": "dp[i][j] = 1 + min(dp[i + 1][j], dp[i][j + 1], dp[i + 1][j + 1])",
+        "explanation": "Otherwise, take 1 plus the minimum of Delete, Insert, or Replace."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "for (int i = 0; i <= m; ++i) dp[i][n] = m - i;",
+        "explanation": "Initialize boundary column representing deletions from empty word2."
+      },
+      {
+        "line": "dp[i][j] = 1 + min({dp[i + 1][j], dp[i][j + 1], dp[i + 1][j + 1]});",
+        "explanation": "Minimum operations step: 1 + min(delete, insert, replace)."
+      }
+    ],
+    "timeComplexity": "O(M * N) - Two nested loops of sizes M (word1) and N (word2).",
+    "spaceComplexity": "O(M * N) - Space to store the subproblems grid table.",
+    "dryRun": [
+      "Input: word1 = 'abc', word2 = 'ac'",
+      "dp boundary: dp[3] = [2, 1, 0]. Last column = [3, 2, 1, 0].",
+      "i = 2 (c), j = 1 (c): Match! dp[2][1] = dp[3][2] = 0.",
+      "i = 1 (b), j = 0 (a): Mismatch -> 1 + min(dp[2][0]=1, dp[1][1]=1, dp[2][1]=0) = 1 (Replace).",
+      "i = 0 (a), j = 0 (a): Match! dp[0][0] = dp[1][1] = 1.",
+      "Result: 1"
+    ],
+    "edgeCases": [
+      "One string is empty",
+      "Strings are identical",
+      "No overlapping characters"
+    ],
+    "followUps": [
+      "Can you optimize space to O(N)? (Yes, by keeping only current and previous DP rows)"
+    ],
+    "relatedProblems": [
+      "Longest Common Subsequence",
+      "One Edit Distance"
+    ],
+    "visualization": "Matrix for 'abc' and 'ac':\n    a  c  \"\"\na   1  1  3\nb   2  1  2\nc   2  0  1\n\"\"  2  1  0\nMatch carries diagonal. Mismatch takes 1 + min(right, down, diagonal).",
+    "commonMistakes": [
+      "Incorrectly initializing boundary cases or swapping dimensions of the DP matrix."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "dp_8",
+    "title": "Regular Expression Matching",
+    "statement": "Given an input string `s` and a pattern `p`, implement regular expression matching with support for `'.'` (matches any single character) and `'*'` (matches zero or more of the preceding element).",
+    "difficulty": "Hard",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Amazon"
+    ],
+    "pattern": "Top-down Recursion with Memoization",
+    "bruteForce": {
+      "description": "Exhaustive DFS branching on every star character condition. (O(3^N) worst case).",
+      "timeComplexity": "O(3^N)",
+      "spaceComplexity": "O(N)"
+    },
+    "optimized": {
+      "description": "Use recursion with memoization. A helper function `dfs(i, j)` checks match from `s[i:]` and `p[j:]`. If `j` matches pattern length, return true if `i` matches string length. Check if characters match. If `j + 1` is `*`, we can either: 1. Ignore `*` (call `dfs(i, j + 2)`). 2. Use `*` if characters match (call `dfs(i + 1, j)`). Otherwise, if characters match, call `dfs(i + 1, j + 1)`.",
+      "timeComplexity": "O(S * P)",
+      "spaceComplexity": "O(S * P)"
+    },
+    "pythonCode": "def isMatch(s, p):\n    memo = {}\n    \n    def dfs(i, j):\n        if (i, j) in memo:\n            return memo[(i, j)]\n        if j == len(p):\n            return i == len(s)\n            \n        match = i < len(s) and (s[i] == p[j] or p[j] == '.')\n        \n        if j + 1 < len(p) and p[j + 1] == '*':\n            # Choice 1: Don't use '*' (skip pattern char and '*')\n            # Choice 2: Use '*' (if current char matches, advance string pointer)\n            res = dfs(i, j + 2) or (match and dfs(i + 1, j))\n        else:\n            res = match and dfs(i + 1, j + 1)\n            \n        memo[(i, j)] = res\n        return res\n        \n    return dfs(0, 0)",
+    "cppCode": "bool isMatch(string s, string p) {\n    int m = s.size(), n = p.size();\n    vector<vector<int>> memo(m + 1, vector<int>(n + 1, -1));\n    \n    auto dfs = [&](auto& self, int i, int j) -> bool {\n        if (memo[i][j] != -1) return memo[i][j];\n        if (j == n) return i == m;\n        \n        bool match = i < m && (s[i] == p[j] || p[j] == '.');\n        bool res = false;\n        \n        if (j + 1 < n && p[j + 1] == '*') {\n            res = self(self, i, j + 2) || (match && self(self, i + 1, j));\n        } else {\n            res = match && self(self, i + 1, j + 1);\n        }\n        \n        return memo[i][j] = res;\n    };\n    \n    return dfs(dfs, 0, 0);\n}",
+    "pythonExplanation": [
+      {
+        "line": "if j == len(p): return i == len(s)",
+        "explanation": "If pattern is fully matched, string must also be fully matched."
+      },
+      {
+        "line": "match = i < len(s) and (s[i] == p[j] or p[j] == '.')",
+        "explanation": "Check if character match occurs or wildcard '.' is used."
+      },
+      {
+        "line": "dfs(i, j + 2)",
+        "explanation": "Skip '*' and preceding character (treat wildcard as matching 0 occurrences)."
+      },
+      {
+        "line": "match and dfs(i + 1, j)",
+        "explanation": "Use '*' (advance string pointer i if character matches)."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "if (memo[i][j] != -1) return memo[i][j];",
+        "explanation": "Return cached subproblem result to save computation time."
+      },
+      {
+        "line": "bool match = i < m && (s[i] == p[j] || p[j] == '.');",
+        "explanation": "Assess single character match conditions."
+      },
+      {
+        "line": "res = self(self, i, j + 2) || (match && self(self, i + 1, j));",
+        "explanation": "Branching choices: matching 0 items (skip j+2) OR matching >=1 items (advance string i+1)."
+      }
+    ],
+    "timeComplexity": "O(S * P) - S is string length, P is pattern length. There are at most S * P states.",
+    "spaceComplexity": "O(S * P) - Grid table space needed for memoization cache.",
+    "dryRun": [
+      "Input: s = 'aa', p = 'a*'",
+      "DFS(0,0): matches 'a' vs 'a'. j+1 is '*'. Options:",
+      "1. Skip '*' -> DFS(0, 2) -> j=2 (end of pattern), i=0 != 2 -> False.",
+      "2. Match and advance string -> DFS(1, 0): matches 'a' vs 'a'.",
+      "  DFS(1,0) Options: DFS(1, 2) -> False. DFS(2, 0) -> i=2, j=0. matches end of string -> DFS(2, 2) -> returns True.",
+      "Result: True"
+    ],
+    "edgeCases": [
+      "Empty string and empty pattern",
+      "Pattern with consecutive stars (assuming valid input)",
+      "Mismatch patterns"
+    ],
+    "followUps": [
+      "Can you implement this using bottom-up 2D DP? (Yes, fill grid row-by-row)"
+    ],
+    "relatedProblems": [
+      "Wildcard Matching",
+      "Regular Expression Matching II"
+    ],
+    "visualization": "s = 'aa', p = 'a*'\nDFS(0,0) -> 'a' matches -> Check choice 1: skip 'a*' (j+2) -> False\n                          -> Check choice 2: match 'a' -> DFS(1,0) -> DFS(2,0) -> True!",
+    "commonMistakes": [
+      "Not handling the boundary checks when string reaches its end but pattern still has optional terms (e.g. s='', p='a*b*')."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "dp_9",
+    "title": "Burst Balloons",
+    "statement": "You are given `n` balloons, indexed from 0 to `n - 1`. Each balloon is painted with a number on it. If you burst balloon `i` you will get `nums[i-1] * nums[i] * nums[i+1]` coins. Find the maximum coins you can collect by bursting all balloons.",
+    "difficulty": "Hard",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Amazon"
+    ],
+    "pattern": "Interval DP Matrix / Partition Split",
+    "bruteForce": {
+      "description": "Try all permutations of bursting balloons recursively. (O(N!) time).",
+      "timeComplexity": "O(N!)",
+      "spaceComplexity": "O(N)"
+    },
+    "optimized": {
+      "description": "Instead of choosing which balloon to burst first, think about which balloon is burst last in a range `[i, j]`. If balloon `k` is burst last, it will have boundaries `i-1` and `j+1`. Maximum coins is: `max_coins(i, k-1) + nums[i-1]*nums[k]*nums[j+1] + max_coins(k+1, j)`. Compute this bottom-up on range sizes.",
+      "timeComplexity": "O(N^3)",
+      "spaceComplexity": "O(N^2)"
+    },
+    "pythonCode": "def maxCoins(nums):\n    # Pad array with 1s at both boundaries\n    arr = [1] + nums + [1]\n    n = len(arr)\n    dp = [[0] * n for _ in range(n)]\n    \n    # l represents the length of sub-array\n    for length in range(1, n - 1):\n        for i in range(1, n - length):\n            j = i + length - 1\n            for k in range(i, j + 1):\n                # k is the last balloon to burst in interval [i, j]\n                coins = arr[i - 1] * arr[k] * arr[j + 1]\n                total = dp[i][k - 1] + coins + dp[k + 1][j]\n                dp[i][j] = max(dp[i][j], total)\n                \n    return dp[1][n - 2]",
+    "cppCode": "int maxCoins(vector<int>& nums) {\n    int n = nums.size();\n    vector<int> arr(n + 2, 1);\n    for (int i = 0; i < n; ++i) {\n        arr[i + 1] = nums[i];\n    }\n    vector<vector<int>> dp(n + 2, vector<int>(n + 2, 0));\n    \n    for (int len = 1; len <= n; ++len) {\n        for (int i = 1; i <= n - len + 1; ++i) {\n            int j = i + len - 1;\n            for (int k = i; k <= j; ++k) {\n                int coins = arr[i - 1] * arr[k] * arr[j + 1];\n                int total = dp[i][k - 1] + coins + dp[k + 1][j];\n                dp[i][j] = max(dp[i][j], total);\n            }\n        }\n    }\n    return dp[1][n];\n}",
+    "pythonExplanation": [
+      {
+        "line": "arr = [1] + nums + [1]",
+        "explanation": "Pad the array with boundary 1s since bursting edge balloons multiplies with outer elements."
+      },
+      {
+        "line": "for length in range(1, n - 1):",
+        "explanation": "Loop over length of range subproblems."
+      },
+      {
+        "line": "k is the last balloon to burst in interval [i, j]",
+        "explanation": "Decide which balloon k is burst last in the active interval."
+      },
+      {
+        "line": "total = dp[i][k - 1] + coins + dp[k + 1][j]",
+        "explanation": "Sum: left sub-problem + current coins + right sub-problem."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "vector<int> arr(n + 2, 1);",
+        "explanation": "Declare padded array with boundary virtual elements."
+      },
+      {
+        "line": "int coins = arr[i - 1] * arr[k] * arr[j + 1];",
+        "explanation": "Coins earned by popping balloon k as the absolute last in interval."
+      },
+      {
+        "line": "dp[i][j] = max(dp[i][j], total);",
+        "explanation": "Update maximum coins for the range."
+      }
+    ],
+    "timeComplexity": "O(N^3) - Three nested loops: range length, start index `i`, and partition split element `k`.",
+    "spaceComplexity": "O(N^2) - Matrix table to store range subproblems.",
+    "dryRun": [
+      "Input: nums = [3, 1, 5]",
+      "arr = [1, 3, 1, 5, 1]",
+      "Ranges processed: len=1: [3], [1], [5].",
+      "  For [1]: coins = 3*1*5 = 15.",
+      "Ranges len=2: [3, 1], [1, 5].",
+      "Eventually computes optimal order: pop 1 first, then 5, then 3. Output: 167."
+    ],
+    "edgeCases": [
+      "Single balloon in array",
+      "All elements identical",
+      "Increasing elements list"
+    ],
+    "followUps": [
+      "Can you explain why greedy fails? (Greedy choice of popping smallest/largest first violates dynamic boundary dependencies)"
+    ],
+    "relatedProblems": [
+      "Minimum Cost Tree From Leaf Values",
+      "Remove Boxes"
+    ],
+    "visualization": "Interval [i, ..., k, ..., j] bounded by i-1 and j+1\nLast balloon to pop is k -> score = arr[i-1] * arr[k] * arr[j+1] + dp[i..k-1] + dp[k+1..j]\nTry all possible k in interval.",
+    "commonMistakes": [
+      "Not padding the array with boundary 1s, which leads to out-of-bounds index errors when popping edge balloons."
+    ],
+    "whenNotToUse": "None"
+  }
+]

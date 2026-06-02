@@ -1,0 +1,662 @@
+[
+  {
+    "id": "binary_search_1",
+    "title": "Binary Search",
+    "statement": "Given an array of integers `nums` which is sorted in ascending order, and an integer `target`, write a function to search `target` in `nums`. If `target` exists, then return its index. Otherwise, return `-1`.",
+    "difficulty": "Easy",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Amazon"
+    ],
+    "pattern": "Binary Search Bounds",
+    "bruteForce": {
+      "description": "Scan the array sequentially from start to end to find the target. (Linear Search).",
+      "timeComplexity": "O(N)",
+      "spaceComplexity": "O(1)"
+    },
+    "optimized": {
+      "description": "Use two pointers, `left` (0) and `right` (N-1), representing the active search window. While `left <= right`, calculate the midpoint `mid`. If `nums[mid] == target`, return `mid`. If `nums[mid] < target`, shrink window to the right: `left = mid + 1`. Otherwise, shrink to the left: `right = mid - 1`.",
+      "timeComplexity": "O(log N)",
+      "spaceComplexity": "O(1)"
+    },
+    "pythonCode": "def search(nums, target):\n    l, r = 0, len(nums) - 1\n    while l <= r:\n        mid = l + (r - l) // 2\n        if nums[mid] == target:\n            return mid\n        elif nums[mid] < target:\n            l = mid + 1\n        else:\n            r = mid - 1\n    return -1",
+    "cppCode": "int search(vector<int>& nums, int target) {\n    int l = 0, r = nums.size() - 1;\n    while (l <= r) {\n        int mid = l + (r - l) / 2;\n        if (nums[mid] == target) return mid;\n        else if (nums[mid] < target) l = mid + 1;\n        else r = mid - 1;\n    }\n    return -1;\n}",
+    "pythonExplanation": [
+      {
+        "line": "l, r = 0, len(nums) - 1",
+        "explanation": "Initialize boundary pointers covering the entire array."
+      },
+      {
+        "line": "mid = l + (r - l) // 2",
+        "explanation": "Calculate midpoint. Using l + (r - l) // 2 prevents integer overflow compared to (l + r) // 2."
+      },
+      {
+        "line": "if nums[mid] == target: return mid",
+        "explanation": "If target is found, return its index immediately."
+      },
+      {
+        "line": "l = mid + 1",
+        "explanation": "If target is larger, ignore the left half by moving the left pointer past mid."
+      },
+      {
+        "line": "r = mid - 1",
+        "explanation": "If target is smaller, ignore the right half by moving the right pointer before mid."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "int mid = l + (r - l) / 2;",
+        "explanation": "Compute midpoint safely without integer overflow risk."
+      },
+      {
+        "line": "if (nums[mid] == target) return mid;",
+        "explanation": "Return index if target value matches midpoint element."
+      }
+    ],
+    "timeComplexity": "O(log N) - The search space is divided in half at each step.",
+    "spaceComplexity": "O(1) - Only constant extra variables are used.",
+    "dryRun": [
+      "Input: nums = [-1, 0, 3, 5, 9, 12], target = 9",
+      "Step 1: l = 0, r = 5. mid = 0 + (5-0)//2 = 2. nums[2] = 3 < 9. Set l = 2 + 1 = 3.",
+      "Step 2: l = 3, r = 5. mid = 3 + (5-3)//2 = 4. nums[4] = 9 == 9. Target found! Return 4."
+    ],
+    "edgeCases": [
+      "Target not in array (returns -1)",
+      "Single element array",
+      "Target is at the boundary"
+    ],
+    "followUps": [
+      "Can you write it recursively? (Yes, passes boundaries as parameters, stack depth O(log N))"
+    ],
+    "relatedProblems": [
+      "Search Insert Position",
+      "First Bad Version"
+    ],
+    "visualization": "[-1, 0, 3, 5, 9, 12]  Target = 9\n  L=0       mid=2      R=5   -> 3 < 9 -> L moves to mid+1 = 3\n            L=3 mid=4  R=5   -> 9 == 9 -> Found!",
+    "commonMistakes": [
+      "Using `(l + r) // 2` which can cause integer overflow in languages like C++ when left and right are very large."
+    ],
+    "whenNotToUse": "If the array is unsorted, binary search cannot be used unless we sort it first (which takes O(N log N) time)."
+  },
+  {
+    "id": "binary_search_2",
+    "title": "Search Insert Position",
+    "statement": "Given a sorted array of distinct integers and a target value, return the index if the target is found. If not, return the index where it would be if it were inserted in order.",
+    "difficulty": "Easy",
+    "companies": [
+      "Infosys",
+      "TCS",
+      "Amazon"
+    ],
+    "pattern": "Binary Search Bounds",
+    "bruteForce": {
+      "description": "Scan sequentially to find first element >= target. (Linear search).",
+      "timeComplexity": "O(N)",
+      "spaceComplexity": "O(1)"
+    },
+    "optimized": {
+      "description": "Run standard binary search. If target is found, return its index. If loop terminates without finding target, the `left` pointer will end up pointing to the first element larger than target, which is the correct insertion index.",
+      "timeComplexity": "O(log N)",
+      "spaceComplexity": "O(1)"
+    },
+    "pythonCode": "def searchInsert(nums, target):\n    l, r = 0, len(nums) - 1\n    while l <= r:\n        mid = l + (r - l) // 2\n        if nums[mid] == target:\n            return mid\n        elif nums[mid] < target:\n            l = mid + 1\n        else:\n            r = mid - 1\n    return l",
+    "cppCode": "int searchInsert(vector<int>& nums, int target) {\n    int l = 0, r = nums.size() - 1;\n    while (l <= r) {\n        int mid = l + (r - l) / 2;\n        if (nums[mid] == target) return mid;\n        else if (nums[mid] < target) l = mid + 1;\n        else r = mid - 1;\n    }\n    return l;\n}",
+    "pythonExplanation": [
+      {
+        "line": "return mid",
+        "explanation": "If target is found, return its index."
+      },
+      {
+        "line": "return l",
+        "explanation": "If loop finishes, left pointer represents the correct insertion index because it points to the first value >= target."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "return l;",
+        "explanation": "When search bounds collapse, the left pointer index is the exact insert location."
+      }
+    ],
+    "timeComplexity": "O(log N) - Standard binary search halving of search space.",
+    "spaceComplexity": "O(1) - Constant auxiliary space.",
+    "dryRun": [
+      "Input: nums = [1, 3, 5, 6], target = 5",
+      "l = 0, r = 3. mid = 1 (val=3) < 5 -> l = 2.",
+      "l = 2, r = 3. mid = 2 (val=5) == 5 -> Target found at index 2."
+    ],
+    "edgeCases": [
+      "Target belongs at start index 0",
+      "Target belongs at end index N",
+      "Target matches existing element"
+    ],
+    "followUps": [
+      "Can you write this using libraries? (In Python, `bisect.bisect_left(nums, target)`. In C++, `lower_bound`)"
+    ],
+    "relatedProblems": [
+      "Binary Search",
+      "First Bad Version"
+    ],
+    "visualization": "nums = [1, 3, 5, 6]  Target = 2\n  L=0     mid=1(3)  R=3 -> 3 > 2 -> R=mid-1=0\n  L=0(1)  mid=0(1)  R=0 -> 1 < 2 -> L=mid+1=1\n  L=1 > R=0 -> loop ends -> Return L = 1",
+    "commonMistakes": [
+      "Returning `mid` or `l - 1` on mismatch instead of `l`."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "binary_search_3",
+    "title": "First Bad Version",
+    "statement": "You are a product manager and currently leading a team to develop a new product. Unfortunately, the latest version of your product fails the quality check. Since each version is developed based on the previous version, all the versions after a bad version are also bad. Find the first bad version.",
+    "difficulty": "Easy",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Amazon"
+    ],
+    "pattern": "Binary Search Decision Bound",
+    "bruteForce": {
+      "description": "Call the API `isBadVersion(i)` sequentially for all versions from 1 to n. (Slow).",
+      "timeComplexity": "O(N)",
+      "spaceComplexity": "O(1)"
+    },
+    "optimized": {
+      "description": "Use binary search. Let `left = 1` and `right = n`. While `left < right`, calculate `mid`. If `isBadVersion(mid)` is true, the first bad version must be at or before `mid` (set `right = mid`). Otherwise, it must be after `mid` (set `left = mid + 1`). When the loop terminates, `left` will point to the first bad version.",
+      "timeComplexity": "O(log N)",
+      "spaceComplexity": "O(1)"
+    },
+    "pythonCode": "def firstBadVersion(n):\n    l, r = 1, n\n    while l < r:\n        mid = l + (r - l) // 2\n        if isBadVersion(mid):\n            r = mid # Could be first bad, or first is earlier\n        else:\n            l = mid + 1 # First bad is definitely after mid\n    return l",
+    "cppCode": "int firstBadVersion(int n) {\n    int l = 1, r = n;\n    while (l < r) {\n        int mid = l + (r - l) / 2;\n        if (isBadVersion(mid)) {\n            r = mid;\n        } else {\n            l = mid + 1;\n        }\n    }\n    return l;\n}",
+    "pythonExplanation": [
+      {
+        "line": "while l < r:",
+        "explanation": "Loop until pointers meet. Do not use l <= r since right is set to mid (would cause infinite loop)."
+      },
+      {
+        "line": "r = mid",
+        "explanation": "If mid is bad, it is a candidate. Move right boundary to mid to search earlier versions."
+      },
+      {
+        "line": "l = mid + 1",
+        "explanation": "If mid is good, all versions up to mid are good. First bad must be to the right."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "while (l < r)",
+        "explanation": "Search loop ends when l == r, indicating the first bad version."
+      },
+      {
+        "line": "r = mid;",
+        "explanation": "Include mid in the search space since it could be the first bad version."
+      }
+    ],
+    "timeComplexity": "O(log N) - Halves search space of size N at each iteration.",
+    "spaceComplexity": "O(1) - Constant auxiliary space.",
+    "dryRun": [
+      "Input: n = 5, first_bad = 4",
+      "l = 1, r = 5. mid = 3. isBad(3) = False -> l = 4.",
+      "l = 4, r = 5. mid = 4. isBad(4) = True -> r = 4.",
+      "l = 4, r = 4. Loop terminates. First bad version = 4."
+    ],
+    "edgeCases": [
+      "First version is bad",
+      "Last version is bad",
+      "n = 1"
+    ],
+    "followUps": [
+      "Can you explain why we don't use `l <= r`? (Yes, because when `l == r`, `mid = l`. If `isBad(mid)` is true, setting `r = mid` would keep `l` and `r` identical, causing an infinite loop)"
+    ],
+    "relatedProblems": [
+      "Binary Search",
+      "Search Insert Position"
+    ],
+    "visualization": "Versions: 1   2   3   4   5\nStatus:   G   G   G   B   B\n  L=1, R=5 -> mid=3 (Good) -> L=4\n  L=4, R=5 -> mid=4 (Bad)  -> R=4\n  L=4, R=4 -> Loop ends -> First bad = 4",
+    "commonMistakes": [
+      "Using `r = mid - 1` when `isBadVersion(mid)` is true, which can skip the target if `mid` itself was the first bad version."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "binary_search_4",
+    "title": "Search in Rotated Sorted Array",
+    "statement": "Given an integer array `nums` sorted in ascending order (with distinct values) which is possibly rotated, and a target, return the index of target if it is in `nums`, else `-1`.",
+    "difficulty": "Medium",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Amazon"
+    ],
+    "pattern": "Rotated Array Split Selection",
+    "bruteForce": {
+      "description": "Scan sequentially. (Linear search).",
+      "timeComplexity": "O(N)",
+      "spaceComplexity": "O(1)"
+    },
+    "optimized": {
+      "description": "At least one half of a rotated sorted array is always normally sorted. Use binary search. Identify which half of `nums` is sorted: 1. If `nums[left] <= nums[mid]`, left half is sorted. Check if target lies in this sorted range; if so, search left (`right = mid - 1`), else search right. 2. Otherwise, right half is sorted. Check if target lies in this sorted range; if so, search right, else left.",
+      "timeComplexity": "O(log N)",
+      "spaceComplexity": "O(1)"
+    },
+    "pythonCode": "def search(nums, target):\n    l, r = 0, len(nums) - 1\n    while l <= r:\n        mid = l + (r - l) // 2\n        if nums[mid] == target:\n            return mid\n            \n        # Check if left half is normally sorted\n        if nums[l] <= nums[mid]:\n            if nums[l] <= target < nums[mid]:\n                r = mid - 1\n            else:\n                l = mid + 1\n        # Otherwise, right half must be normally sorted\n        else:\n            if nums[mid] < target <= nums[r]:\n                l = mid + 1\n            else:\n                r = mid - 1\n    return -1",
+    "cppCode": "int search(vector<int>& nums, int target) {\n    int l = 0, r = nums.size() - 1;\n    while (l <= r) {\n        int mid = l + (r - l) / 2;\n        if (nums[mid] == target) return mid;\n        \n        if (nums[l] <= nums[mid]) {\n            if (nums[l] <= target && target < nums[mid]) {\n                r = mid - 1;\n            } else {\n                l = mid + 1;\n            }\n        } else {\n            if (nums[mid] < target && target <= nums[r]) {\n                l = mid + 1;\n            } else {\n                r = mid - 1;\n            }\n        }\n    }\n    return -1;\n}",
+    "pythonExplanation": [
+      {
+        "line": "if nums[l] <= nums[mid]:",
+        "explanation": "Compare boundary to verify if the left half is normally sorted."
+      },
+      {
+        "line": "if nums[l] <= target < nums[mid]:",
+        "explanation": "Check if the target falls within the sorted left half's bounds."
+      },
+      {
+        "line": "else: l = mid + 1",
+        "explanation": "If left half is sorted but target is not in it, search the right half."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "if (nums[l] <= nums[mid])",
+        "explanation": "Determine which half of the active range is continuously sorted."
+      },
+      {
+        "line": "if (nums[mid] < target && target <= nums[r])",
+        "explanation": "If right half is sorted, check if target fits in its range."
+      }
+    ],
+    "timeComplexity": "O(log N) - Standard binary search split step.",
+    "spaceComplexity": "O(1) - Constant auxiliary space.",
+    "dryRun": [
+      "Input: nums = [4, 5, 6, 7, 0, 1, 2], target = 0",
+      "l = 0, r = 6. mid = 3 (val=7).",
+      "Check sorted half: nums[0](4) <= nums[3](7) -> Left half is sorted. Is target 0 in [4, 7)? No. Search right -> l = 4.",
+      "l = 4, r = 6. mid = 5 (val=1).",
+      "Check sorted half: nums[4](0) <= nums[5](1) -> Left sorted. Is target 0 in [0, 1)? Yes! Search left -> r = 4.",
+      "l = 4, r = 4. mid = 4 (val=0) == 0 -> Found at index 4!"
+    ],
+    "edgeCases": [
+      "Target is not in array",
+      "Array is not rotated (normally sorted)",
+      "Array size is 1"
+    ],
+    "followUps": [
+      "Can you solve it if array contains duplicates? (Search in Rotated Sorted Array II, worst case becomes O(N) when bounds match mid)"
+    ],
+    "relatedProblems": [
+      "Search in Rotated Sorted Array II",
+      "Find Minimum in Rotated Sorted Array"
+    ],
+    "visualization": "nums = [4, 5, 6, 7, 0, 1, 2]  Target = 0\n  L=0       mid=3      R=6   -> Left [4..7] sorted. 0 not in left -> L=4\n            L=4 mid=5  R=6   -> Right [1..2] sorted. 0 not in right -> R=4\n            L=4 mid=4  R=4   -> 0 == 0 -> Found!",
+    "commonMistakes": [
+      "Assuming the array is sorted normally and running basic binary search, which fails on rotation boundaries."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "binary_search_5",
+    "title": "Find Minimum in Rotated Sorted Array",
+    "statement": "Suppose an array of length `n` sorted in ascending order is rotated between 1 and `n` times. Given the sorted rotated array `nums` of unique elements, return the minimum element of this array. Solve in O(log N) time.",
+    "difficulty": "Medium",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Amazon"
+    ],
+    "pattern": "Right Boundary Comparison",
+    "bruteForce": {
+      "description": "Scan sequentially to find the smallest element. (Linear scan).",
+      "timeComplexity": "O(N)",
+      "spaceComplexity": "O(1)"
+    },
+    "optimized": {
+      "description": "Use binary search. Let `left = 0` and `right = N-1`. While `left < right`, calculate `mid`. If `nums[mid] > nums[right]`, the pivot (minimum) must be to the right of `mid` (set `left = mid + 1`). Otherwise, the minimum is at or to the left of `mid` (set `right = mid`). When loop ends, `nums[left]` is the minimum.",
+      "timeComplexity": "O(log N)",
+      "spaceComplexity": "O(1)"
+    },
+    "pythonCode": "def findMin(nums):\n    l, r = 0, len(nums) - 1\n    while l < r:\n        mid = l + (r - l) // 2\n        if nums[mid] > nums[r]:\n            # Min is in the right unsorted part\n            l = mid + 1\n        else:\n            # Min is at mid or to the left\n            r = mid\n    return nums[l]",
+    "cppCode": "int findMin(vector<int>& nums) {\n    int l = 0, r = nums.size() - 1;\n    while (l < r) {\n        int mid = l + (r - l) / 2;\n        if (nums[mid] > nums[r]) {\n            l = mid + 1;\n        } else {\n            r = mid;\n        }\n    }\n    return nums[l];\n}",
+    "pythonExplanation": [
+      {
+        "line": "if nums[mid] > nums[r]:",
+        "explanation": "Compare mid to the right boundary. If mid value is larger than right value, the rotation point (minimum) is in the right half."
+      },
+      {
+        "line": "l = mid + 1",
+        "explanation": "Skip mid since it is larger than right, so it cannot be the minimum."
+      },
+      {
+        "line": "r = mid",
+        "explanation": "If mid is smaller than right, mid could be the minimum, or minimum is earlier."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "if (nums[mid] > nums[r])",
+        "explanation": "If mid element exceeds right element, rotation pivot resides in right portion."
+      },
+      {
+        "line": "r = mid;",
+        "explanation": "Assign right to mid to narrow search to left-hand side including mid."
+      }
+    ],
+    "timeComplexity": "O(log N) - Halves search space of size N at each iteration.",
+    "spaceComplexity": "O(1) - Constant auxiliary space.",
+    "dryRun": [
+      "Input: nums = [3, 4, 5, 1, 2]",
+      "l = 0, r = 4. mid = 2 (val=5) > nums[4](2) -> l = 3.",
+      "l = 3, r = 4. mid = 3 (val=1) <= nums[4](2) -> r = 3.",
+      "l = 3, r = 3. Loop terminates. Min element is nums[3] = 1."
+    ],
+    "edgeCases": [
+      "Array is not rotated (already sorted, returns nums[0])",
+      "Array size is 1",
+      "Array rotated n times"
+    ],
+    "followUps": [
+      "Can you solve it if array contains duplicates? (Find Minimum in Rotated Sorted Array II, worst case degrades to O(N))"
+    ],
+    "relatedProblems": [
+      "Search in Rotated Sorted Array",
+      "Find Minimum in Rotated Sorted Array II"
+    ],
+    "visualization": "nums = [3, 4, 5, 1, 2]\n  L=0       mid=2      R=4   -> 5 > 2 -> Minimum is in right half -> L=3\n            L=3 mid=3  R=4   -> 1 <= 2 -> Minimum could be mid -> R=3\n            L=3, R=3 -> Loop ends -> min is nums[3] = 1",
+    "commonMistakes": [
+      "Comparing `nums[mid]` with `nums[l]` instead of `nums[r]`. Left comparison fails on unrotated arrays."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "binary_search_6",
+    "title": "Search a 2D Matrix",
+    "statement": "Write an efficient algorithm that searches for a value `target` in an `m x n` integer matrix. This matrix has properties: 1. Integers in each row are sorted from left to right. 2. The first integer of each row is greater than the last integer of the previous row.",
+    "difficulty": "Medium",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Amazon"
+    ],
+    "pattern": "Virtual 1D Array Mapping",
+    "bruteForce": {
+      "description": "Iterate through every row and run binary search on each row sequentially.",
+      "timeComplexity": "O(M log N)",
+      "spaceComplexity": "O(1)"
+    },
+    "optimized": {
+      "description": "Treat the 2D matrix as a sorted 1D array of size `M * N`. Run standard binary search with `left = 0` and `right = M * N - 1`. Map the midpoint index `mid` to 2D coordinates using `row = mid // cols` and `col = mid % cols` to access the value.",
+      "timeComplexity": "O(log(M * N))",
+      "spaceComplexity": "O(1)"
+    },
+    "pythonCode": "def searchMatrix(matrix, target):\n    if not matrix or not matrix[0]:\n        return False\n    rows, cols = len(matrix), len(matrix[0])\n    l, r = 0, rows * cols - 1\n    \n    while l <= r:\n        mid = l + (r - l) // 2\n        # Map 1D index to 2D coordinates\n        val = matrix[mid // cols][mid % cols]\n        if val == target:\n            return True\n        elif val < target:\n            l = mid + 1\n        else:\n            r = mid - 1\n    return False",
+    "cppCode": "bool searchMatrix(vector<vector<int>>& matrix, int target) {\n    if (matrix.empty() || matrix[0].empty()) return false;\n    int rows = matrix.size();\n    int cols = matrix[0].size();\n    int l = 0, r = rows * cols - 1;\n    \n    while (l <= r) {\n        int mid = l + (r - l) / 2;\n        int val = matrix[mid / cols][mid % cols];\n        if (val == target) return true;\n        else if (val < target) l = mid + 1;\n        else r = mid - 1;\n    }\n    return false;\n}",
+    "pythonExplanation": [
+      {
+        "line": "rows, cols = len(matrix), len(matrix[0])",
+        "explanation": "Get the dimensions of the matrix."
+      },
+      {
+        "line": "val = matrix[mid // cols][mid % cols]",
+        "explanation": "Map the virtual 1D index mid to its corresponding 2D matrix cell index."
+      },
+      {
+        "line": "elif val < target: l = mid + 1",
+        "explanation": "If value is smaller, search right in the virtual array."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "int val = matrix[mid / cols][mid % cols];",
+        "explanation": "Convert virtual 1D index mid to 2D coordinates: row = mid / cols, col = mid % cols."
+      }
+    ],
+    "timeComplexity": "O(log(M * N)) - Standard binary search on M * N elements.",
+    "spaceComplexity": "O(1) - Constant auxiliary space.",
+    "dryRun": [
+      "Input: matrix = [[1, 3, 5], [10, 11, 16], [20, 23, 30]], target = 10",
+      "rows = 3, cols = 3. l = 0, r = 8.",
+      "Step 1: mid = 4. val = matrix[4//3][4%3] = matrix[1][1] = 11 > 10. Set r = 3.",
+      "Step 2: l = 0, r = 3. mid = 1. val = matrix[1//3][1%3] = matrix[0][1] = 3 < 10. Set l = 2.",
+      "Step 3: l = 2, r = 3. mid = 2. val = matrix[2//3][2%3] = matrix[0][2] = 5 < 10. Set l = 3.",
+      "Step 4: l = 3, r = 3. mid = 3. val = matrix[3//3][3%3] = matrix[1][0] = 10 == 10. Found! Return True."
+    ],
+    "edgeCases": [
+      "Target not in matrix",
+      "Matrix of size 1x1",
+      "Target is smaller than first element"
+    ],
+    "followUps": [
+      "Can you solve it if the rows are sorted but the first element of a row is not larger than last of previous? (Search a 2D Matrix II, solved in O(M + N) by starting from top-right corner)"
+    ],
+    "relatedProblems": [
+      "Search a 2D Matrix II",
+      "Search in Rotated Sorted Array"
+    ],
+    "visualization": "Matrix:                     Virtual 1D Array:\n[ [ 1,  3,  5 ],            [ 1, 3, 5, 10, 11, 16, 20, 23, 30 ]\n  [10, 11, 16 ],             Index map: row = index / cols\n  [20, 23, 30 ] ]                       col = index % cols\n  Binary Search directly on virtual 1D array.",
+    "commonMistakes": [
+      "Dividing mid by rows instead of cols (which maps coordinates incorrectly)."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "binary_search_7",
+    "title": "Median of Two Sorted Arrays",
+    "statement": "Given two sorted arrays `nums1` and `nums2` of size `m` and `n` respectively, return the median of the two sorted arrays. The overall run time complexity should be O(log (m+n)).",
+    "difficulty": "Hard",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Amazon"
+    ],
+    "pattern": "Binary Search Partition Matching",
+    "bruteForce": {
+      "description": "Merge both arrays in a sorted array in O(M+N) time, and return the middle element.",
+      "timeComplexity": "O(M + N)",
+      "spaceComplexity": "O(M + N)"
+    },
+    "optimized": {
+      "description": "Ensure binary search runs on the smaller array to optimize time. Let `A` be the smaller array. Partition `A` and `B` into two halves such that the left half has size `(M+N+1)//2`. Binary search for partition index in `A`. Let `leftA` and `rightA` be the boundary values around partition in `A`. If `leftA <= rightB` and `leftB <= rightA`, the partition is correct. Else, adjust partition bounds.",
+      "timeComplexity": "O(log(min(M, N)))",
+      "spaceComplexity": "O(1)"
+    },
+    "pythonCode": "def findMedianSortedArrays(nums1, nums2):\n    A, B = nums1, nums2\n    if len(A) > len(B):\n        A, B = B, A # Ensure A is the smaller array\n        \n    total = len(A) + len(B)\n    half = (total + 1) // 2\n    \n    l, r = 0, len(A)\n    while l <= r:\n        i = l + (r - l) // 2 # Partition index in A\n        j = half - i         # Partition index in B\n        \n        leftA = A[i - 1] if i > 0 else float('-inf')\n        rightA = A[i] if i < len(A) else float('inf')\n        leftB = B[j - 1] if j > 0 else float('-inf')\n        rightB = B[j] if j < len(B) else float('inf')\n        \n        # Partition is correct\n        if leftA <= rightB and leftB <= rightA:\n            # Odd total length\n            if total % 2:\n                return max(leftA, leftB)\n            # Even total length\n            return (max(leftA, leftB) + min(rightA, rightB)) / 2.0\n        elif leftA > rightB:\n            r = i - 1 # Too many elements on left of A\n        else:\n            l = i + 1 # Too few elements on left of A\n    return 0.0",
+    "cppCode": "double findMedianSortedArrays(vector<int>& nums1, vector<int>& nums2) {\n    vector<int>& A = nums1;\n    vector<int>& B = nums2;\n    if (A.size() > B.size()) {\n        return findMedianSortedArrays(nums2, nums1);\n    }\n    int m = A.size(), n = B.size();\n    int total = m + n;\n    int half = (total + 1) / 2;\n    \n    int l = 0, r = m;\n    while (l <= r) {\n        int i = l + (r - l) / 2;\n        int j = half - i;\n        \n        int leftA = (i > 0) ? A[i - 1] : INT_MIN;\n        int rightA = (i < m) ? A[i] : INT_MAX;\n        int leftB = (j > 0) ? B[j - 1] : INT_MIN;\n        int rightB = (j < n) ? B[j] : INT_MAX;\n        \n        if (leftA <= rightB && leftB <= rightA) {\n            if (total % 2 != 0) {\n                return max(leftA, leftB);\n            }\n            return (max(leftA, leftB) + min(rightA, rightB)) / 2.0;\n        } else if (leftA > rightB) {\n            r = i - 1;\n        } else {\n            l = i + 1;\n        }\n    }\n    return 0.0;\n}",
+    "pythonExplanation": [
+      {
+        "line": "if len(A) > len(B): A, B = B, A",
+        "explanation": "Ensure binary search is done on the smaller array to run in O(log(min(M, N))) time."
+      },
+      {
+        "line": "leftA = A[i - 1] if i > 0 else float('-inf')",
+        "explanation": "Assign negative infinity if partition index splits before the array starts."
+      },
+      {
+        "line": "if leftA <= rightB and leftB <= rightA:",
+        "explanation": "Verify partition validity: all elements on left must be smaller than or equal to elements on right."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "if (A.size() > B.size())",
+        "explanation": "Force binary search on the shorter vector to ensure optimal time complexity."
+      },
+      {
+        "line": "int leftA = (i > 0) ? A[i - 1] : INT_MIN;",
+        "explanation": "Assign INT_MIN if boundary index falls to the left of the array bounds."
+      }
+    ],
+    "timeComplexity": "O(log(min(M, N))) - Binary search is executed on the smaller array A of size M.",
+    "spaceComplexity": "O(1) - Constant auxiliary space.",
+    "dryRun": [
+      "Input: nums1 = [1, 3], nums2 = [2]",
+      "Sorted: A = [2], B = [1, 3] (swap since size of A is smaller). total=3, half=2.",
+      "l = 0, r = 1. i = 0 (mid), j = 2 - 0 = 2.",
+      "leftA = -inf, rightA = 2.",
+      "leftB = B[1] = 3, rightB = inf.",
+      "Check: leftB(3) <= rightA(2)? False. Too small in A -> l = i + 1 = 1.",
+      "l = 1, r = 1. i = 1, j = 1.",
+      "leftA = A[0]=2, rightA = inf.",
+      "leftB = B[0]=1, rightB = 3.",
+      "Check: leftA(2) <= rightB(3) and leftB(1) <= rightA(inf)? True! Partition correct.",
+      "Odd total -> max(leftA, leftB) = max(2, 1) = 2. Return 2.0."
+    ],
+    "edgeCases": [
+      "One array is empty",
+      "Even sum of sizes vs. odd sum of sizes",
+      "Disjoint values arrays"
+    ],
+    "followUps": [
+      "Can you explain why division by 2.0 is needed for even total? (Yes, because median is the average of the two middle elements, which can be floating point numbers)"
+    ],
+    "relatedProblems": [
+      "Median of Two Sorted Arrays II",
+      "Kth Element of Two Sorted Arrays"
+    ],
+    "visualization": "A:  [ 1, 3 ]  --> Partition i\nB:  [ 2 ]     --> Partition j\nEnsure A_left <= B_right and B_left <= A_right\nOdd total: return max(A_left, B_left)",
+    "commonMistakes": [
+      "Not ensuring that array A is the smaller array, leading to out-of-bounds index errors on array B partition index `j = half - i`."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "binary_search_8",
+    "title": "Split Array Largest Sum",
+    "statement": "Given an integer array `nums` and an integer `k`, split the array into `k` non-empty contiguous subarrays such that the largest sum of these subarrays is minimized. Return the minimized largest sum.",
+    "difficulty": "Hard",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Amazon"
+    ],
+    "pattern": "Binary Search on Answer Range",
+    "bruteForce": {
+      "description": "Exhaustively check all combinations of subarray partitions using backtracking. (O(N^K) time).",
+      "timeComplexity": "O(N^K)",
+      "spaceComplexity": "O(N)"
+    },
+    "optimized": {
+      "description": "Use binary search on the answer range. The minimum possible largest sum is `max(nums)` (when each element is a subarray). The maximum possible sum is `sum(nums)` (when the entire array is one subarray). Set `left = max(nums)` and `right = sum(nums)`. For each `mid`, check if we can partition the array into <= `k` subarrays with maximum sum <= `mid`. If yes, search smaller sums (`right = mid`). Else, search larger sums (`left = mid + 1`).",
+      "timeComplexity": "O(N log(Sum - Max))",
+      "spaceComplexity": "O(1)"
+    },
+    "pythonCode": "def splitArray(nums, k):\n    # Helper to check if maximum sum target is feasible with k splits\n    def can_partition(max_sum):\n        subarrays = 1\n        curr_sum = 0\n        for num in nums:\n            if curr_sum + num > max_sum:\n                subarrays += 1\n                curr_sum = num\n                if subarrays > k:\n                    return False\n            else:\n                curr_sum += num\n        return True\n        \n    l, r = max(nums), sum(nums)\n    res = r\n    while l <= r:\n        mid = l + (r - l) // 2\n        if can_partition(mid):\n            res = mid\n            r = mid - 1 # Try to find a smaller maximum sum\n        else:\n            l = mid + 1 # Target sum too small, need larger limits\n    return res",
+    "cppCode": "int splitArray(vector<int>& nums, int k) {\n    long long l = 0, r = 0;\n    for (int num : nums) {\n        l = max(l, (long long)num);\n        r += num;\n    }\n    \n    auto can_partition = [&](long long max_sum) -> bool {\n        int subarrays = 1;\n        long long curr_sum = 0;\n        for (int num : nums) {\n            if (curr_sum + num > max_sum) {\n                subarrays++;\n                curr_sum = num;\n                if (subarrays > k) return false;\n            } else {\n                curr_sum += num;\n            }\n        }\n        return true;\n    };\n    \n    long long res = r;\n    while (l <= r) {\n        long long mid = l + (r - l) / 2;\n        if (can_partition(mid)) {\n            res = mid;\n            r = mid - 1;\n        } else {\n            l = mid + 1;\n        }\n    }\n    return res;\n}",
+    "pythonExplanation": [
+      {
+        "line": "l, r = max(nums), sum(nums)",
+        "explanation": "Set the binary search range bounds: minimum possible sum is the maximum single element; maximum is the array total sum."
+      },
+      {
+        "line": "if curr_sum + num > max_sum:",
+        "explanation": "If adding the next element exceeds the capacity limit `max_sum`, start a new subarray."
+      },
+      {
+        "line": "if subarrays > k: return False",
+        "explanation": "If the number of required subarrays exceeds k, this capacity limit is invalid."
+      },
+      {
+        "line": "r = mid - 1",
+        "explanation": "If the capacity is feasible, record it and try to find a smaller maximum sum."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "long long l = 0, r = 0;",
+        "explanation": "Use long long variables to avoid summation overflows during range computations."
+      },
+      {
+        "line": "if (can_partition(mid))",
+        "explanation": "If a partition with target maximum sum is achievable, narrow the binary search window to check for smaller maximums."
+      }
+    ],
+    "timeComplexity": "O(N log(Sum - Max)) - Binary search runs log(Sum - Max) times, and the feasibility checker `can_partition` takes O(N) time per iteration.",
+    "spaceComplexity": "O(1) - Constant auxiliary space.",
+    "dryRun": [
+      "Input: nums = [7, 2, 5, 10, 8], k = 2",
+      "Range: l = 10 (max), r = 32 (sum).",
+      "Step 1: mid = 21. Check partition limit 21: [7,2,5] (sum=14) and [10,8] (sum=18) -> 2 subarrays <= k(2). Feasible! res=21, r=20.",
+      "Step 2: mid = 15. Check partition limit 15: [7,2,5] (sum=14), [10] (sum=10), [8] (sum=8) -> 3 subarrays > k(2). Infeasible! l=16.",
+      "Eventually converges to 18 (splits: [7,2,5] (sum=14) and [10,8] (sum=18))."
+    ],
+    "edgeCases": [
+      "k matches size of array (returns max(nums))",
+      "k = 1 (returns sum(nums))",
+      "Array elements are large"
+    ],
+    "followUps": [
+      "Can you explain how this is related to Book Allocation Problem? (Yes, the Book Allocation Problem is identical: partitioning books pages to K students while minimizing the maximum pages read by any student)"
+    ],
+    "relatedProblems": [
+      "Capacity To Ship Packages Within D Days",
+      "Koko Eating Bananas"
+    ],
+    "visualization": "nums = [7, 2, 5, 10, 8], k = 2\n  - Range: 10 to 32\n  - Mid = 21: [7, 2, 5] (14) | [10, 8] (18) -> Feasible\n  - Mid = 15: [7, 2, 5] (14) | [10] (10) | [8] (8) -> Infeasible (requires 3 splits)\n  Min max sum = 18",
+    "commonMistakes": [
+      "Setting the initial lower bound `l` to 0 or 1 instead of `max(nums)`, which causes invalid check loops because individual elements cannot fit in the capacity limit."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "binary_search_9",
+    "title": "Find Minimum in Rotated Sorted Array II",
+    "statement": "Given the sorted rotated array `nums` that may contain duplicates, return the minimum element of this array. Solve it in average O(log N) time.",
+    "difficulty": "Hard",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Amazon"
+    ],
+    "pattern": "Right Boundary Duplicate Collapse",
+    "bruteForce": {
+      "description": "Scan sequentially to find the minimum. (Linear scan).",
+      "timeComplexity": "O(N)",
+      "spaceComplexity": "O(1)"
+    },
+    "optimized": {
+      "description": "Use binary search. Let `left = 0` and `right = N-1`. While `left < right`, calculate `mid`. If `nums[mid] > nums[right]`, the minimum is in the right half (`left = mid + 1`). If `nums[mid] < nums[right]`, the minimum is in the left half including `mid` (`right = mid`). If they are equal (`nums[mid] == nums[right]`), we cannot determine the half due to duplicates; decrement `right` by 1 to shrink the window safely.",
+      "timeComplexity": "O(log N) average, O(N) worst case",
+      "spaceComplexity": "O(1)"
+    },
+    "pythonCode": "def findMin(nums):\n    l, r = 0, len(nums) - 1\n    while l < r:\n        mid = l + (r - l) // 2\n        if nums[mid] > nums[r]:\n            l = mid + 1\n        elif nums[mid] < nums[r]:\n            r = mid\n        else:\n            # Collapse duplicate from right\n            r -= 1\n    return nums[l]",
+    "cppCode": "int findMin(vector<int>& nums) {\n    int l = 0, r = nums.size() - 1;\n    while (l < r) {\n        int mid = l + (r - l) / 2;\n        if (nums[mid] > nums[r]) {\n            l = mid + 1;\n        } else if (nums[mid] < nums[r]) {\n            r = mid;\n        } else {\n            r--;\n        }\n    }\n    return nums[l];\n}",
+    "pythonExplanation": [
+      {
+        "line": "elif nums[mid] < nums[r]: r = mid",
+        "explanation": "If mid value is smaller than right value, the right half is sorted and minimum is in left half including mid."
+      },
+      {
+        "line": "r -= 1",
+        "explanation": "If nums[mid] == nums[r], we cannot tell which side is sorted. Shrink the search window by 1 from the right safely."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "else { r--; }",
+        "explanation": "Duplicate collapse step: reduce search space from the right boundary by 1 when values match."
+      }
+    ],
+    "timeComplexity": "O(log N) average - Duplicates are eliminated in O(1) steps on average. Worst case is O(N) when all elements are identical.",
+    "spaceComplexity": "O(1) - Constant auxiliary space.",
+    "dryRun": [
+      "Input: nums = [2, 2, 2, 0, 1, 2]",
+      "l = 0, r = 5. mid = 2 (val=2) == nums[5](2) -> Cannot determine. Decrement: r = 4.",
+      "l = 0, r = 4. mid = 2 (val=2) > nums[4](1) -> l = 3.",
+      "l = 3, r = 4. mid = 3 (val=0) <= nums[4](1) -> r = 3.",
+      "l = 3, r = 3. Loop terminates. Min element is nums[3] = 0."
+    ],
+    "edgeCases": [
+      "All elements are identical (returns nums[0] after N decrements)",
+      "Array is not rotated",
+      "No duplicates actually present"
+    ],
+    "followUps": [
+      "Can you explain why we decrement `right` instead of incrementing `left`? (Yes, because if we increment `left`, we might skip the minimum element if `nums[left]` was the minimum; decrementing `right` is safe because `nums[mid] == nums[right]` means the element at `right` is duplicated at `mid`, so it is not lost)"
+    ],
+    "relatedProblems": [
+      "Find Minimum in Rotated Sorted Array",
+      "Search in Rotated Sorted Array II"
+    ],
+    "visualization": "nums = [2,  2,  2,  0,  1,  2]\n  L=0       mid=2      R=5   -> 2 == 2 -> Cannot determine -> R=4\n  L=0  mid=2  R=4            -> 2 > 1 -> Min is in right half -> L=3\n  L=3, R=4 -> mid=3(0) <= 1  -> R=3 -> min is nums[3] = 0",
+    "commonMistakes": [
+      "Assuming O(log N) worst case. Explain to students that worst case is O(N) due to duplicate values."
+    ],
+    "whenNotToUse": "None"
+  }
+]

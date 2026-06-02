@@ -1,0 +1,701 @@
+[
+  {
+    "id": "backtracking_1",
+    "title": "Binary Watch",
+    "statement": "A binary watch has 4 LEDs on the top to represent hours (1, 2, 4, 8) and 6 LEDs on the bottom to represent minutes (1, 2, 4, 8, 16, 32). Given an integer `turnedOn` which represents the number of LEDs that are currently on, return all possible times the watch could represent.",
+    "difficulty": "Easy",
+    "companies": [
+      "Infosys",
+      "Apple",
+      "Google"
+    ],
+    "pattern": "Bitwise Combination Check",
+    "bruteForce": {
+      "description": "Generate all possible combinations of LED selections recursively and sum their hours/minutes values.",
+      "timeComplexity": "O(2^10)",
+      "spaceComplexity": "O(1)"
+    },
+    "optimized": {
+      "description": "Iterate through all possible hours (0 to 11) and minutes (0 to 59). For each combination, count the number of set bits (1s) in their binary representations using popcount. If the total count matches `turnedOn`, format the time as `h:mm` and append to the result.",
+      "timeComplexity": "O(1) (fixed loop size)",
+      "spaceComplexity": "O(1)"
+    },
+    "pythonCode": "def readBinaryWatch(turnedOn):\n    res = []\n    for h in range(12):\n        for m in range(60):\n            # Count set bits in hour and minute\n            if (bin(h).count('1') + bin(m).count('1')) == turnedOn:\n                res.append(f\"{h}:{m:02d}\")\n    return res",
+    "cppCode": "vector<string> readBinaryWatch(int turnedOn) {\n    vector<string> res;\n    for (int h = 0; h < 12; ++h) {\n        for (int m = 0; m < 60; ++m) {\n            // __builtin_popcount counts set bits in C++\n            if (__builtin_popcount(h) + __builtin_popcount(m) == turnedOn) {\n                string hr = to_string(h);\n                string min = (m < 10) ? \"0\" + to_string(m) : to_string(m);\n                res.push_back(hr + \":\" + min);\n            }\n        }\n    }\n    return res;\n}",
+    "pythonExplanation": [
+      {
+        "line": "for h in range(12):",
+        "explanation": "Iterate over all valid hour values on the watch (0 to 11)."
+      },
+      {
+        "line": "bin(h).count('1')",
+        "explanation": "Convert the hour value to binary and count the number of 1s (lit LEDs)."
+      },
+      {
+        "line": "res.append(f\"{h}:{m:02d}\")",
+        "explanation": "Format the minutes to always display two digits (e.g. 05 instead of 5)."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "if (__builtin_popcount(h) + __builtin_popcount(m) == turnedOn)",
+        "explanation": "Use compiler built-in to count set bits of hour and minute values in constant time."
+      },
+      {
+        "line": "string min = (m < 10) ? \"0\" + to_string(m) : to_string(m);",
+        "explanation": "Zero-pad minutes string representation if single digit."
+      }
+    ],
+    "timeComplexity": "O(1) - The loops are bound by constant values (12 hours and 60 minutes), performing exactly 720 checks total.",
+    "spaceComplexity": "O(1) - No extra memory or recursion structures are needed.",
+    "dryRun": [
+      "Input: turnedOn = 1",
+      "Checks hours and minutes. Loop hits h = 1, m = 0 -> popcount(1) + popcount(0) = 1. Matches! Adds '1:00'.",
+      "Loop hits h = 0, m = 8 -> popcount(0) + popcount(8) = 1. Matches! Adds '0:08'.",
+      "Continues for all 720 pairs, collecting all times with exactly 1 LED lit."
+    ],
+    "edgeCases": [
+      "turnedOn is 0 (returns '0:00')",
+      "turnedOn is greater than 8 (returns empty list, max LEDs possible is 3+5=8)"
+    ],
+    "followUps": [
+      "Can you write it using actual backtracking (recursion on LEDs array)? (Yes, pick/skip 10 LEDs recursively, tracking accumulated hours and minutes, prune when exceeding limits)"
+    ],
+    "relatedProblems": [
+      "Number of 1 Bits",
+      "Letter Combinations of a Phone Number"
+    ],
+    "visualization": "Lit LEDs = 1\n  Hour LEDs:   [1, 2, 4, 8]\n  Minute LEDs: [1, 2, 4, 8, 16, 32]\n  Check combinations: 1 hour LED lit -> 1:00, 2:00, 4:00, 8:00\n                      1 min LED lit  -> 0:01, 0:02, 0:04, 0:08, 0:16, 0:32",
+    "commonMistakes": [
+      "Including invalid times like 12:00 (watch only goes up to 11) or 0:60 (minutes only go up to 59)."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "backtracking_2",
+    "title": "Sum of All Subset XOR Totals",
+    "statement": "The XOR sum of an array is the XOR sum of all its elements. Given an array `nums`, return the sum of all XOR totals for every subset of `nums`.",
+    "difficulty": "Easy",
+    "companies": [
+      "Infosys",
+      "TCS",
+      "Amazon"
+    ],
+    "pattern": "Subset Inclusion-Exclusion Backtracking",
+    "bruteForce": {
+      "description": "Generate all subsets explicitly using loops, calculate XOR sum of each, and sum them. (O(2^N * N) time).",
+      "timeComplexity": "O(2^N * N)",
+      "spaceComplexity": "O(2^N)"
+    },
+    "optimized": {
+      "description": "Use recursion. A helper function `dfs(i, current_xor)` explores subsets: at index `i`, we can either: 1. Exclude `nums[i]` (call `dfs(i + 1, current_xor)`). 2. Include `nums[i]` (call `dfs(i + 1, current_xor ^ nums[i])`). Return the sum of both choices.",
+      "timeComplexity": "O(2^N)",
+      "spaceComplexity": "O(N) stack"
+    },
+    "pythonCode": "def subsetXORSum(nums):\n    def dfs(i, curr_xor):\n        if i == len(nums):\n            return curr_xor\n        # Sum of choice 1 (exclude) and choice 2 (include)\n        exclude = dfs(i + 1, curr_xor)\n        include = dfs(i + 1, curr_xor ^ nums[i])\n        return exclude + include\n        \n    return dfs(0, 0)",
+    "cppCode": "int subsetXORSum(vector<int>& nums) {\n    auto dfs = [&](auto& self, int i, int curr_xor) -> int {\n        if (i == nums.size()) {\n            return curr_xor;\n        }\n        int exclude = self(self, i + 1, curr_xor);\n        int include = self(self, i + 1, curr_xor ^ nums[i]);\n        return exclude + include;\n    };\n    return dfs(dfs, 0, 0);\n}",
+    "pythonExplanation": [
+      {
+        "line": "if i == len(nums): return curr_xor",
+        "explanation": "Base case: when we reach the end of the array, return the accumulated XOR total of the current subset."
+      },
+      {
+        "line": "exclude = dfs(i + 1, curr_xor)",
+        "explanation": "Branch 1: skip the current element and continue."
+      },
+      {
+        "line": "include = dfs(i + 1, curr_xor ^ nums[i])",
+        "explanation": "Branch 2: include the current element, updating the XOR sum, and continue."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "if (i == nums.size()) return curr_xor;",
+        "explanation": "Base case check: returns subset XOR total."
+      },
+      {
+        "line": "int exclude = self(self, i + 1, curr_xor);",
+        "explanation": "Explore path skipping the current element."
+      },
+      {
+        "line": "int include = self(self, i + 1, curr_xor ^ nums[i]);",
+        "explanation": "Explore path XORing the current element."
+      }
+    ],
+    "timeComplexity": "O(2^N) - There are 2^N possible subsets, and we visit each node in the decision tree once.",
+    "spaceComplexity": "O(N) - Stack space used for recursion depth, which goes up to N.",
+    "dryRun": [
+      "Input: nums = [1, 3]",
+      "DFS(0, 0) calls:",
+      "  - Exclude 1 -> DFS(1, 0) calls:",
+      "    - Exclude 3 -> DFS(2, 0) -> Returns 0.",
+      "    - Include 3 -> DFS(2, 3) -> Returns 3. Sum = 3.",
+      "  - Include 1 -> DFS(1, 1) calls:",
+      "    - Exclude 3 -> DFS(2, 1) -> Returns 1.",
+      "    - Include 3 -> DFS(2, 1^3=2) -> Returns 2. Sum = 3.",
+      "Total sum = 3 + 3 = 6."
+    ],
+    "edgeCases": [
+      "Empty list (returns 0)",
+      "Single element array",
+      "Array containing all identical values"
+    ],
+    "followUps": [
+      "Can you solve it in O(N) time? (Yes, mathematically the sum of XOR totals of all subsets is equal to the bitwise OR of all elements multiplied by 2^(N-1))"
+    ],
+    "relatedProblems": [
+      "Subsets",
+      "XOR Queries of a Subarray"
+    ],
+    "visualization": "Decision Tree for [1, 3]:\n          (0, 0)\n         /     \\\n     (1,0)     (1,1)          <- Decide 1\n     /   \\     /   \\\n   (2,0)(2,3)(2,1)(2,2)       <- Decide 3\n   Sum = 0 + 3 + 1 + 2 = 6",
+    "commonMistakes": [
+      "Attempting to store all subsets in list lists before calculation, causing O(2^N) memory overhead when simple recursive accumulator is sufficient."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "backtracking_3",
+    "title": "Generate Binary Strings",
+    "statement": "Given an integer `n`, generate all possible binary strings of length `n` in lexicographically sorted order.",
+    "difficulty": "Easy",
+    "companies": [
+      "Infosys",
+      "TCS",
+      "Accenture"
+    ],
+    "pattern": "Binary Recursion Tree",
+    "bruteForce": {
+      "description": "Iteratively generate all numbers from 0 to 2^n - 1, and convert each to a binary string padded with zeros.",
+      "timeComplexity": "O(2^N * N)",
+      "spaceComplexity": "O(2^N * N)"
+    },
+    "optimized": {
+      "description": "Use recursion. A helper function `dfs(curr)` adds characters: base case: if `len(curr) == n`, append `curr` to results and return. Otherwise, recursively call `dfs(curr + '0')` and then `dfs(curr + '1')`.",
+      "timeComplexity": "O(2^N)",
+      "spaceComplexity": "O(N) stack"
+    },
+    "pythonCode": "def generateBin(n):\n    res = []\n    def dfs(curr):\n        if len(curr) == n:\n            res.append(curr)\n            return\n        dfs(curr + '0')\n        dfs(curr + '1')\n        \n    dfs('')\n    return res",
+    "cppCode": "vector<string> generateBin(int n) {\n    vector<string> res;\n    auto dfs = [&](auto& self, string curr) -> void {\n        if (curr.size() == n) {\n            res.push_back(curr);\n            return;\n        }\n        self(self, curr + \"0\");\n        self(self, curr + \"1\");\n    };\n    dfs(dfs, \"\");\n    return res;\n}",
+    "pythonExplanation": [
+      {
+        "line": "if len(curr) == n: res.append(curr); return",
+        "explanation": "Base case: if string reaches length n, save it and stop."
+      },
+      {
+        "line": "dfs(curr + '0')",
+        "explanation": "Recursively append '0' first to ensure lexicographical sorting."
+      },
+      {
+        "line": "dfs(curr + '1')",
+        "explanation": "Recursively append '1' next."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "if (curr.size() == n)",
+        "explanation": "Base case check for string size."
+      },
+      {
+        "line": "self(self, curr + \"0\");",
+        "explanation": "Recurse adding '0' (lexicographically smaller)."
+      }
+    ],
+    "timeComplexity": "O(2^N) - There are 2^N binary strings of length N.",
+    "spaceComplexity": "O(N) - Recursion stack depth matches N.",
+    "dryRun": [
+      "Input: n = 2",
+      "DFS('') -> Calls DFS('0').",
+      "  DFS('0') -> Calls DFS('00') -> Base case! Saves '00'.",
+      "  DFS('0') -> Calls DFS('01') -> Base case! Saves '01'.",
+      "DFS('') -> Calls DFS('1').",
+      "  DFS('1') -> Calls DFS('10') -> Base case! Saves '10'.",
+      "  DFS('1') -> Calls DFS('11') -> Base case! Saves '11'.",
+      "Result: ['00', '01', '10', '11']"
+    ],
+    "edgeCases": [
+      "n = 1 (returns ['0', '1'])",
+      "Large n (output list size grows exponentially)"
+    ],
+    "followUps": [
+      "Can you solve it iteratively? (Yes, use a queue: pop string, enqueue string+'0' and string+'1')"
+    ],
+    "relatedProblems": [
+      "Generate Parentheses",
+      "Letter Case Permutation"
+    ],
+    "visualization": "         ''\n       /    \\\n     '0'    '1'\n     / \\    / \\\n   '00''01''10''11'   -> Leaves are generated in sorted order.",
+    "commonMistakes": [
+      "Adding '1' before '0' in recursive calls, which breaks the lexicographical sorted order requirement."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "backtracking_4",
+    "title": "Subsets",
+    "statement": "Given an integer array `nums` of unique elements, return all possible subsets (the power set). The solution set must not contain duplicate subsets.",
+    "difficulty": "Medium",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Amazon"
+    ],
+    "pattern": "Subset Inclusion-Exclusion Backtracking",
+    "bruteForce": {
+      "description": "Use binary bits mapping (0 to 2^n - 1) to extract elements for subsets.",
+      "timeComplexity": "O(2^N * N)",
+      "spaceComplexity": "O(2^N * N)"
+    },
+    "optimized": {
+      "description": "Use backtracking. For each element, we have a decision: include it or exclude it. A helper function `dfs(i, path)` branches: 1. Include `nums[i]` (call `dfs(i + 1, path + [nums[i]])`). 2. Exclude `nums[i]` (call `dfs(i + 1, path)`). Base case: when `i == len(nums)`, append copy of path to results.",
+      "timeComplexity": "O(2^N)",
+      "spaceComplexity": "O(N) stack"
+    },
+    "pythonCode": "def subsets(nums):\n    res = []\n    path = []\n    def dfs(i):\n        if i == len(nums):\n            res.append(list(path))\n            return\n        # Choice 1: Include nums[i]\n        path.append(nums[i])\n        dfs(i + 1)\n        path.pop() # Backtrack\n        \n        # Choice 2: Exclude nums[i]\n        dfs(i + 1)\n        \n    dfs(0)\n    return res",
+    "cppCode": "vector<vector<int>> subsets(vector<int>& nums) {\n    vector<vector<int>> res;\n    vector<int> path;\n    auto dfs = [&](auto& self, int i) -> void {\n        if (i == nums.size()) {\n            res.push_back(path);\n            return;\n        }\n        // Include\n        path.push_back(nums[i]);\n        self(self, i + 1);\n        path.pop_back(); // Backtrack\n        \n        // Exclude\n        self(self, i + 1);\n    };\n    dfs(dfs, 0);\n    return res;\n}",
+    "pythonExplanation": [
+      {
+        "line": "res.append(list(path))",
+        "explanation": "Base case: store copy of current subset path once all decisions are made."
+      },
+      {
+        "line": "path.append(nums[i])",
+        "explanation": "Make decision: include current element in path."
+      },
+      {
+        "line": "path.pop()",
+        "explanation": "Backtrack: remove current element to test the exclusion branch."
+      },
+      {
+        "line": "dfs(i + 1)",
+        "explanation": "Explore decision branches for the next index."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "path.push_back(nums[i]);",
+        "explanation": "Push element to decision path."
+      },
+      {
+        "line": "path.pop_back();",
+        "explanation": "Pop element from path to backtrack and explore exclusion branches."
+      }
+    ],
+    "timeComplexity": "O(2^N) - There are 2^N subsets generated.",
+    "spaceComplexity": "O(N) - Stack space used for recursion depth.",
+    "dryRun": [
+      "Input: nums = [1, 2]",
+      "DFS(0): path=[] -> Include 1 -> path=[1] -> DFS(1).",
+      "  DFS(1): path=[1] -> Include 2 -> path=[1, 2] -> DFS(2) -> Saves [1, 2].",
+      "  DFS(1): path=[1] -> Exclude 2 -> path=[1] -> DFS(2) -> Saves [1].",
+      "DFS(0): path=[] -> Exclude 1 -> path=[] -> DFS(1).",
+      "  DFS(1): path=[] -> Include 2 -> path=[2] -> DFS(2) -> Saves [2].",
+      "  DFS(1): path=[] -> Exclude 2 -> path=[] -> DFS(2) -> Saves []."
+    ],
+    "edgeCases": [
+      "Empty input array (returns [[]])",
+      "Single element array"
+    ],
+    "followUps": [
+      "Can you solve it if elements can contain duplicates? (Subsets II, requires sorting and skipping duplicate branches)"
+    ],
+    "relatedProblems": [
+      "Subsets II",
+      "Permutations"
+    ],
+    "visualization": "nums = [1, 2]\n          ''\n        /    \\\n      [1]    []       (Include vs Exclude 1)\n      / \\    / \\\n   [1,2][1] [2][]     (Include vs Exclude 2)",
+    "commonMistakes": [
+      "Forgetting to make a copy of the path/vector before appending to results, appending empty lists or references instead."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "backtracking_5",
+    "title": "Permutations",
+    "statement": "Given an array `nums` of distinct integers, return all the possible permutations. You can return the answer in any order.",
+    "difficulty": "Medium",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Amazon"
+    ],
+    "pattern": "Element Swapping Backtracking",
+    "bruteForce": {
+      "description": "Generate all possible subsets and filter those whose length matches N.",
+      "timeComplexity": "O(2^N)",
+      "spaceComplexity": "O(2^N)"
+    },
+    "optimized": {
+      "description": "Use backtracking. Maintain a recursion function `dfs(first)` that swaps elements in-place: for `i` from `first` to `end`, swap `nums[first]` with `nums[i]`. Recursively call `dfs(first + 1)`. Then backtrack by swapping back `nums[first]` and `nums[i]`.",
+      "timeComplexity": "O(N * N!)",
+      "spaceComplexity": "O(N) stack"
+    },
+    "pythonCode": "def permute(nums):\n    res = []\n    n = len(nums)\n    def backtrack(first):\n        if first == n:\n            res.append(list(nums))\n            return\n        for i in range(first, n):\n            # Swap\n            nums[first], nums[i] = nums[i], nums[first]\n            # Recurse\n            backtrack(first + 1)\n            # Swap back (backtrack)\n            nums[first], nums[i] = nums[i], nums[first]\n            \n    backtrack(0)\n    return res",
+    "cppCode": "vector<vector<int>> permute(vector<int>& nums) {\n    vector<vector<int>> res;\n    int n = nums.size();\n    auto backtrack = [&](auto& self, int first) -> void {\n        if (first == n) {\n            res.push_back(nums);\n            return;\n        }\n        for (int i = first; i < n; ++i) {\n            swap(nums[first], nums[i]);\n            self(self, first + 1);\n            swap(nums[first], nums[i]); // Backtrack\n        }\n    };\n    backtrack(backtrack, 0);\n    return res;\n}",
+    "pythonExplanation": [
+      {
+        "line": "nums[first], nums[i] = nums[i], nums[first]",
+        "explanation": "Swap current element with first index to set it in position."
+      },
+      {
+        "line": "backtrack(first + 1)",
+        "explanation": "Recurse on the remaining subarray elements."
+      },
+      {
+        "line": "nums[first], nums[i] = nums[i], nums[first]",
+        "explanation": "Restore original order (backtrack) to try the next swap choice."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "swap(nums[first], nums[i]);",
+        "explanation": "Swap to place candidate element at current active position."
+      },
+      {
+        "line": "swap(nums[first], nums[i]); // Backtrack",
+        "explanation": "Swap back to restore array structure."
+      }
+    ],
+    "timeComplexity": "O(N * N!) - There are N! permutations. For each permutation, copying the array of size N takes O(N) time.",
+    "spaceComplexity": "O(N) - Recursion stack depth matches N.",
+    "dryRun": [
+      "Input: nums = [1, 2, 3]",
+      "backtrack(0): i=0: swap(0,0) [1,2,3] -> backtrack(1).",
+      "  backtrack(1): i=1: swap(1,1) [1,2,3] -> backtrack(2) -> saves [1,2,3].",
+      "  backtrack(1): i=2: swap(1,2) [1,3,2] -> backtrack(2) -> saves [1,3,2].",
+      "backtrack(0): i=1: swap(0,1) [2,1,3] -> backtrack(1) -> eventually saves [2,1,3], [2,3,1].",
+      "backtrack(0): i=2: swap(0,2) [3,2,1] -> backtrack(1) -> eventually saves [3,2,1], [3,1,2]."
+    ],
+    "edgeCases": [
+      "Single element array",
+      "Array containing duplicates (assuming distinct)"
+    ],
+    "followUps": [
+      "Can you solve it if the array contains duplicates? (Permutations II, requires sorting and tracking visited elements to avoid duplicate swaps)"
+    ],
+    "relatedProblems": [
+      "Permutations II",
+      "Next Permutation"
+    ],
+    "visualization": "Swapping choices for [1, 2, 3]:\n    - Fix 1 at pos 0 -> swap rest -> [1,2,3], [1,3,2]\n    - Fix 2 at pos 0 -> swap rest -> [2,1,3], [2,3,1]\n    - Fix 3 at pos 0 -> swap rest -> [3,2,1], [3,1,2]",
+    "commonMistakes": [
+      "Modifying the array globally without swapping it back (backtracking), which corrupts other recursion branches."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "backtracking_6",
+    "title": "Combination Sum",
+    "statement": "Given an array of distinct integers `candidates` and a target integer `target`, return a list of all unique combinations of candidates where the chosen numbers sum to target. You may return the combinations in any order. The same number may be chosen from candidates an unlimited number of times.",
+    "difficulty": "Medium",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Amazon"
+    ],
+    "pattern": "Inclusion-Exclusion Sum Backtracking",
+    "bruteForce": {
+      "description": "Generate all possible combinations of elements up to target length and check sum. (O(2^(T/min_val)) time).",
+      "timeComplexity": "O(2^(T/min_val))",
+      "spaceComplexity": "O(T)"
+    },
+    "optimized": {
+      "description": "Use backtracking. A helper function `dfs(i, path, total)` branches: 1. If `total == target`, save `path` and return. 2. If `total > target` or `i >= len(candidates)`, stop branch (prune). 3. Include `candidates[i]` (call `dfs(i, path + [candidates[i]], total + candidates[i])` - note index `i` is not advanced because we can reuse elements). 4. Exclude `candidates[i]` (call `dfs(i + 1, path, total)`).",
+      "timeComplexity": "O(2^T) worst case",
+      "spaceComplexity": "O(T) stack"
+    },
+    "pythonCode": "def combinationSum(candidates, target):\n    res = []\n    path = []\n    \n    def dfs(i, total):\n        if total == target:\n            res.append(list(path))\n            return\n        if total > target or i >= len(candidates):\n            return\n            \n        # Choice 1: Include candidates[i] (can repeat, so keep index i)\n        path.append(candidates[i])\n        dfs(i, total + candidates[i])\n        path.pop() # Backtrack\n        \n        # Choice 2: Exclude candidates[i] (move to next candidate)\n        dfs(i + 1, total)\n        \n    dfs(0, 0)\n    return res",
+    "cppCode": "vector<vector<int>> combinationSum(vector<int>& candidates, int target) {\n    vector<vector<int>> res;\n    vector<int> path;\n    \n    auto dfs = [&](auto& self, int i, int total) -> void {\n        if (total == target) {\n            res.push_back(path);\n            return;\n        }\n        if (total > target || i >= candidates.size()) return;\n        \n        // Include candidates[i] (re-pass index i for unlimited usage)\n        path.push_back(candidates[i]);\n        self(self, i, total + candidates[i]);\n        path.pop_back(); // Backtrack\n        \n        // Exclude candidates[i] (step forward)\n        self(self, i + 1, total);\n    };\n    \n    dfs(dfs, 0, 0);\n    return res;\n}",
+    "pythonExplanation": [
+      {
+        "line": "if total == target: res.append(list(path))",
+        "explanation": "Base case: if current path sum matches target, we found a combination! Save it."
+      },
+      {
+        "line": "if total > target or i >= len(candidates): return",
+        "explanation": "Prune the search branch if sum exceeds target, or if we run out of elements."
+      },
+      {
+        "line": "dfs(i, total + candidates[i])",
+        "explanation": "Recurse on the inclusion branch without advancing index i, allowing element reuse."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "if (total > target || i >= candidates.size()) return;",
+        "explanation": "Pruning: stop branch immediately if target is exceeded or bounds are violated."
+      },
+      {
+        "line": "self(self, i, total + candidates[i]);",
+        "explanation": "Recursive call keeping index i to permit reuse."
+      }
+    ],
+    "timeComplexity": "O(2^T) - T is the target value. The call stack tree width is bounded by the branching factor. Pruning heavily reduces search space in practice.",
+    "spaceComplexity": "O(T) - Recursion stack depth can go up to target / minimum candidate value.",
+    "dryRun": [
+      "Input: candidates = [2, 3], target = 5",
+      "DFS(0, 0) calls:",
+      "  - Include 2 -> DFS(0, 2) calls:",
+      "    - Include 2 -> DFS(0, 4) calls:",
+      "      - Include 2 -> DFS(0, 6) -> 6 > 5 -> Prune.",
+      "      - Exclude 2 -> DFS(1, 4) -> Include 3 -> 4+3=7 > 5 -> Prune. Exclude 3 -> end.",
+      "    - Exclude 2 -> DFS(1, 2) -> Include 3 -> path=[2,3], total=5 -> Match! Saves [2,3].",
+      "  - Exclude 2 -> DFS(1, 0) -> Include 3 -> DFS(1, 3) -> Include 3 -> 6 > 5 -> Prune. Exclude 3 -> DFS(2, 3) -> end."
+    ],
+    "edgeCases": [
+      "Target cannot be formed",
+      "candidates contain values larger than target",
+      "Target is 0"
+    ],
+    "followUps": [
+      "Can you solve it if candidates can only be used once? (Combination Sum II, requires sorting, skipping duplicates, and advancing index to i+1)"
+    ],
+    "relatedProblems": [
+      "Combination Sum II",
+      "Combination Sum III"
+    ],
+    "visualization": "candidates = [2, 3], target = 5\n           (i=0, total=0)\n          /               \\\n    (i=0, total=2)      (i=1, total=0)\n      /        \\               \\\n(i=0, total=4) (i=1, total=2) (i=1, total=3)\n                 \\              \\\n               [2,3]=5         [3,3]=6 (exceeds)",
+    "commonMistakes": [
+      "Advancing the index `i` to `i + 1` during the inclusion branch, which prevents elements from being reused."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "backtracking_7",
+    "title": "N-Queens",
+    "statement": "The n-queens puzzle is the problem of placing `n` queens on an `n x n` chessboard such that no two queens attack each other. Given an integer `n`, return all distinct solutions to the n-queens puzzle. You may return the answer in any order.",
+    "difficulty": "Hard",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Amazon"
+    ],
+    "pattern": "Coordinate Diagonal Conflict Sets Backtracking",
+    "bruteForce": {
+      "description": "Try all possible coordinates combinations for N queens on the board. (O(N^N) time).",
+      "timeComplexity": "O(N^N)",
+      "spaceComplexity": "O(N^2)"
+    },
+    "optimized": {
+      "description": "Place queens row-by-row. Maintain three hash sets to track attacked lines: `cols` (vertical), `diags` (positive diagonals: `row + col` is constant), and `anti_diags` (negative diagonals: `row - col` is constant). For each row, iterate columns: if column/diagonals are not attacked, place queen, update sets, and recurse. Backtrack by removing queen and clearing sets.",
+      "timeComplexity": "O(N!)",
+      "spaceComplexity": "O(N^2) board"
+    },
+    "pythonCode": "def solveNQueens(n):\n    res = []\n    board = [['.'] * n for _ in range(n)]\n    \n    cols = set()\n    pos_diag = set() # row + col\n    neg_diag = set() # row - col\n    \n    def backtrack(r):\n        if r == n:\n            # Convert board format\n            copy = [''.join(row) for row in board]\n            res.append(copy)\n            return\n            \n        for c in range(n):\n            if c in cols or (r + c) in pos_diag or (r - c) in neg_diag:\n                continue\n                \n            # Place queen\n            cols.add(c)\n            pos_diag.add(r + c)\n            neg_diag.add(r - c)\n            board[r][c] = 'Q'\n            \n            # Recurse\n            backtrack(r + 1)\n            \n            # Backtrack\n            cols.remove(c)\n            pos_diag.remove(r + c)\n            neg_diag.remove(r - c)\n            board[r][c] = '.'\n            \n    backtrack(0)\n    return res",
+    "cppCode": "vector<vector<string>> solveNQueens(int n) {\n    vector<vector<string>> res;\n    vector<string> board(n, string(n, '.'));\n    \n    unordered_set<int> cols;\n    unordered_set<int> pos_diag;\n    unordered_set<int> neg_diag;\n    \n    auto backtrack = [&](auto& self, int r) -> void {\n        if (r == n) {\n            res.push_back(board);\n            return;\n        }\n        for (int c = 0; c < n; ++c) {\n            if (cols.count(c) || pos_diag.count(r + c) || neg_diag.count(r - c)) {\n                continue;\n            }\n            cols.insert(c);\n            pos_diag.insert(r + c);\n            neg_diag.insert(r - c);\n            board[r][c] = 'Q';\n            \n            self(self, r + 1);\n            \n            cols.erase(c);\n            pos_diag.erase(r + c);\n            neg_diag.erase(r - c);\n            board[r][c] = '.';\n        }\n    };\n    \n    backtrack(backtrack, 0);\n    return res;\n}",
+    "pythonExplanation": [
+      {
+        "line": "pos_diag = set()",
+        "explanation": "Cells sharing a positive diagonal (/ shape) have a constant row + col index sum."
+      },
+      {
+        "line": "neg_diag = set()",
+        "explanation": "Cells sharing a negative diagonal (\\ shape) have a constant row - col index difference."
+      },
+      {
+        "line": "board[r][c] = 'Q'",
+        "explanation": "Mark cell as Queen on the board."
+      },
+      {
+        "line": "board[r][c] = '.'",
+        "explanation": "Remove Queen (backtrack step) to explore subsequent column configurations."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "if (cols.count(c) || pos_diag.count(r + c) || neg_diag.count(r - c)) continue;",
+        "explanation": "Conflict pruning: skip cell if column or either diagonal is already under attack."
+      },
+      {
+        "line": "board[r][c] = 'Q';",
+        "explanation": "Place Queen representation character."
+      }
+    ],
+    "timeComplexity": "O(N!) - The first row has N choices, the second has at most N-2 choices, and so on. Highly optimized by set-based conflict checks.",
+    "spaceComplexity": "O(N^2) - For the board grid representation.",
+    "dryRun": [
+      "Input: n = 4",
+      "Row 0: places Q at (0, 0). attacked: cols={0}, pos={0}, neg={0}.",
+      "Row 1: (1,0) blocked. (1,1) blocked by pos diag (1+1=2 != 0, but neg diag 1-1=0 conflicts with 0-0=0). Place Q at (1, 2).",
+      "Row 2: no spots free! (2,0) blocked. (2,1) blocked. (2,2) blocked. (2,3) blocked. Backtrack!",
+      "Row 0: moves Q to (0, 1). Recursion continues, eventually finding valid configurations: Q at (0,1),(1,3),(2,0),(3,2)."
+    ],
+    "edgeCases": [
+      "n = 1 (returns [['Q']])",
+      "n = 2 or 3 (returns empty list, no solutions exist)"
+    ],
+    "followUps": [
+      "Can you return just the total number of distinct solutions? (Yes, N-Queens II, same logic but increment counter on base case)"
+    ],
+    "relatedProblems": [
+      "N-Queens II",
+      "Sudoku Solver"
+    ],
+    "visualization": "Row 0: . Q . .    (Q placed at index 1)\nRow 1: . . . Q    (Q placed at index 3)\nRow 2: Q . . .    (Q placed at index 0)\nRow 3: . . Q .    (Q placed at index 2)\nSets cols, diags and anti-diags prevent queen overlaps.",
+    "commonMistakes": [
+      "Iterating through all board coordinates instead of placing row-by-row, which raises search complexity to O(N^(N^2))."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "backtracking_8",
+    "title": "Sudoku Solver",
+    "statement": "Write a program to solve a Sudoku puzzle by filling the empty cells. A sudoku solution must satisfy: 1. Each digit 1-9 must occur exactly once in each row. 2. Each digit 1-9 must occur exactly once in each column. 3. Each digit 1-9 must occur exactly once in each of the 9 3x3 sub-boxes of the grid.",
+    "difficulty": "Hard",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Amazon"
+    ],
+    "pattern": "Cell Recursion with Subgrid Constraints",
+    "bruteForce": {
+      "description": "Try all possible combinations of digits for all empty cells using permutation loops. (Extremely slow).",
+      "timeComplexity": "O(9^81)",
+      "spaceComplexity": "O(1)"
+    },
+    "optimized": {
+      "description": "Traverse the board. When an empty cell `'.'` is found, try placing digits `'1'` through `'9'`. For each digit, verify validity using a helper function (checks row, column, and the local 3x3 subgrid). If valid, place the digit and recursively call solver on next empty cell. If recursion returns true, puzzle solved. Otherwise, reset cell to `'.'` (backtrack).",
+      "timeComplexity": "O(9^K) where K is empty cells",
+      "spaceComplexity": "O(1) board modifications"
+    },
+    "pythonCode": "def solveSudoku(board):\n    def is_valid(r, c, val):\n        for i in range(9):\n            # Check row\n            if board[r][i] == val:\n                return False\n            # Check column\n            if board[i][c] == val:\n                return False\n            # Check 3x3 subgrid\n            sub_r = 3 * (r // 3) + i // 3\n            sub_c = 3 * (c // 3) + i % 3\n            if board[sub_r][sub_c] == val:\n                return False\n        return True\n        \n    def solve():\n        for r in range(9):\n            for c in range(9):\n                if board[r][c] == '.':\n                    for num in '123456789':\n                        if is_valid(r, c, num):\n                            board[r][c] = num\n                            if solve():\n                                return True\n                            board[r][c] = '.' # Backtrack\n                    return False # No number fits\n        return True # Board complete\n        \n    solve()",
+    "cppCode": "void solveSudoku(vector<vector<char>>& board) {\n    auto isValid = [&](int r, int c, char val) -> bool {\n        for (int i = 0; i < 9; ++i) {\n            if (board[r][i] == val) return false;\n            if (board[i][c] == val) return false;\n            int sub_r = 3 * (r / 3) + i / 3;\n            int sub_c = 3 * (c / 3) + i % 3;\n            if (board[sub_r][sub_c] == val) return false;\n        }\n        return true;\n    };\n    \n    auto solve = [&](auto& self) -> bool {\n        for (int r = 0; r < 9; ++r) {\n            for (int c = 0; c < 9; ++c) {\n                if (board[r][c] == '.') {\n                    for (char num = '1'; num <= '9'; ++num) {\n                        if (isValid(r, c, num)) {\n                            board[r][c] = num;\n                            if (self(self)) return true;\n                            board[r][c] = '.'; // Backtrack\n                        }\n                    }\n                    return false;\n                }\n            }\n        }\n        return true;\n    };\n    \n    solve(solve);\n}",
+    "pythonExplanation": [
+      {
+        "line": "sub_r = 3 * (r // 3) + i // 3",
+        "explanation": "Map index i (0-8) to row coordinates of the 3x3 subgrid corresponding to cell (r, c)."
+      },
+      {
+        "line": "board[r][c] = num",
+        "explanation": "Assign candidate digit to cell."
+      },
+      {
+        "line": "if solve(): return True",
+        "explanation": "If subsequent recursive calls return True, propagate the solution up and exit."
+      },
+      {
+        "line": "board[r][c] = '.'",
+        "explanation": "If placement fails to solve, backtrack by restoring cell to '.' and try next digit."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "if (board[sub_r][sub_c] == val) return false;",
+        "explanation": "Check for duplicates in the local 3x3 box grid."
+      },
+      {
+        "line": "board[r][c] = '.'; // Backtrack",
+        "explanation": "Reset cell value on path failure to restore state."
+      }
+    ],
+    "timeComplexity": "O(9^K) - K is the number of empty cells. While the upper bound is large, constraints prune branches heavily, making execution fast in practice.",
+    "spaceComplexity": "O(1) - The grid board is solved in-place. The recursion stack depth is bounded by 81 levels.",
+    "dryRun": [
+      "Input: Partial Sudoku grid.",
+      "Scans for first empty cell. Hits (0, 2).",
+      "Attempts to place '1'. '1' is already in row 0 -> invalid.",
+      "Attempts to place '5'. Valid! board[0][2] = '5'. Calls solve().",
+      "Next empty cell (0, 5). Attempts '1' -> valid! Calls solve().",
+      "If a downstream path hits a dead end (no digit fits), backtrack resets board[0][2] = '.' and tries next digit."
+    ],
+    "edgeCases": [
+      "Board contains no empty slots (returns True immediately)",
+      "Sudoku with multiple solutions (finds first valid one)"
+    ],
+    "followUps": [
+      "Can you optimize validation lookups? (Yes, keep boolean states of size 9x9 for rows, columns, and boxes to check validity in O(1) time instead of loop scans)"
+    ],
+    "relatedProblems": [
+      "N-Queens",
+      "Unique Paths III"
+    ],
+    "visualization": "Box coordinates mapping:\n  Col index:  0 1 2 | 3 4 5 | 6 7 8\n  Row index:  0 1 2 | 3 4 5 | 6 7 8\n  Local box indices share (row/3)*3 + col/3 unique keys.",
+    "commonMistakes": [
+      "Returning True at wrong positions in loops, terminating the solver before all cells are filled."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "backtracking_9",
+    "title": "Word Search II",
+    "statement": "Given an `m x n` board of characters and a list of strings `words`, return all words on the board. Each word must be constructed from letters of sequentially adjacent cells (horizontally/vertically adjacent). The same letter cell may not be used more than once in a word.",
+    "difficulty": "Hard",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Amazon"
+    ],
+    "pattern": "Trie-based Grid Backtracking",
+    "bruteForce": {
+      "description": "Run standard Word Search (DFS) for each word independently. (Extremely slow, O(W * R * C * 4^L) time).",
+      "timeComplexity": "O(W * R * C * 4^L)",
+      "spaceComplexity": "O(L)"
+    },
+    "optimized": {
+      "description": "First, insert all search words into a Trie (Prefix Tree). Perform a DFS starting from each cell in the grid. If a cell character exists in the current Trie node, transition. If the node contains a complete word, add it to results. Temporarily mark the cell as visited (e.g. `'#'`). Recursively search in all four cardinal directions. Backtrack by restoring cell character.",
+      "timeComplexity": "O(R * C * 4^L)",
+      "spaceComplexity": "O(Total letters in words) Trie size"
+    },
+    "pythonCode": "class TrieNode:\n    def __init__(self):\n        self.children = {}\n        self.word = None\n\ndef findWords(board, words):\n    # Build Trie\n    root = TrieNode()\n    for w in words:\n        curr = root\n        for char in w:\n            if char not in curr.children:\n                curr.children[char] = TrieNode()\n            curr = curr.children[char]\n        curr.word = w\n        \n    r, c = len(board), len(board[0])\n    res = set()\n    \n    def dfs(i, j, node):\n        char = board[i][j]\n        if char not in node.children:\n            return\n            \n        next_node = node.children[char]\n        if next_node.word:\n            res.add(next_node.word)\n            # Optimization: set word to None to prevent duplicate matches\n            next_node.word = None\n            \n        board[i][j] = '#'\n        for di, dj in [(1,0), (-1,0), (0,1), (0,-1)]:\n            ni, nj = i + di, j + dj\n            if 0 <= ni < r and 0 <= nj < c and board[ni][nj] != '#':\n                dfs(ni, nj, next_node)\n        board[i][j] = char # Backtrack\n        \n    for i in range(r):\n        for j in range(c):\n            dfs(i, j, root)\n            \n    return list(res)",
+    "cppCode": "struct TrieNode {\n    unordered_map<char, TrieNode*> children;\n    string word = \"\";\n};\n\nvector<string> findWords(vector<vector<char>>& board, vector<string>& words) {\n    TrieNode* root = new TrieNode();\n    for (const string& w : words) {\n        TrieNode* curr = root;\n        for (char c : w) {\n            if (!curr->children.count(c)) curr->children[c] = new TrieNode();\n            curr = curr->children[c];\n        }\n        curr->word = w;\n    }\n    \n    int r = board.size();\n    int c = board[0].size();\n    vector<string> res;\n    \n    auto dfs = [&](auto& self, int i, int j, TrieNode* node) -> void {\n        char ch = board[i][j];\n        if (!node->children.count(ch)) return;\n        \n        TrieNode* next_node = node->children[ch];\n        if (!next_node->word.empty()) {\n            res.push_back(next_node->word);\n            next_node->word = \"\"; // Avoid duplicates\n        }\n        \n        board[i][j] = '#'; // Mark visited\n        int dirs[4][2] = {{1,0}, {-1,0}, {0,1}, {0,-1}};\n        for (auto& dir : dirs) {\n            int ni = i + dir[0];\n            int nj = j + dir[1];\n            if (ni >= 0 && ni < r && nj >= 0 && nj < c && board[ni][nj] != '#') {\n                self(self, ni, nj, next_node);\n            }\n        }\n        board[i][j] = ch; // Backtrack\n    };\n    \n    for (int i = 0; i < r; ++i) {\n        for (int j = 0; j < c; ++j) {\n            dfs(dfs, i, j, root);\n        }\n    }\n    return res;\n}",
+    "pythonExplanation": [
+      {
+        "line": "curr.word = w",
+        "explanation": "Store the complete word directly in the leaf TrieNode to avoid tracking matching prefix strings on the path."
+      },
+      {
+        "line": "if next_node.word: res.add(next_node.word)",
+        "explanation": "If we reach a TrieNode matching a word, we found a match! Save it."
+      },
+      {
+        "line": "next_node.word = None",
+        "explanation": "Optimization: set word to None once found to prevent duplicate matches and save operations."
+      },
+      {
+        "line": "board[i][j] = '#'",
+        "explanation": "Mark cell as visited to prevent reusing letters within the same word search path."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "curr->word = w;",
+        "explanation": "Attach the word payload directly to Trie leaf node."
+      },
+      {
+        "line": "board[i][j] = '#'; // Mark visited",
+        "explanation": "Set visited state flag locally in board cell."
+      },
+      {
+        "line": "board[i][j] = ch; // Backtrack",
+        "explanation": "Restore character value to backtrack cleanly."
+      }
+    ],
+    "timeComplexity": "O(R * C * 4^L) - R, C are board dimensions, L is max word length. DFS search checks 4 directions up to L steps.",
+    "spaceComplexity": "O(W * L) - Space required to store the Trie containing W words of length L.",
+    "dryRun": [
+      "Input: board = [['o','a','a'],['e','t','a'],['i','h','k']], words = ['oath','pea']",
+      "Trie built with: 'oath', 'pea'.",
+      "DFS(0,0): char = 'o'. Matches Trie root children 'o'. Node transitions.",
+      "DFS(0,1): char = 'a'. Matches Trie child 'a'.",
+      "DFS(1,1): char = 't'. Matches Trie child 't'.",
+      "DFS(1,2): char = 'h'. Matches Trie child 'h'. 'h' has word = 'oath' -> Save 'oath'.",
+      "DFS finishes. Result: ['oath']."
+    ],
+    "edgeCases": [
+      "Board contains no matching characters",
+      "Words contains empty string",
+      "Grid of size 1x1"
+    ],
+    "followUps": [
+      "Can you optimize the Trie after finding a word? (Yes, prune children nodes that have no more word paths left, which cuts DFS branches drastically)"
+    ],
+    "relatedProblems": [
+      "Word Search",
+      "Prefix Tree (Trie) Implementation"
+    ],
+    "visualization": "Board:             Trie search:         Find 'oath':\no a a              root -> o -> a       - board[0][0]='o'\ne t a                      |            - board[0][1]='a'\ni h k                      t -> h       - board[1][1]='t'\n(oath)                                  - board[1][2]='h' (Matched!)",
+    "commonMistakes": [
+      "Reusing the same cell within a single word (e.g. path loops back to starting letter, solved by setting cell to '#' temporarily during search)."
+    ],
+    "whenNotToUse": "None"
+  }
+]

@@ -1,0 +1,749 @@
+[
+  {
+    "id": "recursion_1",
+    "title": "Fibonacci Number",
+    "statement": "The Fibonacci numbers, commonly denoted `F(n)` form a sequence, called the Fibonacci sequence, such that each number is the sum of the two preceding ones, starting from 0 and 1. Given `n`, calculate `F(n)`.",
+    "difficulty": "Easy",
+    "companies": [
+      "Infosys",
+      "TCS",
+      "Wipro"
+    ],
+    "pattern": "Recursive Base Case Reduction / Memoization",
+    "bruteForce": {
+      "description": "Use standard recursion: `fib(n) = fib(n-1) + fib(n-2)` without caching. (Slow, O(2^N) time).",
+      "timeComplexity": "O(2^N)",
+      "spaceComplexity": "O(N) stack"
+    },
+    "optimized": {
+      "description": "Use recursion with memoization, or compute iteratively in O(N) time and O(1) space by maintaining the last two Fibonacci values in variables.",
+      "timeComplexity": "O(N)",
+      "spaceComplexity": "O(1)"
+    },
+    "pythonCode": "def fib(n):\n    if n <= 1:\n        return n\n    a, b = 0, 1\n    for _ in range(2, n + 1):\n        a, b = b, a + b\n    return b",
+    "cppCode": "int fib(int n) {\n    if (n <= 1) return n;\n    int a = 0, b = 1;\n    for (int i = 2; i <= n; ++i) {\n        int temp = a + b;\n        a = b;\n        b = temp;\n    }\n    return b;\n}",
+    "pythonExplanation": [
+      {
+        "line": "if n <= 1: return n",
+        "explanation": "Base case: F(0) = 0 and F(1) = 1."
+      },
+      {
+        "line": "a, b = 0, 1",
+        "explanation": "Seed the variables for F(0) and F(1)."
+      },
+      {
+        "line": "a, b = b, a + b",
+        "explanation": "Iteratively calculate next state while sliding values forward."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "if (n <= 1) return n;",
+        "explanation": "Base cases: F(0)=0, F(1)=1."
+      },
+      {
+        "line": "int a = 0, b = 1;",
+        "explanation": "Initialize preceding Fibonacci state values."
+      },
+      {
+        "line": "a = b; b = temp;",
+        "explanation": "Step forward to compute next Fibonacci value."
+      }
+    ],
+    "timeComplexity": "O(N) - Single loop running from 2 to N.",
+    "spaceComplexity": "O(1) - Constant auxiliary space is used.",
+    "dryRun": [
+      "Input: n = 4",
+      "i = 2: temp = 0+1 = 1. a=1, b=1.",
+      "i = 3: temp = 1+1 = 2. a=1, b=2.",
+      "i = 4: temp = 1+2 = 3. a=2, b=3.",
+      "Result: 3"
+    ],
+    "edgeCases": [
+      "n = 0 (returns 0)",
+      "n = 1 (returns 1)",
+      "Large values (integer overflow check)"
+    ],
+    "followUps": [
+      "Can you write it using actual recursion with memoization? (Yes, use a cache map/decorator to store results and achieve O(N) time)"
+    ],
+    "relatedProblems": [
+      "Climbing Stairs",
+      "N-th Tribonacci Number"
+    ],
+    "visualization": "F(0)=0, F(1)=1\nF(2) = 1 + 0 = 1\nF(3) = 1 + 1 = 2\nF(4) = 2 + 1 = 3",
+    "commonMistakes": [
+      "Using plain recursion without memoization (causes exponential time complexity)."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "recursion_2",
+    "title": "Power of Three",
+    "statement": "Given an integer `n`, return `true` if it is a power of three. Otherwise, return `false`. An integer `n` is a power of three if there exists an integer `x` such that `n == 3^x`.",
+    "difficulty": "Easy",
+    "companies": [
+      "Infosys",
+      "TCS",
+      "Cognizant"
+    ],
+    "pattern": "Recursive Division",
+    "bruteForce": {
+      "description": "Iteratively multiply 1 by 3 until it exceeds or equals n.",
+      "timeComplexity": "O(log3 N)",
+      "spaceComplexity": "O(1)"
+    },
+    "optimized": {
+      "description": "Use recursion. Base cases: if `n <= 0`, return false. If `n == 1`, return true. If `n` is not divisible by 3, return false. Otherwise, recurse with `n // 3`.",
+      "timeComplexity": "O(log3 N)",
+      "spaceComplexity": "O(log3 N) stack"
+    },
+    "pythonCode": "def isPowerOfThree(n):\n    if n <= 0:\n        return False\n    if n == 1:\n        return True\n    if n % 3 != 0:\n        return False\n    return isPowerOfThree(n // 3)",
+    "cppCode": "bool isPowerOfThree(int n) {\n    if (n <= 0) return false;\n    if (n == 1) return true;\n    if (n % 3 != 0) return false;\n    return isPowerOfThree(n / 3);\n}",
+    "pythonExplanation": [
+      {
+        "line": "if n <= 0: return False",
+        "explanation": "Base case: numbers less than or equal to 0 cannot be powers of 3."
+      },
+      {
+        "line": "if n == 1: return True",
+        "explanation": "Base case: 3^0 = 1, so 1 is a power of 3."
+      },
+      {
+        "line": "if n % 3 != 0: return False",
+        "explanation": "If n is not divisible by 3, it cannot be a power of 3."
+      },
+      {
+        "line": "return isPowerOfThree(n // 3)",
+        "explanation": "Recursively divide n by 3 and repeat."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "if (n <= 0) return false;",
+        "explanation": "Negative numbers and zero are invalid."
+      },
+      {
+        "line": "if (n == 1) return true;",
+        "explanation": "3^0 matches 1."
+      },
+      {
+        "line": "if (n % 3 != 0) return false;",
+        "explanation": "Remainder check: must be divisible by 3."
+      },
+      {
+        "line": "return isPowerOfThree(n / 3);",
+        "explanation": "Recursively divide and call."
+      }
+    ],
+    "timeComplexity": "O(log3 N) - We divide n by 3 in each recursive step.",
+    "spaceComplexity": "O(log3 N) - Recursion stack space.",
+    "dryRun": [
+      "Input: n = 27",
+      "Step 1: 27 > 0, 27 != 1, 27 % 3 == 0. Call isPowerOfThree(9).",
+      "Step 2: 9 > 0, 9 != 1, 9 % 3 == 0. Call isPowerOfThree(3).",
+      "Step 3: 3 > 0, 3 != 1, 3 % 3 == 0. Call isPowerOfThree(1).",
+      "Step 4: n == 1 -> returns True."
+    ],
+    "edgeCases": [
+      "n <= 0",
+      "n is a large prime number",
+      "n is a power of nine (also power of three)"
+    ],
+    "followUps": [
+      "Can you solve it in O(1) time and space without recursion or loops? (Yes, check if the maximum power of three fitting in an integer, 1162261467, is divisible by n)"
+    ],
+    "relatedProblems": [
+      "Power of Two",
+      "Power of Four"
+    ],
+    "visualization": "27 -> divide 3 -> 9 -> divide 3 -> 3 -> divide 3 -> 1 (Returns True)\n28 -> 28 % 3 != 0 -> Returns False",
+    "commonMistakes": [
+      "Forgetting to check `n <= 0`, which can cause infinite recursion or incorrect results."
+    ],
+    "whenNotToUse": "If recursion is forbidden or stack depth is restricted, check if 1162261467 % n == 0 for O(1) time."
+  },
+  {
+    "id": "recursion_3",
+    "title": "Range Sum of BST",
+    "statement": "Given the root node of a binary search tree and two integers `low` and `high`, return the sum of values of all nodes with a value in the inclusive range `[low, high]`.",
+    "difficulty": "Easy",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Amazon"
+    ],
+    "pattern": "BST Pruning Recursion",
+    "bruteForce": {
+      "description": "Traverse all nodes using standard DFS, checking every value against range bounds.",
+      "timeComplexity": "O(N)",
+      "spaceComplexity": "O(H)"
+    },
+    "optimized": {
+      "description": "Use recursion. Since it is a BST, we can prune subtrees: 1. If node is Null, return 0. 2. If `node.val` is smaller than `low`, prune left child (only search right). 3. If `node.val` is larger than `high`, prune right child (only search left). 4. If in-range, return `val + sum(left) + sum(right)`.",
+      "timeComplexity": "O(N) worst case",
+      "spaceComplexity": "O(H) stack"
+    },
+    "pythonCode": "def rangeSumBST(root, low, high):\n    if not root:\n        return 0\n    if root.val < low:\n        return rangeSumBST(root.right, low, high)\n    if root.val > high:\n        return rangeSumBST(root.left, low, high)\n    return root.val + rangeSumBST(root.left, low, high) + rangeSumBST(root.right, low, high)",
+    "cppCode": "int rangeSumBST(TreeNode* root, int low, int high) {\n    if (root == nullptr) return 0;\n    if (root->val < low) {\n        return rangeSumBST(root->right, low, high);\n    }\n    if (root->val > high) {\n        return rangeSumBST(root->left, low, high);\n    }\n    return root->val + rangeSumBST(root->left, low, high) + rangeSumBST(root->right, low, high);\n}",
+    "pythonExplanation": [
+      {
+        "line": "if not root: return 0",
+        "explanation": "Base case: empty tree adds 0 to sum."
+      },
+      {
+        "line": "if root.val < low: return rangeSumBST(root.right, low, high)",
+        "explanation": "If current node is smaller than low, all left subtree elements are also smaller (prune left, search only right)."
+      },
+      {
+        "line": "if root.val > high: return rangeSumBST(root.left, ...)",
+        "explanation": "If current node is larger than high, prune right, search only left."
+      },
+      {
+        "line": "return root.val + rangeSumBST(left) + rangeSumBST(right)",
+        "explanation": "If current node is in-range, include it and sum both left and right subtrees."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "if (root == nullptr) return 0;",
+        "explanation": "Null node check."
+      },
+      {
+        "line": "if (root->val < low) return rangeSumBST(root->right, low, high);",
+        "explanation": "Pruning: ignore left subtree branch since values are too small."
+      },
+      {
+        "line": "return root->val + rangeSumBST(...) + rangeSumBST(...);",
+        "explanation": "Current value is inside range bounds. Sum it and recurse into both subtrees."
+      }
+    ],
+    "timeComplexity": "O(N) - In the worst case, we visit all N nodes in the tree.",
+    "spaceComplexity": "O(H) - Space used by the recursion call stack, where H is the height of the tree.",
+    "dryRun": [
+      "Input: root = [10, 5, 15], low = 7, high = 15",
+      "At Node 10: 7 <= 10 <= 15 -> in range. Sum = 10 + Call(5) + Call(15).",
+      "At Node 5: 5 < 7 -> too small. Prune left. Call(Node 5's right child) -> Null -> returns 0.",
+      "At Node 15: 15 <= 15 -> in range. Sum = 15 + Call(Null) + Call(Null) = 15.",
+      "Result: 10 + 0 + 15 = 25."
+    ],
+    "edgeCases": [
+      "All elements out of range",
+      "low and high boundaries match node values",
+      "Single node tree"
+    ],
+    "followUps": [
+      "Can you solve it iteratively? (Yes, using a stack to process node pointers, implementing pruning)"
+    ],
+    "relatedProblems": [
+      "Binary Search Tree Iterator",
+      "Closest Binary Search Tree Value"
+    ],
+    "visualization": "       10 [Range: 7-15] -> Keep 10. Recurse both.\n      /  \\\n     5    15            -> 5 is < 7 (prune left child). Search right.\n          /             -> 15 is in range. Keep 15.\n  Sum = 10 + 15 = 25",
+    "commonMistakes": [
+      "Not taking advantage of BST properties (searching both left and right subtrees unconditionally, increasing complexity to O(N) always)."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "dp_10",
+    "title": "Pow(x, n)",
+    "statement": "Implement `pow(x, n)`, which calculates `x` raised to the power `n` (i.e., `x^n`). Solve it in O(log N) time.",
+    "difficulty": "Medium",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Amazon"
+    ],
+    "pattern": "Binary Exponentiation Recursion",
+    "bruteForce": {
+      "description": "Multiply x by itself n times in a loop. (Slow, O(N) time).",
+      "timeComplexity": "O(N)",
+      "spaceComplexity": "O(1)"
+    },
+    "optimized": {
+      "description": "Use binary exponentiation. Base case: `n == 0` returns 1. Handle negative power `n` by computing `1 / pow(x, -n)`. In each recursive step: compute `half = pow(x, n // 2)`. If `n` is even, return `half * half`. If `n` is odd, return `x * half * half`.",
+      "timeComplexity": "O(log N)",
+      "spaceComplexity": "O(log N) stack"
+    },
+    "pythonCode": "def myPow(x, n):\n    if n == 0:\n        return 1.0\n    if n < 0:\n        return 1.0 / myPow(x, -n)\n        \n    half = myPow(x, n // 2)\n    if n % 2 == 0:\n        return half * half\n    else:\n        return x * half * half",
+    "cppCode": "double myPow(double x, int n) {\n    if (n == 0) return 1.0;\n    if (n < 0) {\n        // Handle INT_MIN overflow: -INT_MIN overflow. Cast to long long.\n        long long N = n;\n        return 1.0 / myPow(x, -N);\n    }\n    double half = myPow(x, n / 2);\n    if (n % 2 == 0) {\n        return half * half;\n    } else {\n        return x * half * half;\n    }\n}",
+    "pythonExplanation": [
+      {
+        "line": "if n == 0: return 1.0",
+        "explanation": "Any number raised to power 0 is 1.0."
+      },
+      {
+        "line": "return 1.0 / myPow(x, -n)",
+        "explanation": "Handle negative powers: x^(-n) = 1 / x^n."
+      },
+      {
+        "line": "half = myPow(x, n // 2)",
+        "explanation": "Recursive step: divide the power in half (Binary exponentiation)."
+      },
+      {
+        "line": "return half * half",
+        "explanation": "If power is even, result is half^2. If odd, result is x * half^2."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "if (n == 0) return 1.0;",
+        "explanation": "Base case of power 0."
+      },
+      {
+        "line": "long long N = n; return 1.0 / myPow(x, -N);",
+        "explanation": "Avoid overflow edge case in C++: negating INT_MIN exceeds INT_MAX. Use long long."
+      },
+      {
+        "line": "double half = myPow(x, n / 2);",
+        "explanation": "Recursive binary divide-and-conquer."
+      }
+    ],
+    "timeComplexity": "O(log N) - We halve the exponent value in each recursive step.",
+    "spaceComplexity": "O(log N) - Stack frames used for recursion depth.",
+    "dryRun": [
+      "Input: x = 2.0, n = 10",
+      "Step 1: myPow(2, 5).",
+      "Step 2: myPow(2, 2).",
+      "Step 3: myPow(2, 1).",
+      "Step 4: myPow(2, 0) -> returns 1.0.",
+      "Step 3 returns: 2 * 1 * 1 = 2.",
+      "Step 2 returns: 2 * 2 = 4.",
+      "Step 1 returns: 2 * 4 * 4 = 32.",
+      "Step 0 returns: 32 * 32 = 1024."
+    ],
+    "edgeCases": [
+      "n is negative",
+      "n = INT_MIN",
+      "x is 0 or 1"
+    ],
+    "followUps": [
+      "Can you solve it iteratively in O(1) space? (Yes, using a while loop and bitwise shift updates)"
+    ],
+    "relatedProblems": [
+      "Sqrt(x)",
+      "Super Pow"
+    ],
+    "visualization": "2^10 = (2^5) * (2^5) = 32 * 32 = 1024\n2^5  = 2 * (2^2) * (2^2) = 2 * 4 * 4 = 32\nBinary exponentiation cuts steps from N to log(N).",
+    "commonMistakes": [
+      "Failing to handle `n = INT_MIN` in C++, which overflows when negated because `|INT_MIN| > INT_MAX`."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "recursion_5",
+    "title": "K-th Symbol in Grammar",
+    "statement": "We build a table of `n` rows (1-indexed). We start with `0` in row 1. In each subsequent row, we replace each occurrence of `0` with `01`, and each occurrence of `1` with `10`. Given row `n` and index `k`, return the `k`-th character. (k is 1-indexed).",
+    "difficulty": "Medium",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Amazon"
+    ],
+    "pattern": "Recursive Midpoint Mirroring",
+    "bruteForce": {
+      "description": "Generate the entire string row-by-row and index the K-th character. (Slow, causes Out of Memory).",
+      "timeComplexity": "O(2^N)",
+      "spaceComplexity": "O(2^N)"
+    },
+    "optimized": {
+      "description": "Notice that the first half of row `N` is identical to row `N-1`. The second half is the binary negation of row `N-1`. Calculate the midpoint `mid = 2^(N-2)`. If `k <= mid`, the answer is `kthGrammar(n-1, k)`. If `k > mid`, the answer is the negation `1 - kthGrammar(n-1, k - mid)`.",
+      "timeComplexity": "O(N)",
+      "spaceComplexity": "O(N) stack"
+    },
+    "pythonCode": "def kthGrammar(n, k):\n    if n == 1:\n        return 0\n    mid = 2 ** (n - 2)\n    if k <= mid:\n        return kthGrammar(n - 1, k)\n    else:\n        return 1 - kthGrammar(n - 1, k - mid)",
+    "cppCode": "int kthGrammar(int n, int k) {\n    if (n == 1) return 0;\n    int mid = 1 << (n - 2);\n    if (k <= mid) {\n        return kthGrammar(n - 1, k);\n    } else {\n        return 1 - kthGrammar(n - 1, k - mid);\n    }\n}",
+    "pythonExplanation": [
+      {
+        "line": "if n == 1: return 0",
+        "explanation": "Base case: Row 1 always starts with 0."
+      },
+      {
+        "line": "mid = 2 ** (n - 2)",
+        "explanation": "Find the midpoint of the current row (which has size 2^(n-1))."
+      },
+      {
+        "line": "return kthGrammar(n - 1, k)",
+        "explanation": "If K is in the left half, it is identical to row n-1 at index K."
+      },
+      {
+        "line": "return 1 - kthGrammar(n - 1, k - mid)",
+        "explanation": "If K is in the right half, it is the binary negation of row n-1 at index (K - mid)."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "if (n == 1) return 0;",
+        "explanation": "Row 1 base value."
+      },
+      {
+        "line": "int mid = 1 << (n - 2);",
+        "explanation": "Bitwise shift to compute midpoint of the current row size dynamically."
+      },
+      {
+        "line": "return 1 - kthGrammar(n - 1, k - mid);",
+        "explanation": "If index is in the right half, recurse and negate result."
+      }
+    ],
+    "timeComplexity": "O(N) - Recursion depth goes up to N steps.",
+    "spaceComplexity": "O(N) - Call stack height.",
+    "dryRun": [
+      "Input: n = 3, k = 3",
+      "Row 1: 0. Row 2: 01. Row 3: 0110.",
+      "Step 1: n = 3, k = 3. mid = 2^(3-2) = 2. k(3) > mid(2). Recurse: 1 - kthGrammar(2, 3-2=1).",
+      "Step 2: n = 2, k = 1. mid = 2^(2-2) = 1. k(1) <= mid(1). Recurse: kthGrammar(1, 1).",
+      "Step 3: n = 1, k = 1 -> returns 0.",
+      "Step 2 returns: 0.",
+      "Step 1 returns: 1 - 0 = 1."
+    ],
+    "edgeCases": [
+      "k is 1 (always returns 0)",
+      "N is large (midpoint calculation must not overflow)"
+    ],
+    "followUps": [
+      "Can you solve it in O(1) time and space? (Yes, index k-1 has value equal to the number of 1s in its binary representation modulo 2, count bits using popcount)"
+    ],
+    "relatedProblems": [
+      "Grammar Rules",
+      "Kth Symbol II"
+    ],
+    "visualization": "Row 1: 0\nRow 2: 0 | 1           (second half is inverse of first)\nRow 3: 0 1 | 1 0         (second half is inverse of first)\nFind index K by dividing and negating if in right half.",
+    "commonMistakes": [
+      "Attempting to compute row strings, which grows exponentially: row 30 has 1 billion characters, causing Out of Memory."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "recursion_6",
+    "title": "Decode String",
+    "statement": "Given an encoded string, return its decoded string. The encoding rule is: `k[encoded_string]`, where the `encoded_string` inside the square brackets is being repeated exactly `k` times. `k` is guaranteed to be a positive integer.",
+    "difficulty": "Medium",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Amazon"
+    ],
+    "pattern": "DFS Parser Stack / Nested Recursion",
+    "bruteForce": {
+      "description": "Scan and replace characters manually using string matching. (Fails on nested brackets).",
+      "timeComplexity": "O(N^2)",
+      "spaceComplexity": "O(N)"
+    },
+    "optimized": {
+      "description": "Use recursion. Maintain a global index pointer `i`. Traverse the string: if character is digit, accumulate the number multiplier. If character is `'['`, recurse to parse the inner string. If character is `']'`, return the current decoded string. Else, append character to the result.",
+      "timeComplexity": "O(N)",
+      "spaceComplexity": "O(N) stack"
+    },
+    "pythonCode": "def decodeString(s):\n    def decode(i):\n        res = []\n        num = 0\n        while i < len(s):\n            char = s[i]\n            if char.isdigit():\n                num = num * 10 + int(char)\n            elif char == '[':\n                # Recurse\n                decoded, next_i = decode(i + 1)\n                res.append(num * decoded)\n                num = 0\n                i = next_i\n            elif char == ']':\n                return ''.join(res), i\n            else:\n                res.append(char)\n            i += 1\n        return ''.join(res), i\n        \n    res, _ = decode(0)\n    return res",
+    "cppCode": "string decodeString(string s) {\n    int idx = 0;\n    auto decode = [&](auto& self) -> string {\n        string res = \"\";\n        int num = 0;\n        while (idx < s.size()) {\n            char c = s[idx];\n            if (isdigit(c)) {\n                num = num * 10 + (c - '0');\n            } else if (c == '[') {\n                idx++; // skip '['\n                string decoded = self(self);\n                while (num > 0) {\n                    res += decoded;\n                    num--;\n                }\n            } else if (c == ']') {\n                return res;\n            } else {\n                res += c;\n            }\n            idx++;\n        }\n        return res;\n    };\n    return decode(decode);\n}",
+    "pythonExplanation": [
+      {
+        "line": "num = num * 10 + int(char)",
+        "explanation": "Parse multi-digit multipliers correctly (e.g. 100[a])."
+      },
+      {
+        "line": "decoded, next_i = decode(i + 1)",
+        "explanation": "On encountering '[', recursively parse the nested string starting from index i+1."
+      },
+      {
+        "line": "res.append(num * decoded)",
+        "explanation": "Multiply the inner decoded string by the number count accumulated."
+      },
+      {
+        "line": "elif char == ']': return ''.join(res), i",
+        "explanation": "On encountering ']', return the accumulated string and the current index pointer to the parent caller."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "num = num * 10 + (c - '0');",
+        "explanation": "Assemble multi-digit numbers."
+      },
+      {
+        "line": "string decoded = self(self);",
+        "explanation": "Recurse on nested subproblems inside brackets."
+      },
+      {
+        "line": "return res;",
+        "explanation": "Return current string block when closing bracket is reached."
+      }
+    ],
+    "timeComplexity": "O(N) - We visit each character in the string of size N exactly once.",
+    "spaceComplexity": "O(N) - Call stack depth is proportional to the number of nested brackets.",
+    "dryRun": [
+      "Input: s = '3[a]2[bc]'",
+      "idx = 0: num = 3. idx = 1: '[' -> calls recurse. idx = 2: 'a'. idx = 3: ']' -> returns 'a'.",
+      "Pasted: 3 * 'a' = 'aaa'. num reset. idx = 4: num = 2. idx = 5: '[' -> calls recurse.",
+      "Inner: 'bc' -> ']' -> returns 'bc'. Pasted: 2 * 'bc' = 'bcbc'.",
+      "Result: 'aaabcbc'"
+    ],
+    "edgeCases": [
+      "Nested brackets (e.g., 3[a2[c]])",
+      "Empty brackets (e.g. 3[])",
+      "Strings without digits"
+    ],
+    "followUps": [
+      "Can you solve it iteratively? (Yes, using two stacks: one for numbers, one for strings)"
+    ],
+    "relatedProblems": [
+      "Decode Ways",
+      "Number of Atoms"
+    ],
+    "visualization": "s = '3[a2[c]]'\n  DFS Level 1: num=3 -> '[' -> call DFS Level 2\n  DFS Level 2: string='a', num=2 -> '[' -> call DFS Level 3\n  DFS Level 3: string='c' -> ']' -> returns 'c' -> Level 2 builds 'a' + 2*'c' = 'acc' -> returns 'acc'\n  Level 1 builds 3 * 'acc' = 'accaccacc'",
+    "commonMistakes": [
+      "Not resetting the multiplier variable `num` to 0 after popping bracket results, repeating multipliers incorrectly."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "recursion_7",
+    "title": "Special Binary String",
+    "statement": "Special binary strings are binary strings that satisfy: 1. The number of 0's is equal to the number of 1's. 2. Every prefix of the binary string has at least as many 1's as 0's. You can swap two consecutive, non-empty, special substrings. Return the lexicographically largest resulting string.",
+    "difficulty": "Hard",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Amazon"
+    ],
+    "pattern": "Sub-Segment Split Recursion & Sorting",
+    "bruteForce": {
+      "description": "Generate all possible swap combinations of substrings recursively. (Extremely slow).",
+      "timeComplexity": "O(N!)",
+      "spaceComplexity": "O(N)"
+    },
+    "optimized": {
+      "description": "Every special string must start with '1' and end with '0'. Split the string into its independent outer special sub-strings. Recursively solve each inner substring `s[1:-1]`, wrap them back in `'1' + solved_inner + '0'`, sort them in descending order (greedy choice), and join them.",
+      "timeComplexity": "O(N^2) sorting steps",
+      "spaceComplexity": "O(N) stack"
+    },
+    "pythonCode": "def makeSpecial(s):\n    count = 0\n    i = 0\n    res = []\n    for j, char in enumerate(s):\n        count += 1 if char == '1' else -1\n        if count == 0:\n            # Split found. Recurse on inner portion s[i+1:j]\n            res.append('1' + makeSpecial(s[i + 1:j]) + '0')\n            i = j + 1\n            \n    # Sort sub-segments in descending order to maximize value\n    res.sort(reverse=True)\n    return ''.join(res)",
+    "cppCode": "string makeSpecial(string s) {\n    int count = 0, i = 0;\n    vector<string> res;\n    for (int j = 0; j < s.size(); ++j) {\n        count += (s[j] == '1') ? 1 : -1;\n        if (count == 0) {\n            res.push_back(\"1\" + makeSpecial(s.substr(i + 1, j - i - 1)) + \"0\");\n            i = j + 1;\n        }\n    }\n    sort(res.begin(), res.end(), greater<string>());\n    string ans = \"\";\n    for (string& str : res) ans += str;\n    return ans;\n}",
+    "pythonExplanation": [
+      {
+        "line": "count += 1 if char == '1' else -1",
+        "explanation": "Maintain balance: +1 for 1, -1 for 0."
+      },
+      {
+        "line": "if count == 0:",
+        "explanation": "When count reaches 0, we found a closed special substring segment."
+      },
+      {
+        "line": "res.append('1' + makeSpecial(s[i + 1:j]) + '0')",
+        "explanation": "Recursively process the inner portion of the special string, and wrap it back in 1 and 0."
+      },
+      {
+        "line": "res.sort(reverse=True)",
+        "explanation": "Sort the special substrings in descending lexicographical order (greedy choice to maximize value)."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "count += (s[j] == '1') ? 1 : -1;",
+        "explanation": "Maintain prefix balance counts."
+      },
+      {
+        "line": "res.push_back(\"1\" + makeSpecial(s.substr(i + 1, j - i - 1)) + \"0\");",
+        "explanation": "Extract, recurse and wrap nested components."
+      },
+      {
+        "line": "sort(res.begin(), res.end(), greater<string>());",
+        "explanation": "Sort substrings in descending order to form lexicographically largest representation."
+      }
+    ],
+    "timeComplexity": "O(N^2) - Substring splitting and recursive calls on string lengths, plus sorting step per recursion layer.",
+    "spaceComplexity": "O(N) - Memory to store sub-segments and stack frames.",
+    "dryRun": [
+      "Input: s = '11011000' (split: '1' + '101100' + '0')",
+      "Inner: '101100' split: '10' ('1'+''+'0') and '1100' ('1'+'10'+'0').",
+      "Recursions sort: '1100' > '10'. Join -> '110010'.",
+      "Outermost returns '1' + '110010' + '0' = '11100100'."
+    ],
+    "edgeCases": [
+      "Single special string (cannot be partitioned further)",
+      "Empty string"
+    ],
+    "followUps": [
+      "Can you explain connection to parentheses matching? (Yes, 1 represents '(' and 0 represents ')'. Special binary strings are valid parentheses listings. The problem is equivalent to finding the lexicographically largest valid parentheses arrangement)"
+    ],
+    "relatedProblems": [
+      "Valid Parentheses",
+      "Remove Invalid Parentheses"
+    ],
+    "visualization": "s = '11011000' (Parentheses: '(( ) ( ( ) ) )')\n  - Sub-segments: '10' and '1100'\n  - Sort: '1100' > '10' -> Swap consecutive blocks\n  - Output: '11100100'",
+    "commonMistakes": [
+      "Not understanding that every special string must start with '1' and end with '0', missing the outer wrapping boundaries."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "recursion_8",
+    "title": "Parse Lisp Expression",
+    "statement": "You are given a string expression representing a Lisp-like expression to return the integer value of. The syntax supports three commands: `let` (variable binding), `add` (addition), and `mult` (multiplication).",
+    "difficulty": "Hard",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Amazon"
+    ],
+    "pattern": "Recursive Tokenizer & Scope Map Stack",
+    "bruteForce": {
+      "description": "Use regex splitting to extract arguments. (Fails due to nested structures).",
+      "timeComplexity": "O(N^2)",
+      "spaceComplexity": "O(N)"
+    },
+    "optimized": {
+      "description": "Use recursion. Maintain a stack of scopes (variable-to-value maps). A helper function `evaluate` parses expressions: 1. If it's a number or variable, return its value from the active scope. 2. Otherwise, tokenize the expression inside parentheses. Identify the command (`let`, `add`, `mult`). Recurse on arguments: `add` returns `arg1 + arg2`, `mult` returns `arg1 * arg2`, and `let` updates the scope map iteratively.",
+      "timeComplexity": "O(N)",
+      "spaceComplexity": "O(N) stack"
+    },
+    "pythonCode": "def evaluate(expression):\n    scope = [{}]\n    \n    def get_val(x):\n        if x[0] in '-0123456789':\n            return int(x)\n        # Lookup in scopes stack from top to bottom\n        for s in reversed(scope):\n            if x in s:\n                return s[x]\n        return 0\n        \n    def parse(s):\n        # Tokenize space-separated items, ignoring inner parentheses\n        res = []\n        buf = []\n        bal = 0\n        for char in s:\n            if char == '(':\n                bal += 1\n            elif char == ')':\n                bal -= 1\n            if char == ' ' and bal == 0:\n                res.append(''.join(buf))\n                buf = []\n            else:\n                buf.append(char)\n        if buf:\n            res.append(''.join(buf))\n        return res\n        \n    def evaluate_inner(expr):\n        if expr[0] != '(':\n            return get_val(expr)\n            \n        # Strip outer parentheses\n        tokens = parse(expr[1:-1])\n        cmd = tokens[0]\n        \n        if cmd == 'add':\n            return evaluate_inner(tokens[1]) + evaluate_inner(tokens[2])\n        elif cmd == 'mult':\n            return evaluate_inner(tokens[1]) * evaluate_inner(tokens[2])\n        else: # let\n            scope.append(dict(scope[-1])) # Push new scope\n            for i in range(1, len(tokens) - 1, 2):\n                var = tokens[i]\n                val_expr = tokens[i + 1]\n                scope[-1][var] = evaluate_inner(val_expr)\n            res = evaluate_inner(tokens[-1])\n            scope.pop() # Pop scope\n            return res\n            \n    return evaluate_inner(expression)",
+    "cppCode": "int evaluate(string expression) {\n    vector<unordered_map<string, int>> scope;\n    scope.push_back({});\n    \n    auto get_val = [&](string x) -> int {\n        if (isdigit(x[0]) || x[0] == '-') return stoi(x);\n        for (auto it = scope.rbegin(); it != scope.rend(); ++it) {\n            if (it->count(x)) return (*it)[x];\n        }\n        return 0;\n    };\n    \n    auto parse = [](string s) -> vector<string> {\n        vector<string> res;\n        string buf = \"\";\n        int bal = 0;\n        for (char c : s) {\n            if (c == '(') bal++;\n            else if (c == ')') bal--;\n            if (c == ' ' && bal == 0) {\n                res.push_back(buf);\n                buf = \"\";\n            } else {\n                buf += c;\n            }\n        }\n        if (!buf.empty()) res.push_back(buf);\n        return res;\n    };\n    \n    auto evaluate_inner = [&](auto& self, string expr) -> int {\n        if (expr[0] != '(') return get_val(expr);\n        \n        // strip brackets\n        vector<string> tokens = parse(expr.substr(1, expr.size() - 2));\n        string cmd = tokens[0];\n        \n        if (cmd == \"add\") {\n            return self(self, tokens[1]) + self(self, tokens[2]);\n        } else if (cmd == \"mult\") {\n            return self(self, tokens[1]) * self(self, tokens[2]);\n        } else { // let\n            scope.push_back(scope.back()); // Push scope\n            for (size_t i = 1; i < tokens.size() - 1; i += 2) {\n                scope.back()[tokens[i]] = self(self, tokens[i+1]);\n            }\n            int res = self(self, tokens.back());\n            scope.pop_back(); // Pop scope\n            return res;\n        }\n    };\n    \n    return evaluate_inner(evaluate_inner, expression);\n}",
+    "pythonExplanation": [
+      {
+        "line": "scope = [{}]",
+        "explanation": "Maintain a scope stack to support variable shadowing in nested let expressions."
+      },
+      {
+        "line": "for char in s:",
+        "explanation": "Custom tokenizer that splits tokens by space while keeping parentheses groupings intact."
+      },
+      {
+        "line": "scope.append(dict(scope[-1]))",
+        "explanation": "Push a copy of the parent scope for the local let bindings."
+      },
+      {
+        "line": "scope.pop()",
+        "explanation": "Pop the scope when exiting the let expression to restore parent bindings."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "vector<unordered_map<string, int>> scope;",
+        "explanation": "Stack of scope maps for variable namespace shadowing."
+      },
+      {
+        "line": "scope.push_back(scope.back());",
+        "explanation": "Push new scope scope as copy of current active scope."
+      },
+      {
+        "line": "scope.pop_back();",
+        "explanation": "Pop local scope variables when returning from block."
+      }
+    ],
+    "timeComplexity": "O(N) - The string expression is parsed, tokenized, and evaluated linearly.",
+    "spaceComplexity": "O(N) - Storage for the stack of scopes and recursion stack.",
+    "dryRun": [
+      "Input: expression = '(let x 2 (add x 3))'",
+      "Tokens: ['let', 'x', '2', '(add x 3)']. Command = 'let'.",
+      "Push scope. Bind: scope['x'] = evaluate('2') = 2.",
+      "Evaluate body: '(add x 3)' -> cmd = 'add'.",
+      "Evaluates 'x' -> lookup scope -> 2. Evaluates '3' -> 3.",
+      "Add: 2 + 3 = 5.",
+      "Pop scope. Returns 5."
+    ],
+    "edgeCases": [
+      "Nested let statements shadowing same variables",
+      "Negative numbers",
+      "Expressions without variables"
+    ],
+    "followUps": [
+      "Can you explain variable shadowing? (Yes, a variable defined in an inner scope obscures the variable with same name in parent scopes)"
+    ],
+    "relatedProblems": [
+      "Basic Calculator",
+      "Parse Ternary Expression"
+    ],
+    "visualization": "(let x 2 (add x 3))   ===> Bind x=2\n                      ===> Evaluate (add x 3) = 2 + 3 = 5\nScope stack manages namespaces cleanly.",
+    "commonMistakes": [
+      "Incorrectly tokenizing nested expressions (e.g. splitting space inside a nested `(add 1 2)` which breaks arguments indices)."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "recursion_9",
+    "title": "Number of Atoms",
+    "statement": "Given a chemical formula representation string, return the count of all atoms. The formula supports nested parentheses and multipliers, e.g., `H2O` or `Mg(OH)2`.",
+    "difficulty": "Hard",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Amazon"
+    ],
+    "pattern": "DFS Parser Stack / Formula Parsing Stack",
+    "bruteForce": {
+      "description": "Use regex matches to find elements and multiply counts in loops. (Fails on nested brackets).",
+      "timeComplexity": "O(N^2)",
+      "spaceComplexity": "O(N)"
+    },
+    "optimized": {
+      "description": "Use recursion or a stack of hash maps. Maintain index pointer `i`. Traverse the formula: if we find an element (starts with uppercase), parse its name and optional count. If `'('`, push a new map to the stack. If `')'`, parse the multiplier after it, pop the top map, multiply all its atoms counts, and add them back to the parent map.",
+      "timeComplexity": "O(N)",
+      "spaceComplexity": "O(N)"
+    },
+    "pythonCode": "import collections\ndef countOfAtoms(formula):\n    n = len(formula)\n    stack = [collections.defaultdict(int)]\n    i = 0\n    \n    while i < n:\n        if formula[i] == '(':\n            stack.append(collections.defaultdict(int))\n            i += 1\n        elif formula[i] == ')':\n            i += 1\n            # Parse multiplier\n            start = i\n            while i < n and formula[i].isdigit():\n                i += 1\n            mult = int(formula[start:i] or 1)\n            \n            # Pop top map and merge with parent\n            top = stack.pop()\n            for elem, val in top.items():\n                stack[-1][elem] += val * mult\n        else:\n            # Parse Element Name\n            start = i\n            i += 1\n            while i < n and formula[i].islower():\n                i += 1\n            elem = formula[start:i]\n            \n            # Parse Element Count\n            start = i\n            while i < n and formula[i].isdigit():\n                i += 1\n            count = int(formula[start:i] or 1)\n            \n            stack[-1][elem] += count\n            \n    # Format output alphabetically\n    res = stack[0]\n    sorted_keys = sorted(res.keys())\n    return ''.join(key + (str(res[key]) if res[key] > 1 else '') for key in sorted_keys)",
+    "cppCode": "string countOfAtoms(string formula) {\n    int n = formula.size();\n    vector<map<string, int>> stack;\n    stack.push_back({});\n    int i = 0;\n    \n    while (i < n) {\n        if (formula[i] == '(') {\n            stack.push_back({});\n            i++;\n        } else if (formula[i] == ')') {\n            i++;\n            int start = i;\n            while (i < n && isdigit(formula[i])) i++;\n            string mult_str = formula.substr(start, i - start);\n            int mult = mult_str.empty() ? 1 : stoi(mult_str);\n            \n            auto top = stack.back();\n            stack.pop_back();\n            for (auto& [elem, count] : top) {\n                stack.back()[elem] += count * mult;\n            }\n        } else {\n            // Element\n            int start = i++;\n            while (i < n && islower(formula[i])) i++;\n            string elem = formula.substr(start, i - start);\n            \n            // Count\n            start = i;\n            while (i < n && isdigit(formula[i])) i++;\n            string count_str = formula.substr(start, i - start);\n            int count = count_str.empty() ? 1 : stoi(count_str);\n            \n            stack.back()[elem] += count;\n        }\n    }\n    \n    string ans = \"\";\n    for (auto& [elem, count] : stack[0]) {\n        ans += elem;\n        if (count > 1) ans += to_string(count);\n    }\n    return ans;\n}",
+    "pythonExplanation": [
+      {
+        "line": "stack = [collections.defaultdict(int)]",
+        "explanation": "Maintain a stack of hash maps to store atom counts at each parenthesis nesting level."
+      },
+      {
+        "line": "mult = int(formula[start:i] or 1)",
+        "explanation": "Read the group multiplier after closing parenthesis. Default is 1 if omitted."
+      },
+      {
+        "line": "stack[-1][elem] += val * mult",
+        "explanation": "Multiply counts of all popped atoms by the multiplier and merge them into the parent scope."
+      },
+      {
+        "line": "sorted(res.keys())",
+        "explanation": "Return the final formatted counts sorted alphabetically."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "vector<map<string, int>> stack;",
+        "explanation": "Use a map inside vector to keep atom names sorted alphabetically naturally."
+      },
+      {
+        "line": "stack.pop_back();",
+        "explanation": "Pop the nested parenthesis scope."
+      },
+      {
+        "line": "ans += elem; if (count > 1) ans += to_string(count);",
+        "explanation": "Build sorted chemical result string omitting count if it equals 1."
+      }
+    ],
+    "timeComplexity": "O(N log N) - N is formula length. Parsing takes O(N). Sorting the output elements alphabetically takes O(U log U) where U is number of unique atoms.",
+    "spaceComplexity": "O(N) - Storage for the stack of maps.",
+    "dryRun": [
+      "Input: formula = 'K4(ON(SO3)2)2'",
+      "1. K:4. stack = [{'K':4}]",
+      "2. '(': push new map. stack = [{'K':4}, {}]",
+      "3. O:1, N:1. stack = [{'K':4}, {'O':1, 'N':1}]",
+      "4. '(': push new map. stack = [{'K':4}, {'O':1, 'N':1}, {}]",
+      "5. S:1, O:3. stack = [{'K':4}, {'O':1, 'N':1}, {'S':1, 'O':3}]",
+      "6. ')2': pop inner. S:1*2=2, O:3*2=6. merge -> stack = [{'K':4}, {'O':7, 'N':1, 'S':2}]",
+      "7. ')2': pop inner. O:14, N:2, S:4. merge -> stack = [{'K':4, 'O':14, 'N':2, 'S':4}]",
+      "Result sorted: 'K4N2O14S4'"
+    ],
+    "edgeCases": [
+      "Parentheses without multipliers (defaults to 1)",
+      "Double digit element names (e.g. He, Mg)",
+      "Formula with large multipliers"
+    ],
+    "followUps": [
+      "Can you write it using actual DFS recursion? (Yes, the stack logic maps directly to recursion stack frames)"
+    ],
+    "relatedProblems": [
+      "Decode String",
+      "Basic Calculator III"
+    ],
+    "visualization": "Formula: Mg(OH)2\n  - Map: {Mg:1}\n  - '(' -> Push Map: {}\n  - O:1, H:1 -> Map: {O:1, H:1}\n  - ')2' -> Pop, multiply by 2 -> {O:2, H:2} -> Merge with parent -> {Mg:1, O:2, H:2}",
+    "commonMistakes": [
+      "Omitting element counts when parsing multi-digit numbers (e.g., parsing H12 as H1 and 2)."
+    ],
+    "whenNotToUse": "None"
+  }
+]

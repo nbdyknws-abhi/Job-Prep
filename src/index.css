@@ -1,0 +1,126 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500;600&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --color-darkbg: #0a0a0f;
+  --color-darkbg-card: #12121e;
+  --color-darkbg-border: #1f1f35;
+  --color-darkbg-hover: #1b1b2f;
+
+  --color-cyber-pink: #ff007f;
+  --color-cyber-cyan: #00f0ff;
+  --color-cyber-purple: #9d00ff;
+  --color-cyber-yellow: #ffea00;
+  --color-cyber-green: #39ff14;
+
+  --font-sans: 'Outfit', 'Inter', 'system-ui', 'sans-serif';
+  --font-mono: 'Fira Code', 'Courier New', 'monospace';
+
+  --animate-fade-in: fade-in 0.25s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+
+  @keyframes fade-in {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+}
+
+@utility glass-panel {
+  background: rgba(18, 18, 30, 0.7);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(31, 31, 53, 0.6);
+}
+
+@utility glass-panel-hover {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  &:hover {
+    background: rgba(27, 27, 47, 0.85);
+    border-color: rgba(0, 240, 255, 0.5);
+    box-shadow: 0 0 15px rgba(0, 240, 255, 0.15);
+  }
+}
+
+@utility neon-text-cyan {
+  text-shadow: 0 0 8px rgba(0, 240, 255, 0.6);
+}
+
+@utility neon-text-pink {
+  text-shadow: 0 0 8px rgba(255, 0, 127, 0.6);
+}
+
+@utility neon-text-purple {
+  text-shadow: 0 0 8px rgba(157, 0, 255, 0.6);
+}
+
+@utility neon-border-cyan {
+  border-color: #00f0ff;
+  box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+}
+
+@utility neon-border-pink {
+  border-color: #ff007f;
+  box-shadow: 0 0 10px rgba(255, 0, 127, 0.3);
+}
+
+html, body {
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
+body {
+  @apply bg-darkbg text-gray-200 antialiased font-sans selection:bg-cyber-pink selection:text-white;
+}
+
+@utility no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #0a0a0f;
+}
+::-webkit-scrollbar-thumb {
+  background: #1f1f35;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #ff007f;
+}
+
+/* Hide default input numbers arrows */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+/* Custom code formatting */
+pre code {
+  font-family: 'Fira Code', 'Courier New', monospace;
+}
+
+@media print {
+  body {
+    background: white !important;
+    color: black !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .print-card {
+    background: white !important;
+    border: 1px solid #ccc !important;
+    color: black !important;
+    page-break-inside: avoid;
+  }
+}

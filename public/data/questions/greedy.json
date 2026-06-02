@@ -1,0 +1,699 @@
+[
+  {
+    "id": "greedy_1",
+    "title": "Assign Cookies",
+    "statement": "Assume you are an awesome parent and want to give your children some cookies. But, you should give each child at most one cookie. Each child `i` has a greed factor `g[i]`, and each cookie `j` has a size `s[j]`. If `s[j] >= g[i]`, we can assign the cookie `j` to child `i`. Maximize the number of content children.",
+    "difficulty": "Easy",
+    "companies": [
+      "Infosys",
+      "TCS",
+      "Amazon"
+    ],
+    "pattern": "Two Pointers Greedy Match",
+    "bruteForce": {
+      "description": "Try all cookie-to-child combinations using recursion or nested loops.",
+      "timeComplexity": "O(N * M)",
+      "spaceComplexity": "O(1)"
+    },
+    "optimized": {
+      "description": "Sort both the children greed factors `g` and cookies sizes `s` arrays. Use two pointers starting from 0: if `s[j] >= g[i]`, we can satisfy the child (advance both pointers). Otherwise, the cookie is too small; advance only the cookie pointer.",
+      "timeComplexity": "O(N log N + M log M)",
+      "spaceComplexity": "O(1)"
+    },
+    "pythonCode": "def findContentChildren(g, s):\n    g.sort()\n    s.sort()\n    i = j = 0\n    while i < len(g) and j < len(s):\n        if s[j] >= g[i]:\n            i += 1 # Child satisfied\n        j += 1     # Try next cookie\n    return i",
+    "cppCode": "int findContentChildren(vector<int>& g, vector<int>& s) {\n    sort(g.begin(), g.end());\n    sort(s.begin(), s.end());\n    int i = 0, j = 0;\n    while (i < g.size() && j < s.size()) {\n        if (s[j] >= g[i]) {\n            i++;\n        }\n        j++;\n    }\n    return i;\n}",
+    "pythonExplanation": [
+      {
+        "line": "g.sort()",
+        "explanation": "Sort greed factors to satisfy least-greedy children first (greedy choice)."
+      },
+      {
+        "line": "s.sort()",
+        "explanation": "Sort cookie sizes to assign the smallest viable cookie to each child."
+      },
+      {
+        "line": "if s[j] >= g[i]: i += 1",
+        "explanation": "If the cookie size matches or exceeds greed, satisfy child and advance pointer."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "sort(g.begin(), g.end());",
+        "explanation": "Sort child greed levels in ascending order."
+      },
+      {
+        "line": "sort(s.begin(), s.end());",
+        "explanation": "Sort cookie sizes in ascending order."
+      },
+      {
+        "line": "if (s[j] >= g[i]) i++;",
+        "explanation": "If cookie satisfies child, count it as completed and step to next child."
+      }
+    ],
+    "timeComplexity": "O(N log N + M log M) - Sorting children array (N) and cookies array (M) dominates the execution time.",
+    "spaceComplexity": "O(1) - Constant auxiliary space is used since we modify inputs in place.",
+    "dryRun": [
+      "Input: g = [1, 2, 3], s = [1, 1]",
+      "Sorted: g = [1, 2, 3], s = [1, 1]",
+      "i = 0, j = 0: s[0]=1 >= g[0]=1 -> Child 0 satisfied! i=1, j=1.",
+      "i = 1, j = 1: s[1]=1 < g[1]=2 -> Too small. Cookie pointer advances. i=1, j=2.",
+      "End loop. Returns 1 satisfied child."
+    ],
+    "edgeCases": [
+      "No cookies available",
+      "No children",
+      "All cookies smaller than all greed factors"
+    ],
+    "followUps": [
+      "Can you solve it in O(N + M) if arrays are already pre-sorted? (Yes, the two-pointer step runs in linear time)"
+    ],
+    "relatedProblems": [
+      "Queue Reconstruction by Height",
+      "Bag of Tokens"
+    ],
+    "visualization": "Greed:   1   2   3\nCookie:  1   1\nMatch:   1 satisfied! -> Next child 2 cannot match cookie 1. Stop.",
+    "commonMistakes": [
+      "Assigning large cookies to children with small greed factors, which wastes larger resources that could satisfy greedier children."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "greedy_2",
+    "title": "Lemonade Change",
+    "statement": "Each lemonade costs $5. Customers stand in a queue to buy one. They can pay with $5, $10, or $20 bills. You must provide the correct change. Determine if you can serve all customers.",
+    "difficulty": "Easy",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Amazon"
+    ],
+    "pattern": "Greedy Change Register",
+    "bruteForce": {
+      "description": "Try all possible combinations of change options using backtracking.",
+      "timeComplexity": "O(2^N)",
+      "spaceComplexity": "O(1)"
+    },
+    "optimized": {
+      "description": "Maintain variables for the count of $5 and $10 bills. When a customer pays with $5: increment $5 count. When paying with $10: decrement $5, increment $10. When paying with $20: greedily try to give one $10 and one $5 first (retains more $5 bills), otherwise give three $5 bills. If at any point counts drop below zero, return false.",
+      "timeComplexity": "O(N)",
+      "spaceComplexity": "O(1)"
+    },
+    "pythonCode": "def lemonadeChange(bills):\n    five = ten = 0\n    for bill in bills:\n        if bill == 5:\n            five += 1\n        elif bill == 10:\n            if not five:\n                return False\n            five -= 1\n            ten += 1\n        else: # bill == 20\n            # Greedy: prefer giving 10+5 over 5+5+5\n            if ten and five:\n                ten -= 1\n                five -= 1\n            elif five >= 3:\n                five -= 3\n            else:\n                return False\n    return True",
+    "cppCode": "bool lemonadeChange(vector<int>& bills) {\n    int five = 0, ten = 0;\n    for (int bill : bills) {\n        if (bill == 5) {\n            five++;\n        } else if (bill == 10) {\n            if (five == 0) return false;\n            five--;\n            ten++;\n        } else {\n            if (ten > 0 && five > 0) {\n                ten--;\n                five--;\n            } else if (five >= 3) {\n                five -= 3;\n            } else {\n                return false;\n            }\n        }\n    }\n    return true;\n}",
+    "pythonExplanation": [
+      {
+        "line": "five = ten = 0",
+        "explanation": "Initialize counts for $5 and $10 bills to 0 (we don't need to count $20 bills since we can't use them as change)."
+      },
+      {
+        "line": "five -= 1; ten += 1",
+        "explanation": "To change $10, we must deduct one $5 bill and add one $10 bill."
+      },
+      {
+        "line": "if ten and five:",
+        "explanation": "Greedy choice: Prefer spending $10 + $5 over three $5 bills because $5 is more versatile."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "int five = 0, ten = 0;",
+        "explanation": "Initialize bill counters."
+      },
+      {
+        "line": "if (ten > 0 && five > 0)",
+        "explanation": "Greedy change choice for $20: use $10 and $5 to preserve $5 bills."
+      }
+    ],
+    "timeComplexity": "O(N) - Single pass through the bills array of size N.",
+    "spaceComplexity": "O(1) - Constant space used for bill count variables.",
+    "dryRun": [
+      "Input: bills = [5, 5, 10, 10, 20]",
+      "Cust 1: pays 5. five = 1.",
+      "Cust 2: pays 5. five = 2.",
+      "Cust 3: pays 10. Change: gives 5. five = 1, ten = 1.",
+      "Cust 4: pays 10. Change: gives 5. five = 0, ten = 2.",
+      "Cust 5: pays 20. Change: needs 15. We have two 10s but no 5. Failure! Returns False."
+    ],
+    "edgeCases": [
+      "All customers pay $5 (returns True)",
+      "Customers pay in increasing bill amounts"
+    ],
+    "followUps": [
+      "Can you explain why $5 bills are more valuable than $10 bills? (Yes, $5 bills can be used to make change for both $10 and $20, whereas $10 bills can only be used for $20)"
+    ],
+    "relatedProblems": [
+      "Task Scheduler",
+      "Gas Station"
+    ],
+    "visualization": "Customer pays 20:\n  Choice A (Greedy): 10 + 5 (Leaves more 5s) -> Prefer this!\n  Choice B: 5 + 5 + 5\n  Keep 5s as they are the only bills that change 10s.",
+    "commonMistakes": [
+      "Giving change for $20 using three $5 bills first, which depletes the $5 register prematurely."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "greedy_3",
+    "title": "Can Place Flowers",
+    "statement": "You have a long flowerbed in which some of the plots are planted, and some are not. However, flowers cannot be planted in adjacent plots. Given an integer array `flowerbed` containing `0`s and `1`s, and an integer `n`, return `true` if `n` new flowers can be planted without violating the rules.",
+    "difficulty": "Easy",
+    "companies": [
+      "Infosys",
+      "Apple",
+      "Google"
+    ],
+    "pattern": "1D Array Adjacent Cell Scan",
+    "bruteForce": {
+      "description": "Backtrack over all empty spots to test placement combinations recursively.",
+      "timeComplexity": "O(2^N)",
+      "spaceComplexity": "O(N)"
+    },
+    "optimized": {
+      "description": "Traverse the flowerbed. For each plot, check if it is empty (`0`) and both its left and right neighboring plots are also empty or out of bounds. If yes, plant a flower there (set value to `1`), decrement `n`, and proceed. If `n <= 0`, return true early.",
+      "timeComplexity": "O(N)",
+      "spaceComplexity": "O(1)"
+    },
+    "pythonCode": "def canPlaceFlowers(flowerbed, n):\n    if n <= 0:\n        return True\n    length = len(flowerbed)\n    for i in range(length):\n        if flowerbed[i] == 0:\n            left_empty = (i == 0) or (flowerbed[i - 1] == 0)\n            right_empty = (i == length - 1) or (flowerbed[i + 1] == 0)\n            if left_empty and right_empty:\n                flowerbed[i] = 1\n                n -= 1\n                if n <= 0:\n                    return True\n    return False",
+    "cppCode": "bool canPlaceFlowers(vector<int>& flowerbed, int n) {\n    if (n <= 0) return true;\n    int length = flowerbed.size();\n    for (int i = 0; i < length; ++i) {\n        if (flowerbed[i] == 0) {\n            bool left_empty = (i == 0 || flowerbed[i - 1] == 0);\n            bool right_empty = (i == length - 1 || flowerbed[i + 1] == 0);\n            if (left_empty && right_empty) {\n                flowerbed[i] = 1;\n                n--;\n                if (n <= 0) return true;\n            }\n        }\n    }\n    return false;\n}",
+    "pythonExplanation": [
+      {
+        "line": "left_empty = (i == 0) or (flowerbed[i - 1] == 0)",
+        "explanation": "Check if left neighbor is empty. If i is 0, the left boundary counts as empty."
+      },
+      {
+        "line": "flowerbed[i] = 1",
+        "explanation": "Greedily plant flower immediately at first valid spot to maximize placements."
+      },
+      {
+        "line": "if n <= 0: return True",
+        "explanation": "Short-circuit return True if all requested flowers are successfully planted."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "bool left_empty = (i == 0 || flowerbed[i - 1] == 0);",
+        "explanation": "Treat left array index boundary as empty space."
+      },
+      {
+        "line": "flowerbed[i] = 1;",
+        "explanation": "Mark current cell as planted to prevent adjacent placements in subsequent iterations."
+      }
+    ],
+    "timeComplexity": "O(N) - Single pass traversing the flowerbed array of size N.",
+    "spaceComplexity": "O(1) - Placements are checked in-place with no extra space allocated.",
+    "dryRun": [
+      "Input: flowerbed = [1, 0, 0, 0, 1], n = 1",
+      "i = 0: val = 1 (occupied).",
+      "i = 1: val = 0. Left is 1 (occupied).",
+      "i = 2: val = 0. Left is 0, Right is 0. Satisfied! Plant flower: flowerbed[2]=1. n = 0.",
+      "n <= 0 -> returns True."
+    ],
+    "edgeCases": [
+      "n = 0 (always returns True)",
+      "Flowerbed containing all zeros",
+      "Flowerbed with size 1"
+    ],
+    "followUps": [
+      "Can you solve it without modifying the input array? (Yes, by tracking the index of last planted flower in a variable)"
+    ],
+    "relatedProblems": [
+      "Teemo Attacking",
+      "Asteroid Collision"
+    ],
+    "visualization": "Flowerbed: [ 1,  0,  0,  0,  1 ]\n  Index 2:     ^   Left is empty (index 1), Right is empty (index 3) -> Plant! \n  Updated:   [ 1,  0,  1,  0,  1 ]",
+    "commonMistakes": [
+      "Out-of-bounds index exceptions when checking `flowerbed[i-1]` or `flowerbed[i+1]` without checking boundary conditions."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "greedy_4",
+    "title": "Jump Game",
+    "statement": "You are given an integer array `nums`. You are initially positioned at the array's first index, and each element in the array represents your maximum jump length at that position. Determine if you can reach the last index.",
+    "difficulty": "Medium",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Amazon"
+    ],
+    "pattern": "Backward Goal Post Movement",
+    "bruteForce": {
+      "description": "Use recursion with backtracking to check all jump path branches. (O(2^N) time).",
+      "timeComplexity": "O(2^N)",
+      "spaceComplexity": "O(N)"
+    },
+    "optimized": {
+      "description": "Set the target `goal` as the last index of the array (`len(nums) - 1`). Loop backwards from the second-to-last index to 0: if `i + nums[i] >= goal`, we can reach the current goal from index `i`. Therefore, shift the `goal` post leftwards to index `i`. At the end, return true if `goal == 0`.",
+      "timeComplexity": "O(N)",
+      "spaceComplexity": "O(1)"
+    },
+    "pythonCode": "def canJump(nums):\n    goal = len(nums) - 1\n    for i in range(len(nums) - 2, -1, -1):\n        if i + nums[i] >= goal:\n            goal = i\n    return goal == 0",
+    "cppCode": "bool canJump(vector<int>& nums) {\n    int goal = nums.size() - 1;\n    for (int i = nums.size() - 2; i >= 0; --i) {\n        if (i + nums[i] >= goal) {\n            goal = i;\n        }\n    }\n    return goal == 0;\n}",
+    "pythonExplanation": [
+      {
+        "line": "goal = len(nums) - 1",
+        "explanation": "Set initial goal post at the destination index."
+      },
+      {
+        "line": "if i + nums[i] >= goal: goal = i",
+        "explanation": "If we can leap to the goal from index i, update goal to i. We now only need to find a path to index i."
+      },
+      {
+        "line": "return goal == 0",
+        "explanation": "If the goal post was successfully shifted back to the start index (0), then a valid path exists."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "int goal = nums.size() - 1;",
+        "explanation": "Seed goal post at the last index."
+      },
+      {
+        "line": "if (i + nums[i] >= goal) goal = i;",
+        "explanation": "Shift goal post left if index i can leap to it."
+      }
+    ],
+    "timeComplexity": "O(N) - We iterate backwards through the array of size N exactly once.",
+    "spaceComplexity": "O(1) - Only a single variable `goal` is maintained.",
+    "dryRun": [
+      "Input: nums = [2, 3, 1, 1, 4]",
+      "Initial: goal = 4.",
+      "i = 3: index 3 + jump 1 = 4 >= goal(4) -> goal = 3.",
+      "i = 2: index 2 + jump 1 = 3 >= goal(3) -> goal = 2.",
+      "i = 1: index 1 + jump 3 = 4 >= goal(2) -> goal = 1.",
+      "i = 0: index 0 + jump 2 = 2 >= goal(1) -> goal = 0.",
+      "Result: goal == 0 -> True"
+    ],
+    "edgeCases": [
+      "Array contains zeros (can block path)",
+      "Single element array (always returns True)",
+      "Max jump lengths are large"
+    ],
+    "followUps": [
+      "Can you return the minimum number of jumps to reach the end? (Jump Game II, solved in O(N) using BFS-style greedy window)"
+    ],
+    "relatedProblems": [
+      "Jump Game II",
+      "Jump Game III"
+    ],
+    "visualization": "nums = [ 2,  3,  1,  1,  4 ]\n                               ^  Initial Goal = 4\n                       ^  3+1=4 >= 4 -> Goal = 3\n                   ^  2+1=3 >= 3 -> Goal = 2\n               ^  1+3=4 >= 2 -> Goal = 1\n           ^  0+2=2 >= 1 -> Goal = 0 (Success!)",
+    "commonMistakes": [
+      "Using a forward DP approach (O(N^2) time) when a simple backward greedy sweep is O(N)."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "greedy_5",
+    "title": "Gas Station",
+    "statement": "There are `n` gas stations along a circular route, where the amount of gas at the `i`th station is `gas[i]`. You have a car with an unlimited gas tank and it costs `cost[i]` of gas to travel from the `i`th station to its next `(i + 1)`th station. Return the starting gas station's index if you can travel around the circuit once, otherwise return -1.",
+    "difficulty": "Medium",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Amazon"
+    ],
+    "pattern": "Running Deficit Tracking",
+    "bruteForce": {
+      "description": "Test all starting indices sequentially, simulating the trip with loops.",
+      "timeComplexity": "O(N^2)",
+      "spaceComplexity": "O(1)"
+    },
+    "optimized": {
+      "description": "First, check if `sum(gas) < sum(cost)`. If so, a solution is mathematically impossible; return -1. Otherwise, a solution must exist. Initialize `start = 0` and `total = 0`. Iterate: add `gas[i] - cost[i]` to `total`. If `total < 0` at any point, reset `total = 0` and set the next index `i + 1` as the new candidate `start`.",
+      "timeComplexity": "O(N)",
+      "spaceComplexity": "O(1)"
+    },
+    "pythonCode": "def canCompleteCircuit(gas, cost):\n    if sum(gas) < sum(cost):\n        return -1\n        \n    start = 0\n    total = 0\n    for i in range(len(gas)):\n        total += gas[i] - cost[i]\n        if total < 0:\n            # Reset fuel and candidate starting point\n            total = 0\n            start = i + 1\n            \n    return start",
+    "cppCode": "int canCompleteCircuit(vector<int>& gas, vector<int>& cost) {\n    int sum_gas = 0, sum_cost = 0;\n    for (int g : gas) sum_gas += g;\n    for (int c : cost) sum_cost += c;\n    if (sum_gas < sum_cost) return -1;\n    \n    int start = 0;\n    int total = 0;\n    for (int i = 0; i < gas.size(); ++i) {\n        total += gas[i] - cost[i];\n        if (total < 0) {\n            total = 0;\n            start = i + 1;\n        }\n    }\n    return start;\n}",
+    "pythonExplanation": [
+      {
+        "line": "if sum(gas) < sum(cost): return -1",
+        "explanation": "If total gas is less than total cost, traveling around the circuit is impossible. Return -1."
+      },
+      {
+        "line": "total += gas[i] - cost[i]",
+        "explanation": "Accumulate running gas balance during the journey."
+      },
+      {
+        "line": "if total < 0:",
+        "explanation": "If gas drops below zero, the current start candidate is invalid. We cannot pass index i."
+      },
+      {
+        "line": "start = i + 1",
+        "explanation": "Set candidate start index to the next station (since all indices between previous start and i are invalid)."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "if (sum_gas < sum_cost) return -1;",
+        "explanation": "Verify total fuel suffices to complete the entire route loop."
+      },
+      {
+        "line": "total += gas[i] - cost[i];",
+        "explanation": "Calculate gas tank balance after traveling to the next station."
+      },
+      {
+        "line": "if (total < 0)",
+        "explanation": "If tank is empty, reset candidate starting position to i+1."
+      }
+    ],
+    "timeComplexity": "O(N) - We perform a linear sum check and a single pass loop over N stations.",
+    "spaceComplexity": "O(1) - Only a few tracking variables (`start`, `total`) are used.",
+    "dryRun": [
+      "Input: gas = [1, 2, 3, 4, 5], cost = [3, 4, 5, 1, 2]",
+      "Total gas = 15, Total cost = 15. Path is guaranteed to exist.",
+      "i = 0: gas-cost = -2. total = -2 < 0. Reset: total=0, start=1.",
+      "i = 1: gas-cost = -2. total = -2 < 0. Reset: total=0, start=2.",
+      "i = 2: gas-cost = -2. total = -2 < 0. Reset: total=0, start=3.",
+      "i = 3: gas-cost = +3. total = 3. start=3.",
+      "i = 4: gas-cost = +3. total = 6. start=3.",
+      "Result: start = 3."
+    ],
+    "edgeCases": [
+      "No solution exists (returns -1)",
+      "Unique matching station at the very end of list",
+      "All stations have same gas and cost"
+    ],
+    "followUps": [
+      "Can you explain why the next starting point must be exactly `i + 1` if a candidate fails at `i`? (Yes, because any station between the previous start and `i` would accumulate even less gas, so they are guaranteed to fail as well)"
+    ],
+    "relatedProblems": [
+      "Jump Game",
+      "Gas Station II"
+    ],
+    "visualization": "Diffs:  [ -2,  -2,  -2,  +3,  +3 ]\n  Index 0,1,2 cannot be start due to negative balances.\n  Start at index 3 -> balance goes +3 -> +6 -> wraps to 0 -> completes loop!",
+    "commonMistakes": [
+      "Not verifying the global sum condition first, which can cause out-of-bounds indices if `start = i + 1` reaches `N` when no solution exists."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "greedy_6",
+    "title": "Partition Labels",
+    "statement": "You are given a string `s`. We want to partition the string into as many parts as possible so that each letter appears in at most one part. Return a list of integers representing the size of these parts.",
+    "difficulty": "Medium",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Amazon"
+    ],
+    "pattern": "HashMap Last Index Tracker",
+    "bruteForce": {
+      "description": "Check all substrings combinations and count unique letters to split them.",
+      "timeComplexity": "O(N^2)",
+      "spaceComplexity": "O(N)"
+    },
+    "optimized": {
+      "description": "First, record the last occurrence index of each character in a hash map. Maintain two pointers: `start` and `end` (both initialized to 0). Traverse the string: for each character, update `end = max(end, last_seen[char])`. When the index `i` reaches `end`, a partition is complete. Add `end - start + 1` to results, and update `start = i + 1`.",
+      "timeComplexity": "O(N)",
+      "spaceComplexity": "O(26) = O(1)"
+    },
+    "pythonCode": "def partitionLabels(s):\n    # Record last occurrence of each char\n    last_idx = {char: i for i, char in enumerate(s)}\n    \n    res = []\n    start = end = 0\n    for i, char in enumerate(s):\n        end = max(end, last_idx[char])\n        if i == end:\n            res.append(end - start + 1)\n            start = i + 1\n    return res",
+    "cppCode": "vector<int> partitionLabels(string s) {\n    vector<int> last_idx(26, 0);\n    for (int i = 0; i < s.size(); ++i) {\n        last_idx[s[i] - 'a'] = i;\n    }\n    vector<int> res;\n    int start = 0, end = 0;\n    for (int i = 0; i < s.size(); ++i) {\n        end = max(end, last_idx[s[i] - 'a']);\n        if (i == end) {\n            res.push_back(end - start + 1);\n            start = i + 1;\n        }\n    }\n    return res;\n}",
+    "pythonExplanation": [
+      {
+        "line": "last_idx = {char: i for i, char in enumerate(s)}",
+        "explanation": "Precompute the last index of all characters in the string."
+      },
+      {
+        "line": "end = max(end, last_idx[char])",
+        "explanation": "Extend the boundary of the partition to include the last occurrence of the current character."
+      },
+      {
+        "line": "if i == end:",
+        "explanation": "If the current index matches the furthest boundary, the partition contains all its letters exclusively. Cut it here."
+      },
+      {
+        "line": "start = i + 1",
+        "explanation": "Set the start of the next partition immediately after the cut."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "last_idx[s[i] - 'a'] = i;",
+        "explanation": "Populate frequency/index array of size 26 with last seen indices."
+      },
+      {
+        "line": "end = max(end, last_idx[s[i] - 'a']);",
+        "explanation": "Extend the partition segment to cover the last instance of any character within the partition."
+      },
+      {
+        "line": "if (i == end)",
+        "explanation": "When the loop index catches up to the furthest boundary, partition segment is isolated."
+      }
+    ],
+    "timeComplexity": "O(N) - Two passes through the string of size N (one to populate the map, one to partition).",
+    "spaceComplexity": "O(1) - The extra space is bounded by the alphabet size (26 characters).",
+    "dryRun": [
+      "Input: s = 'ababcbacadefegdehihj' ('ababcbaca' + 'defegde' + 'hijh')",
+      "last_idx = {'a': 8, 'b': 5, 'c': 7, ...}",
+      "i = 0: char='a'. end = max(0, last_idx[a]=8) = 8.",
+      "i = 1 to 7: updates end with last indices (none exceed 8).",
+      "i = 8: i == end (8 == 8) -> partition size = 8-0+1 = 9. res = [9]. start = 9.",
+      "Processes remaining segments next. Returns [9, 7, 4]."
+    ],
+    "edgeCases": [
+      "String with all unique characters (returns list of size 1s)",
+      "String with no possible partitions (returns single size N)"
+    ],
+    "followUps": [
+      "Can you solve it in a single pass? (No, since we must know the last indices of future letters to make greedy decisions)"
+    ],
+    "relatedProblems": [
+      "Merge Intervals",
+      "Insert Interval"
+    ],
+    "visualization": "s = 'a b a b c b a c a d e f e g d e'\n    |<--- Part 1 --->| |<--- Part 2 --->|\n     last occurrences of a,b,c are <= 8. Cut at 8 -> Size = 9",
+    "commonMistakes": [
+      "Incrementing the partition counts incorrectly or using a full hash map when a fixed array of size 26 is faster."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "greedy_7",
+    "title": "Candy Greedy",
+    "statement": "There are `n` children standing in a line. Each child is assigned a rating value. You must give candies to these children subjected to: 1. Each child must have at least one candy. 2. Children with a higher rating get more candies than their neighbors. Return the minimum candies required.",
+    "difficulty": "Hard",
+    "companies": [
+      "Infosys",
+      "Amazon",
+      "Google"
+    ],
+    "pattern": "Two-Pass Greedy Sweep",
+    "bruteForce": {
+      "description": "Use recursion or backtracking to try all candy configurations. (O(2^N) time).",
+      "timeComplexity": "O(2^N)",
+      "spaceComplexity": "O(N)"
+    },
+    "optimized": {
+      "description": "Perform two greedy sweeps. Left-to-right pass: if rating is higher than left neighbor, set candies to `left_candies + 1`. Right-to-left pass: if rating is higher than right neighbor, set candies to `max(current_candies, right_candies + 1)`.",
+      "timeComplexity": "O(N)",
+      "spaceComplexity": "O(N)"
+    },
+    "pythonCode": "def candy(ratings):\n    n = len(ratings)\n    candies = [1] * n\n    for i in range(1, n):\n        if ratings[i] > ratings[i-1]:\n            candies[i] = candies[i-1] + 1\n    for i in range(n-2, -1, -1):\n        if ratings[i] > ratings[i+1]:\n            candies[i] = max(candies[i], candies[i+1] + 1)\n    return sum(candies)",
+    "cppCode": "int candy(vector<int>& ratings) {\n    int n = ratings.size();\n    vector<int> candies(n, 1);\n    for (int i = 1; i < n; ++i) {\n        if (ratings[i] > ratings[i-1]) candies[i] = candies[i-1] + 1;\n    }\n    for (int i = n - 2; i >= 0; --i) {\n        if (ratings[i] > ratings[i+1]) candies[i] = max(candies[i], candies[i+1] + 1);\n    }\n    int sum = 0; for(int c : candies) sum += c; return sum;\n}",
+    "pythonExplanation": [
+      {
+        "line": "for i in range(1, n):",
+        "explanation": "Forward pass to satisfy left neighbor constraint."
+      },
+      {
+        "line": "for i in range(n-2, -1, -1):",
+        "explanation": "Backward pass to satisfy right neighbor constraint while preserving left conditions."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "for (int i = 1; i < n; ++i)",
+        "explanation": "Left to right check."
+      },
+      {
+        "line": "candies[i] = max(candies[i], candies[i+1] + 1);",
+        "explanation": "Preserve left condition while checking right."
+      }
+    ],
+    "timeComplexity": "O(N) - Two passes of length N.",
+    "spaceComplexity": "O(N) - Array to store candies for each child.",
+    "dryRun": [
+      "Input: [1, 2, 2]",
+      "Forward pass: [1, 2, 1]",
+      "Backward pass: [1, 2, 1] (No changes since ratings are equal at the end)",
+      "Sum: 4"
+    ],
+    "edgeCases": [
+      "Array with repeating numbers"
+    ],
+    "followUps": [
+      "O(1) space peak tracking?"
+    ],
+    "relatedProblems": [
+      "Trapping Rain Water"
+    ],
+    "visualization": "Ratings: [ 1, 2, 2 ] -> candies: [1, 2, 1] -> sum = 4",
+    "commonMistakes": [
+      "Using set formulas that don't verify peak heights properly."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "greedy_8",
+    "title": "Course Schedule III",
+    "statement": "There are `n` courses, where `courses[i] = [duration_i, lastDay_i]`. You want to take as many courses as possible. You must start at 1st day. Return the maximum number of courses you can take.",
+    "difficulty": "Hard",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Amazon"
+    ],
+    "pattern": "Greedy Replacement with Max Heap",
+    "bruteForce": {
+      "description": "Try all combinations of courses to find the maximum possible scheduling count. (O(2^N) time).",
+      "timeComplexity": "O(2^N)",
+      "spaceComplexity": "O(N)"
+    },
+    "optimized": {
+      "description": "Sort courses by their deadline `lastDay`. Iterate through courses: add course duration to the running `time`. Also push the course duration to a Max-Heap. If `time > lastDay`, we exceeded the deadline; pop the longest course duration from the heap and subtract it from `time`.",
+      "timeComplexity": "O(N log N)",
+      "spaceComplexity": "O(N) heap space"
+    },
+    "pythonCode": "import heapq\ndef scheduleCourse(courses):\n    # Sort courses by deadline\n    courses.sort(key=lambda x: x[1])\n    max_heap = []\n    time = 0\n    for duration, deadline in courses:\n        time += duration\n        # Python has Min-Heap by default, push negative values for Max-Heap\n        heapq.heappush(max_heap, -duration)\n        if time > deadline:\n            # Swap out the longest course taken so far\n            longest = -heapq.heappop(max_heap)\n            time -= longest\n    return len(max_heap)",
+    "cppCode": "int scheduleCourse(vector<vector<int>>& courses) {\n    // Sort by deadline\n    sort(courses.begin(), courses.end(), [](const vector<int>& a, const vector<int>& b) {\n        return a[1] < b[1];\n    });\n    priority_queue<int> max_heap; // Max-heap on durations\n    int time = 0;\n    for (auto& course : courses) {\n        int duration = course[0];\n        int deadline = course[1];\n        time += duration;\n        max_heap.push(duration);\n        if (time > deadline) {\n            time -= max_heap.top();\n            max_heap.pop();\n        }\n    }\n    return max_heap.size();\n}",
+    "pythonExplanation": [
+      {
+        "line": "courses.sort(key=lambda x: x[1])",
+        "explanation": "Sort courses by deadline to process the most urgent schedules first."
+      },
+      {
+        "line": "heapq.heappush(max_heap, -duration)",
+        "explanation": "Add the course duration to the heap (negate for Max-Heap)."
+      },
+      {
+        "line": "if time > deadline: time -= longest",
+        "explanation": "If current total time exceeds the deadline, swap out the longest course taken to maximize future space."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "sort(courses.begin(), courses.end(), ...);",
+        "explanation": "Sort courses by their end deadlines."
+      },
+      {
+        "line": "time += duration; max_heap.push(duration);",
+        "explanation": "Simulate taking course and save its duration in max heap."
+      },
+      {
+        "line": "if (time > deadline) { time -= max_heap.top(); max_heap.pop(); }",
+        "explanation": "Drop the longest course if the total time exceeds the current deadline limit."
+      }
+    ],
+    "timeComplexity": "O(N log N) - Sorting takes O(N log N). The loop runs N times, and heap push/pop operations take O(log N) time.",
+    "spaceComplexity": "O(N) - Maximum heap size to store course durations.",
+    "dryRun": [
+      "Input: courses = [[100, 200], [200, 1300], [1000, 1250], [2000, 3200]]",
+      "Sorted: [[100, 200], [1000, 1250], [200, 1300], [2000, 3200]]",
+      "Step 1: time=100 <= 200. heap = [100].",
+      "Step 2: time=1100 <= 1250. heap = [1000, 100].",
+      "Step 3: time=1300 > 1300. (exceeds!). heap=[1000,200,100]. Pop max (1000). time=1300-1000=300. heap=[200,100].",
+      "Step 4: time=2300 <= 3200. heap = [2000, 200, 100].",
+      "Result: heap size = 3."
+    ],
+    "edgeCases": [
+      "Course duration exceeds its own deadline (always skipped)",
+      "All courses fit",
+      "Duplicate deadlines"
+    ],
+    "followUps": [
+      "Can you explain why we swap out the longest course? (Yes, because dropping the longest course gives us the largest possible time reduction, maximizing the chances of fitting subsequent courses without reducing our count)"
+    ],
+    "relatedProblems": [
+      "Course Schedule",
+      "Course Schedule II"
+    ],
+    "visualization": "Sorted deadlines:  [ [100,200], [1000,1250], [200,1300], [2000,3200] ]\n  - At 1300, time = 1300 (exceeds deadline 1300)\n  - Drop the 1000-day course -> time reduces to 300! Keeps count stable.",
+    "commonMistakes": [
+      "Sorting by duration instead of deadline. The deadlines dictate urgency, which is the correct greedy sorting key."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "greedy_9",
+    "title": "Patching Array",
+    "statement": "Given a sorted integer array `nums` and an integer `n`, add/patch elements to the array such that any number in the range `[1, n]` inclusive can be formed by the sum of some elements in the array. Return the minimum number of patches required.",
+    "difficulty": "Hard",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Amazon"
+    ],
+    "pattern": "Greedy Range Upper Bound Doubling",
+    "bruteForce": {
+      "description": "Test all combinations of subset sums using recursive verification up to N. (Extremely slow).",
+      "timeComplexity": "O(2^N)",
+      "spaceComplexity": "O(1)"
+    },
+    "optimized": {
+      "description": "Maintain a variable `miss` which represents the smallest number we cannot form yet (initially 1). Loop: if `nums[i] <= miss`, we can expand our range of formable numbers to `[1, miss + nums[i] - 1]`, so update `miss += nums[i]`. Otherwise, we must patch `miss` into the array, which doubles our reach to `miss += miss`. Count the patch.",
+      "timeComplexity": "O(N)",
+      "spaceComplexity": "O(1)"
+    },
+    "pythonCode": "def minPatches(nums, n):\n    patches = 0\n    miss = 1\n    i = 0\n    while miss <= n:\n        if i < len(nums) and nums[i] <= miss:\n            miss += nums[i]\n            i += 1\n        else:\n            # Patch the missing number, doubling our reach\n            miss += miss\n            patches += 1\n    return patches",
+    "cppCode": "int minPatches(vector<int>& nums, int n) {\n    int patches = 0;\n    long long miss = 1;\n    int i = 0;\n    while (miss <= n) {\n        if (i < nums.size() && nums[i] <= miss) {\n            miss += nums[i++];\n        } else {\n            miss += miss;\n            patches++;\n        }\n    }\n    return patches;\n}",
+    "pythonExplanation": [
+      {
+        "line": "miss = 1",
+        "explanation": "Start by verifying if we can form 1 (the smallest positive number)."
+      },
+      {
+        "line": "miss += nums[i]",
+        "explanation": "If nums[i] is smaller than or equal to miss, we can extend our range to include all sums up to miss + nums[i] - 1."
+      },
+      {
+        "line": "miss += miss",
+        "explanation": "If we cannot form miss, we must patch it. Patching miss extends our reach by miss units (doubling the range)."
+      },
+      {
+        "line": "patches += 1",
+        "explanation": "Increment the patch count variable."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "long long miss = 1;",
+        "explanation": "Use long long to prevent integer overflow when doubling large ranges near n."
+      },
+      {
+        "line": "miss += nums[i++];",
+        "explanation": "Expand reach range using existing array numbers."
+      },
+      {
+        "line": "miss += miss; patches++;",
+        "explanation": "Patch the missing number greedily, doubling our reach capability."
+      }
+    ],
+    "timeComplexity": "O(M + log N) - M is number of elements in nums. The doubling step runs at most O(log N) times.",
+    "spaceComplexity": "O(1) - Constant auxiliary space is used.",
+    "dryRun": [
+      "Input: nums = [1, 3], n = 6",
+      "miss = 1. nums[0] = 1 <= 1 -> miss = 1 + 1 = 2.",
+      "miss = 2. nums[1] = 3 > 2 (gap!). Must patch 2 -> miss = 2 + 2 = 4. patches = 1.",
+      "miss = 4. nums[1] = 3 <= 4 -> miss = 4 + 3 = 7.",
+      "miss = 7 > 6 -> Loop ends. Patches = 1."
+    ],
+    "edgeCases": [
+      "Empty array nums",
+      "n is smaller than first element",
+      "No patches required"
+    ],
+    "followUps": [
+      "Can you explain why we patch exactly `miss`? (Yes, because patching any number smaller than `miss` would not cover the gap at `miss`, and patching any number larger would leave `miss` unformable)"
+    ],
+    "relatedProblems": [
+      "First Missing Positive",
+      "Combination Sum"
+    ],
+    "visualization": "nums = [ 1,  3 ], n = 6\n  - Range reachable: [1, 1]\n  - Need 2: patch 2 -> Range becomes [1, 3]\n  - Next is 3: add -> Range becomes [1, 6] (Covers all up to 6!)\n  Patches = 1 (we added 2)",
+    "commonMistakes": [
+      "Using standard integer type for `miss`, which causes infinite loops or incorrect results due to overflow at large N (like 2^31 - 1). Use `long long` in C++."
+    ],
+    "whenNotToUse": "None"
+  }
+]

@@ -1,0 +1,685 @@
+[
+  {
+    "id": "stack_1",
+    "title": "Valid Parentheses",
+    "statement": "Given a string `s` containing just the characters '(', ')', '{', '}', '[' and ']', determine if the input string is valid.",
+    "difficulty": "Easy",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Amazon"
+    ],
+    "pattern": "Stack Matching / Complement Mapping",
+    "bruteForce": {
+      "description": "Repeatedly search for and replace adjacent matching pairs (like '()', '{}', '[]') with an empty string until the string stops changing or becomes empty.",
+      "timeComplexity": "O(N^2)",
+      "spaceComplexity": "O(1)"
+    },
+    "optimized": {
+      "description": "Use a Stack. Iterate through the string character by character. If it is an opening bracket, push it onto the stack. If it is a closing bracket, check if the stack is empty or if the top of the stack matches its opening counterpart. If yes, pop it; otherwise, the string is invalid. At the end, if the stack is empty, return True.",
+      "timeComplexity": "O(N)",
+      "spaceComplexity": "O(N)"
+    },
+    "pythonCode": "def isValid(s):\n    m = {')': '(', '}': '{', ']': '['}\n    st = []\n    for c in s:\n        if c in m:\n            if not st or st.pop() != m[c]:\n                return False\n        else:\n            st.append(c)\n    return not st",
+    "cppCode": "bool isValid(string s) {\n    stack<char> st;\n    for (char c : s) {\n        if (c == '(' || c == '{' || c == '[') {\n            st.push(c);\n        } else {\n            if (st.empty()) return false;\n            if (c == ')' && st.top() != '(') return false;\n            if (c == '}' && st.top() != '{') return false;\n            if (c == ']' && st.top() != '[') return false;\n            st.pop();\n        }\n    }\n    return st.empty();\n}",
+    "pythonExplanation": [
+      {
+        "line": "m = {')': '(', ...}",
+        "explanation": "Define matching complement mappings for closing brackets to opening ones."
+      },
+      {
+        "line": "if c in m:",
+        "explanation": "If the character is a closing bracket (exists in our map keys)."
+      },
+      {
+        "line": "if not st or st.pop() != m[c]:",
+        "explanation": "Check if stack is empty (no opening bracket exists) or if popped item fails to match complement."
+      },
+      {
+        "line": "st.append(c)",
+        "explanation": "If it is an opening bracket, push it onto the stack."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "stack<char> st;",
+        "explanation": "Initialize a character stack to hold opening brackets."
+      },
+      {
+        "line": "if (c == '(' || c == '{' || c == '[')",
+        "explanation": "Push any opening bracket onto the stack."
+      },
+      {
+        "line": "if (st.empty()) return false;",
+        "explanation": "If stack is empty on meeting a closing bracket, it is invalid."
+      },
+      {
+        "line": "st.pop();",
+        "explanation": "Pop matched opening bracket from top of stack."
+      }
+    ],
+    "timeComplexity": "O(N) - We traverse the string of length N exactly once.",
+    "spaceComplexity": "O(N) - In the worst case, the stack stores all N characters (e.g. '(((...').",
+    "dryRun": [
+      "Input: s = '()[]{}'",
+      "Step 1: c = '('. Push to stack. st = ['(']",
+      "Step 2: c = ')'. Complement is '('. Top of stack is '('. Match! Pop. st = []",
+      "Step 3: c = '['. Push. st = ['[']",
+      "Step 4: c = ']'. Match with '['. Pop. st = []",
+      "Step 5: c = '{'. Push. st = ['{']",
+      "Step 6: c = '}'. Match with '{'. Pop. st = []",
+      "Result: Stack is empty -> True"
+    ],
+    "edgeCases": [
+      "Only closing brackets",
+      "Only opening brackets",
+      "Nested brackets like '({[c]})'",
+      "Empty string"
+    ],
+    "followUps": [
+      "Can you optimize it if string only contains one type of bracket? (Yes, use a counter instead of a stack: O(1) space)"
+    ],
+    "relatedProblems": [
+      "Generate Parentheses",
+      "Minimum Remove to Make Valid Parentheses"
+    ],
+    "visualization": "Stack Behavior:\ns = ' (  [  ]  ) '\nPush '('  ->  [ '(' ]\nPush '['  ->  [ '(', '[' ]\nPop  ']'  ->  [ '(' ]  (Matched '[')\nPop  ')'  ->  [ ]  (Matched '(')",
+    "commonMistakes": [
+      "Popping from stack without checking if it is empty, causing stack-underflow run-time errors."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "stack_2",
+    "title": "Min Stack",
+    "statement": "Design a stack that supports push, pop, top, and retrieving the minimum element in O(1) time.",
+    "difficulty": "Easy",
+    "companies": [
+      "Infosys",
+      "Amazon",
+      "Wipro"
+    ],
+    "pattern": "Dual Stack Minimum Tracking",
+    "bruteForce": {
+      "description": "Iterate through the entire stack elements to find the minimum value whenever getMin() is called.",
+      "timeComplexity": "O(N)",
+      "spaceComplexity": "O(1)"
+    },
+    "optimized": {
+      "description": "Maintain two stacks: a main stack to store all elements, and a min stack that stores the minimum element seen so far at each level of the stack. When pushing `val`, push it to the main stack and push `min(val, min_stack.top())` to the min stack. Pop from both stacks simultaneously.",
+      "timeComplexity": "O(1)",
+      "spaceComplexity": "O(N)"
+    },
+    "pythonCode": "class MinStack:\n    def __init__(self):\n        self.st = []\n        self.min_st = []\n    def push(self, val):\n        self.st.append(val)\n        m = val if not self.min_st else min(val, self.min_st[-1])\n        self.min_st.append(m)\n    def pop(self):\n        self.st.pop()\n        self.min_st.pop()\n    def top(self):\n        return self.st[-1]\n    def getMin(self):\n        return self.min_st[-1]",
+    "cppCode": "class MinStack {\n    stack<int> st;\n    stack<int> min_st;\npublic:\n    void push(int val) {\n        st.push(val);\n        if (min_st.empty() || val <= min_st.top()) {\n            min_st.push(val);\n        } else {\n            min_st.push(min_st.top());\n        }\n    }\n    void pop() {\n        st.pop();\n        min_st.pop();\n    }\n    int top() { return st.top(); }\n    int getMin() { return min_st.top(); }\n};",
+    "pythonExplanation": [
+      {
+        "line": "self.st = []",
+        "explanation": "Main stack to hold all pushed elements."
+      },
+      {
+        "line": "self.min_st = []",
+        "explanation": "Min stack to hold current running minimums."
+      },
+      {
+        "line": "m = val if not self.min_st else min(val, self.min_st[-1])",
+        "explanation": "Calculate current minimum: compare new value with top of min stack."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "stack<int> st; stack<int> min_st;",
+        "explanation": "Define main and minimum tracking stacks."
+      },
+      {
+        "line": "if (min_st.empty() || val <= min_st.top())",
+        "explanation": "Determine if we have a new minimum to push, else push previous min again to align heights."
+      }
+    ],
+    "timeComplexity": "O(1) - All operations (push, pop, top, getMin) take constant time.",
+    "spaceComplexity": "O(N) - Dual stacks store at most N elements each.",
+    "dryRun": [
+      "Steps:",
+      "1. push(-2): st=[-2], min_st=[-2]",
+      "2. push(0): st=[-2, 0], min_st=[-2, -2]",
+      "3. push(-3): st=[-2, 0, -3], min_st=[-2, -2, -3]",
+      "4. getMin() -> top of min_st = -3",
+      "5. pop(): st=[-2, 0], min_st=[-2, -2]",
+      "6. getMin() -> top of min_st = -2"
+    ],
+    "edgeCases": [
+      "Popping from empty stack",
+      "Pushing multiple identical minimum elements (must push them to both stacks to keep sizes aligned)"
+    ],
+    "followUps": [
+      "Can you solve it using a single stack and storing differences? (Yes, push val - min, but code is prone to overflow)"
+    ],
+    "relatedProblems": [
+      "Max Stack",
+      "Implement Queue using Stacks"
+    ],
+    "visualization": "Main Stack: [ -2, 0, -3 ]\nMin Stack : [ -2, -2, -3 ]  <-- Top gives minimum value -3",
+    "commonMistakes": [
+      "Forgetting to pop from min_stack during a main pop() operation, causing stack misalignment."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "stack_3",
+    "title": "Implement Queue using Stacks",
+    "statement": "Implement a first in first out (FIFO) queue using only two stacks. The implemented queue should support all functions of a normal queue (`push`, `peek`, `pop`, and `empty`).",
+    "difficulty": "Easy",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Amazon"
+    ],
+    "pattern": "Dual Stack Amortized Shift",
+    "bruteForce": {
+      "description": "For every push operation, move all elements to stack B, insert new, then move elements back to stack A. (O(N) push).",
+      "timeComplexity": "O(N)",
+      "spaceComplexity": "O(N)"
+    },
+    "optimized": {
+      "description": "Maintain two stacks: `input` and `output`. Pushing always inserts into `input`. For `pop` or `peek` operations: if `output` stack is empty, transfer all elements from `input` to `output` (which reverses the order, changing LIFO to FIFO). Then execute operations from `output` stack. Amortized O(1).",
+      "timeComplexity": "Amortized O(1)",
+      "spaceComplexity": "O(N)"
+    },
+    "pythonCode": "class MyQueue:\n    def __init__(self):\n        self.inp = []\n        self.out = []\n    def push(self, x):\n        self.inp.append(x)\n    def pop(self):\n        self.peek()\n        return self.out.pop()\n    def peek(self):\n        if not self.out:\n            while self.inp:\n                self.out.append(self.inp.pop())\n        return self.out[-1]\n    def empty(self):\n        return not self.inp and not self.out",
+    "cppCode": "class MyQueue {\n    stack<int> inp, out;\n    void shift() {\n        if (out.empty()) {\n            while (!inp.empty()) {\n                out.push(inp.top());\n                inp.pop();\n            }\n        }\n    }\npublic:\n    void push(int x) { inp.push(x); }\n    int pop() {\n        shift();\n        int val = out.top(); out.pop();\n        return val;\n    }\n    int peek() {\n        shift();\n        return out.top();\n    }\n    bool empty() { return inp.empty() && out.empty(); }\n};",
+    "pythonExplanation": [
+      {
+        "line": "self.inp = []",
+        "explanation": "Define input stack where new elements are appended."
+      },
+      {
+        "line": "while self.inp: self.out.append(...)",
+        "explanation": "Transfer loop: pops all elements from input stack and pushes to output stack, reversing their order."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "void shift()",
+        "explanation": "Utility method to transfer input stack elements to output stack lazily."
+      }
+    ],
+    "timeComplexity": "Amortized O(1) - Pushing takes O(1). Popping/peeking may take O(N) when shifting, but each element is shifted at most once, leading to amortized O(1).",
+    "spaceComplexity": "O(N) - Storing N elements in stacks.",
+    "dryRun": [
+      "Steps:",
+      "1. push(1): inp=[1], out=[]",
+      "2. push(2): inp=[1, 2], out=[]",
+      "3. peek(): out is empty -> shift. Pop inp to out -> out=[2, 1], inp=[]. Returns top of out = 1.",
+      "4. pop(): pop from out -> returns 1. out=[2]",
+      "5. empty(): return False since out has [2]"
+    ],
+    "edgeCases": [
+      "Calling pop on empty queue"
+    ],
+    "followUps": [
+      "Can you implement a stack using queues? (Yes, push takes O(N) or pop takes O(N))"
+    ],
+    "relatedProblems": [
+      "Implement Stack using Queues"
+    ],
+    "visualization": "inp: [ 1, 2 ]  --> Pop to out --> out: [ 2, 1 ] (top is 1, correct FIFO!)\nNew pushes go to inp, pops pop from out.",
+    "commonMistakes": [
+      "Shifting elements back and forth on every push operation (highly inefficient)."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "stack_4",
+    "title": "Evaluate Reverse Polish Notation",
+    "statement": "Evaluate the value of an arithmetic expression in Reverse Polish Notation (postfix). Valid operators are `+`, `-`, `*`, and `/`.",
+    "difficulty": "Medium",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Amazon"
+    ],
+    "pattern": "Stack Operand Accumulation",
+    "bruteForce": {
+      "description": "Repeatedly search for 'number number operator' patterns in the list, calculate results, and splice them back in-place.",
+      "timeComplexity": "O(N^2)",
+      "spaceComplexity": "O(1)"
+    },
+    "optimized": {
+      "description": "Iterate through the tokens. If the token is a number, push it onto the stack. If it is an operator, pop the top two numbers from the stack. Notice the order: the first popped is the right operand `b`, and the second is the left operand `a`. Perform the operation (`a op b`) and push the result back onto the stack.",
+      "timeComplexity": "O(N)",
+      "spaceComplexity": "O(N)"
+    },
+    "pythonCode": "def evalRPN(tokens):\n    st = []\n    for t in tokens:\n        if t in '+-*/':\n            b = st.pop()\n            a = st.pop()\n            if t == '+': st.append(a + b)\n            elif t == '-': st.append(a - b)\n            elif t == '*': st.append(a * b)\n            elif t == '/': st.append(int(a / b)) # Truncates towards zero\n        else:\n            st.append(int(t))\n    return st[0]",
+    "cppCode": "int evalRPN(vector<string>& tokens) {\n    stack<int> st;\n    for (string t : tokens) {\n        if (t == \"+\" || t == \"-\" || t == \"*\" || t == \"/\") {\n            int b = st.top(); st.pop();\n            int a = st.top(); st.pop();\n            if (t == \"+\") st.push(a + b);\n            else if (t == \"-\") st.push(a - b);\n            else if (t == \"*\") st.push(a * b);\n            else if (t == \"/\") st.push(a / b);\n        } else {\n            st.push(stoi(t));\n        }\n    }\n    return st.top();\n}",
+    "pythonExplanation": [
+      {
+        "line": "b = st.pop()",
+        "explanation": "Pop right operand first (top of stack)."
+      },
+      {
+        "line": "a = st.pop()",
+        "explanation": "Pop left operand (second from top)."
+      },
+      {
+        "line": "int(a / b)",
+        "explanation": "Perform division and truncate toward zero in Python (using int(a / b) instead of a // b handles negative values correctly)."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "int b = st.top(); st.pop();",
+        "explanation": "Pop right operand."
+      },
+      {
+        "line": "st.push(stoi(t));",
+        "explanation": "Parse and push integer onto stack."
+      }
+    ],
+    "timeComplexity": "O(N) - Single pass through the N tokens.",
+    "spaceComplexity": "O(N) - Stack holds operands up to size N.",
+    "dryRun": [
+      "Input: tokens = ['2', '1', '+', '3', '*']",
+      "t = '2': push. st = [2]",
+      "t = '1': push. st = [2, 1]",
+      "t = '+': pop b=1, a=2. 2+1=3. push 3. st = [3]",
+      "t = '3': push. st = [3, 3]",
+      "t = '*': pop b=3, a=3. 3*3=9. push 9. st = [9]",
+      "Result: 9"
+    ],
+    "edgeCases": [
+      "Negative values in strings",
+      "Division by zero",
+      "Integer overflow during multiplication"
+    ],
+    "followUps": [
+      "Can you evaluate infix expressions? (Yes, using the Shunting-Yard algorithm)"
+    ],
+    "relatedProblems": [
+      "Basic Calculator",
+      "Expression Add Operators"
+    ],
+    "visualization": "RPN: 2  1  +  3  *\nStack: [ 2 ] -> [ 2, 1 ] -> (operator '+') -> [ 3 ] -> [ 3, 3 ] -> (operator '*') -> [ 9 ]",
+    "commonMistakes": [
+      "Using division order `b / a` instead of `a / b` (causing incorrect division calculations)."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "stack_5",
+    "title": "Daily Temperatures",
+    "statement": "Given an array of integers `temperatures`, return an array `answer` such that `answer[i]` is the number of days you have to wait after the `i`th day to get a warmer temperature. If there is no future day for which this is possible, keep `answer[i] == 0`.",
+    "difficulty": "Medium",
+    "companies": [
+      "Infosys",
+      "Amazon",
+      "Google"
+    ],
+    "pattern": "Monotonic Decreasing Stack",
+    "bruteForce": {
+      "description": "For each day, run a nested loop scanning ahead until a day with a strictly warmer temperature is found.",
+      "timeComplexity": "O(N^2)",
+      "spaceComplexity": "O(1)"
+    },
+    "optimized": {
+      "description": "Maintain a monotonic decreasing stack of indices. Iterate through the array. For the current day index `i` with temperature `t`, while the stack is not empty and `temperatures[stack.top()] < t`, it means we found a warmer day for the index at the top of the stack. Pop the index `prev_idx` and set `answer[prev_idx] = i - prev_idx`. Push the current index `i` onto the stack.",
+      "timeComplexity": "O(N)",
+      "spaceComplexity": "O(N)"
+    },
+    "pythonCode": "def dailyTemperatures(temperatures):\n    res = [0] * len(temperatures)\n    st = []\n    for i, t in enumerate(temperatures):\n        while st and temperatures[st[-1]] < t:\n            prev = st.pop()\n            res[prev] = i - prev\n        st.append(i)\n    return res",
+    "cppCode": "vector<int> dailyTemperatures(vector<int>& temperatures) {\n    vector<int> res(temperatures.size(), 0);\n    stack<int> st;\n    for (int i = 0; i < temperatures.size(); ++i) {\n        while (!st.empty() && temperatures[st.top()] < temperatures[i]) {\n            int prev = st.top(); st.pop();\n            res[prev] = i - prev;\n        }\n        st.push(i);\n    }\n    return res;\n}",
+    "pythonExplanation": [
+      {
+        "line": "while st and temperatures[st[-1]] < t:",
+        "explanation": "Check if current temp is warmer than temperature at index at top of stack."
+      },
+      {
+        "line": "res[prev] = i - prev",
+        "explanation": "Set the difference in indices as the days wait count for that index."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "while (!st.empty() && temperatures[st.top()] < temperatures[i])",
+        "explanation": "Monotonic loop: resolve waiting counts for indices that are colder than current temperature."
+      }
+    ],
+    "timeComplexity": "O(N) - Each index is pushed onto the stack exactly once and popped at most once.",
+    "spaceComplexity": "O(N) - Monotonic stack can store up to N indices.",
+    "dryRun": [
+      "Input: temps = [73, 74, 75, 71, 69, 72]",
+      "i = 0: temp = 73. st = [0]",
+      "i = 1: temp = 74. 74 > temps[0](73). Pop 0. res[0] = 1-0 = 1. st = [1]",
+      "i = 2: temp = 75. 75 > temps[1](74). Pop 1. res[1] = 2-1 = 1. st = [2]",
+      "i = 3: temp = 71. st = [2, 3]",
+      "i = 4: temp = 69. st = [2, 3, 4]",
+      "i = 5: temp = 72. 72 > temps[4](69). Pop 4. res[4] = 5-4 = 1. st = [2, 3]",
+      "                72 > temps[3](71). Pop 3. res[3] = 5-3 = 2. st = [2]",
+      "Result: res = [1, 1, 0, 2, 1, 0]"
+    ],
+    "edgeCases": [
+      "Temperatures array is sorted in descending order (stack size becomes N, all results are 0)",
+      "Single element array"
+    ],
+    "followUps": [
+      "Can you solve it in O(1) space if modifying the output array is allowed? (Yes, scan backwards and jump indexes)"
+    ],
+    "relatedProblems": [
+      "Next Greater Element I",
+      "Online Stock Span"
+    ],
+    "visualization": "Temps: [ 73, 74, 75, 71, 69, 72 ]\nStack: [ 0(73) ] -> Pop 0, push 1(74) -> Pop 1, push 2(75) -> [ 2(75), 3(71), 4(69) ] -> Pop 4, 3, push 5(72)",
+    "commonMistakes": [
+      "Storing temperature values directly onto the stack instead of indices (indices are required to calculate offsets)."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "stack_6",
+    "title": "Simplify Path",
+    "statement": "Given an absolute path for a Unix-style file system, simplify it to the canonical path.",
+    "difficulty": "Medium",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Microsoft"
+    ],
+    "pattern": "Stack Directory Directory Hierarchy",
+    "bruteForce": {
+      "description": "Parse the string character by character with complex state flags to handle multiple slashes and dots.",
+      "timeComplexity": "O(N^2)",
+      "spaceComplexity": "O(1)"
+    },
+    "optimized": {
+      "description": "Split the path by `/`. Iterate through the segments. If the segment is empty, `.` (current directory), skip it. If the segment is `..` (parent directory), pop the top directory from the stack if the stack is not empty. If it is a valid directory name, push it onto the stack. At the end, join stack elements using `/` with a leading slash.",
+      "timeComplexity": "O(N)",
+      "spaceComplexity": "O(N)"
+    },
+    "pythonCode": "def simplifyPath(path):\n    st = []\n    for part in path.split('/'):\n        if part == '..':\n            if st: st.pop()\n        elif part and part != '.':\n            st.append(part)\n    return '/' + '/'.join(st)",
+    "cppCode": "string simplifyPath(string path) {\n    vector<string> st;\n    stringstream ss(path);\n    string part;\n    while (getline(ss, part, '/')) {\n        if (part == \"..\") {\n            if (!st.empty()) st.pop_back();\n        } else if (part != \"\" && part != \".\") {\n            st.push_back(part);\n        }\n    }\n    string res = \"\";\n    for (string s : st) res += \"/\" + s;\n    return res.empty() ? \"/\" : res;\n}",
+    "pythonExplanation": [
+      {
+        "line": "path.split('/')",
+        "explanation": "Split string using '/' as separator."
+      },
+      {
+        "line": "if part == '..': if st: st.pop()",
+        "explanation": "If '..', go back to parent directory by popping from stack if not empty."
+      },
+      {
+        "line": "return '/' + '/'.join(st)",
+        "explanation": "Join the remaining components with '/' and prepend root slash."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "while (getline(ss, part, '/'))",
+        "explanation": "Split the path string using stringstream delimiter in C++."
+      },
+      {
+        "line": "st.pop_back();",
+        "explanation": "Pop the last directory from vector stack."
+      }
+    ],
+    "timeComplexity": "O(N) - We split the path string of length N and traverse directories.",
+    "spaceComplexity": "O(N) - Stack holds directory path components.",
+    "dryRun": [
+      "Input: path = '/home//foo/../bar/'",
+      "Split segments: ['', 'home', '', 'foo', '..', 'bar', '']",
+      "Segment 1: '' -> skip",
+      "Segment 2: 'home' -> push. st = ['home']",
+      "Segment 3: '' -> skip",
+      "Segment 4: 'foo' -> push. st = ['home', 'foo']",
+      "Segment 5: '..' -> pop. st = ['home']",
+      "Segment 6: 'bar' -> push. st = ['home', 'bar']",
+      "Segment 7: '' -> skip",
+      "Result: '/home/bar'"
+    ],
+    "edgeCases": [
+      "Path is root '/'",
+      "Path containing '...' (must treat as a valid file name)",
+      "Popping beyond root '/../'"
+    ],
+    "followUps": [
+      "Can you solve it without splitting by `/`? (Yes, by keeping index bounds manually)"
+    ],
+    "relatedProblems": [
+      "Evaluate Division",
+      "Path Sum"
+    ],
+    "visualization": "Path: /home//foo/../bar/\nSplit: [ 'home', 'foo', '..', 'bar' ]\nStack: [ 'home' ] -> [ 'home', 'foo' ] -> Pop ('..') -> [ 'home' ] -> [ 'home', 'bar' ]",
+    "commonMistakes": [
+      "Throwing an exception when trying to pop '..' on root path (pop should be bypassed instead)."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "stack_7",
+    "title": "Largest Rectangle in Histogram",
+    "statement": "Given an array of integers `heights` representing the histogram's bar height where the width of each bar is 1, return the area of the largest rectangle in the histogram.",
+    "difficulty": "Hard",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Amazon"
+    ],
+    "pattern": "Monotonic Increasing Stack",
+    "bruteForce": {
+      "description": "Check every pair of bars, find the minimum height between them, calculate the rectangle area, and track the maximum.",
+      "timeComplexity": "O(N^2)",
+      "spaceComplexity": "O(1)"
+    },
+    "optimized": {
+      "description": "Maintain a monotonic increasing stack storing tuples of `(index, height)`. For each bar `i` with height `h`: while the stack is not empty and the top stack height > `h`, pop from stack. The popped bar is restricted by `h` on the right; its height times the width `(i - popped_index)` gives an area candidate. Update maximum area. Also, set the start index of the new bar `h` to the index of the last popped element. Finally, resolve elements left on stack.",
+      "timeComplexity": "O(N)",
+      "spaceComplexity": "O(N)"
+    },
+    "pythonCode": "def largestRectangleArea(heights):\n    max_area = 0\n    st = []\n    for i, h in enumerate(heights):\n        start = i\n        while st and st[-1][1] > h:\n            idx, height = st.pop()\n            max_area = max(max_area, height * (i - idx))\n            start = idx\n        st.append((start, h))\n    for i, h in st:\n        max_area = max(max_area, h * (len(heights) - i))\n    return max_area",
+    "cppCode": "int largestRectangleArea(vector<int>& heights) {\n    stack<pair<int, int>> st; // {index, height}\n    int max_area = 0;\n    for (int i = 0; i < heights.size(); ++i) {\n        int start = i;\n        while (!st.empty() && st.top().second > heights[i]) {\n            auto [idx, h] = st.top(); st.pop();\n            max_area = max(max_area, h * (i - idx));\n            start = idx;\n        }\n        st.push({start, heights[i]});\n    }\n    while (!st.empty()) {\n        auto [idx, h] = st.top(); st.pop();\n        max_area = max(max_area, h * ((int)heights.size() - idx));\n    }\n    return max_area;\n}",
+    "pythonExplanation": [
+      {
+        "line": "start = idx",
+        "explanation": "Extend the starting boundary of the current height leftwards to include popped element index since it can expand there."
+      },
+      {
+        "line": "max_area = max(max_area, height * (i - idx))",
+        "explanation": "Pop resolved bar and calculate area (height * width)."
+      },
+      {
+        "line": "h * (len(heights) - i)",
+        "explanation": "For elements remaining on the stack, their rectangles can extend to the very end of the histogram."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "while (!st.empty() && st.top().second > heights[i])",
+        "explanation": "Monotonic loop: pop elements taller than current height."
+      },
+      {
+        "line": "start = idx;",
+        "explanation": "Update start index pointer leftwards."
+      }
+    ],
+    "timeComplexity": "O(N) - Each bar is pushed and popped from the stack at most once.",
+    "spaceComplexity": "O(N) - Stack stores heights and start indices.",
+    "dryRun": [
+      "Input: heights = [2, 1, 5, 6, 2, 3]",
+      "i = 0: h = 2. st = [(0, 2)]",
+      "i = 1: h = 1. 2 > 1. Pop (0, 2) -> area = 2 * (1-0) = 2. start = 0. st = [(0, 1)]",
+      "i = 2: h = 5. st = [(0, 1), (2, 5)]",
+      "i = 3: h = 6. st = [(0, 1), (2, 5), (3, 6)]",
+      "i = 4: h = 2. 6 > 2. Pop (3, 6) -> area = 6 * (4-3) = 6. start = 3.",
+      "            5 > 2. Pop (2, 5) -> area = max(6, 5 * (4-2)) = 10. start = 2.",
+      "            st = [(0, 1), (2, 2)]",
+      "i = 5: h = 3. st = [(0, 1), (2, 2), (5, 3)]",
+      "Resolve stack: Pop (5, 3) -> area = 3 * (6-5) = 3.",
+      "               Pop (2, 2) -> area = 2 * (6-2) = 8.",
+      "               Pop (0, 1) -> area = 1 * (6-0) = 6.",
+      "Result: Max area is 10"
+    ],
+    "edgeCases": [
+      "Heights sorted in ascending order",
+      "All bars of identical height",
+      "Array contains zero heights"
+    ],
+    "followUps": [
+      "Can you solve it using Divide and Conquer? (Yes, O(N log N) average using Segment Trees)"
+    ],
+    "relatedProblems": [
+      "Maximal Rectangle",
+      "Trapping Rain Water"
+    ],
+    "visualization": "Heights: [ 2, 1, 5, 6, 2, 3 ]\nPop 5 and 6 at index 4 -> rectangle width = 4 - 2 = 2. Height = 5. Area = 10 (Max)",
+    "commonMistakes": [
+      "Calculating width incorrectly by using `i - idx - 1` instead of `i - idx`."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "stack_8",
+    "title": "Maximal Rectangle",
+    "statement": "Given a `rows x cols` binary matrix filled with 0's and 1's, find the largest rectangle containing only 1's and return its area.",
+    "difficulty": "Hard",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Amazon"
+    ],
+    "pattern": "Histogram Reduction / Monotonic Stack",
+    "bruteForce": {
+      "description": "Check all possible subgrids coordinates in the matrix. (O((R * C)^3) time).",
+      "timeComplexity": "O((R * C)^3)",
+      "spaceComplexity": "O(1)"
+    },
+    "optimized": {
+      "description": "Reduce the problem to 'Largest Rectangle in Histogram'. Maintain a 1D histogram array of size `cols`. Loop through each row: if `matrix[r][c] == '1'`, increment `histogram[c]` by 1. Otherwise, reset `histogram[c] = 0`. For each row, run the Largest Rectangle in Histogram algorithm on the updated histogram array to find the largest candidate area.",
+      "timeComplexity": "O(R * C)",
+      "spaceComplexity": "O(C)"
+    },
+    "pythonCode": "def maximalRectangle(matrix):\n    if not matrix or not matrix[0]:\n        return 0\n    cols = len(matrix[0])\n    h_arr = [0] * cols\n    max_area = 0\n    \n    def max_hist(heights):\n        st = []\n        area = 0\n        for i, h in enumerate(heights):\n            start = i\n            while st and st[-1][1] > h:\n                idx, height = st.pop()\n                area = max(area, height * (i - idx))\n                start = idx\n            st.append((start, h))\n        for i, h in st:\n            area = max(area, h * (len(heights) - i))\n        return area\n        \n    for row in matrix:\n        for c in range(cols):\n            h_arr[c] = h_arr[c] + 1 if row[c] == '1' else 0\n        max_area = max(max_area, max_hist(h_arr))\n    return max_area",
+    "cppCode": "int maxHist(vector<int>& heights) {\n    stack<pair<int, int>> st;\n    int max_area = 0;\n    for (int i = 0; i < heights.size(); ++i) {\n        int start = i;\n        while (!st.empty() && st.top().second > heights[i]) {\n            auto [idx, h] = st.top(); st.pop();\n            max_area = max(max_area, h * (i - idx));\n            start = idx;\n        }\n        st.push({start, heights[i]});\n    }\n    while (!st.empty()) {\n        auto [idx, h] = st.top(); st.pop();\n        max_area = max(max_area, h * ((int)heights.size() - idx));\n    }\n    return max_area;\n}\nint maximalRectangle(vector<vector<char>>& matrix) {\n    if (matrix.empty()) return 0;\n    int r = matrix.size(), c = matrix[0].size();\n    vector<int> heights(c, 0);\n    int max_area = 0;\n    for (int i = 0; i < r; ++i) {\n        for (int j = 0; j < c; ++j) {\n            heights[j] = (matrix[i][j] == '1') ? heights[j] + 1 : 0;\n        }\n        max_area = max(max_area, maxHist(heights));\n    }\n    return max_area;\n}",
+    "pythonExplanation": [
+      {
+        "line": "h_arr[c] = h_arr[c] + 1 if row[c] == '1' else 0",
+        "explanation": "Accumulate height of 1s in columns. Reset to 0 if blocked by '0'."
+      },
+      {
+        "line": "max_area = max(max_area, max_hist(h_arr))",
+        "explanation": "Run the Largest Rectangle in Histogram algorithm on the updated histogram row array."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "heights[j] = (matrix[i][j] == '1') ? heights[j] + 1 : 0;",
+        "explanation": "Convert matrix cell to histogram height increment or reset step."
+      }
+    ],
+    "timeComplexity": "O(R * C) - R, C are row and column counts. We process every cell of the matrix once per row.",
+    "spaceComplexity": "O(C) - Histogram array size is bounded by column count.",
+    "dryRun": [
+      "Input: matrix = [",
+      "  ['1', '0', '1', '0'],",
+      "  ['1', '1', '1', '1']",
+      "]",
+      "Row 0: heights = [1, 0, 1, 0]. maxHist([1, 0, 1, 0]) -> area = 1.",
+      "Row 1: heights = [2, 1, 2, 1]. maxHist([2, 1, 2, 1]) -> area = 4.",
+      "Result: Max area is 4"
+    ],
+    "edgeCases": [
+      "Matrix with only 0s",
+      "Single column matrix",
+      "All cells are 1s"
+    ],
+    "followUps": [
+      "Can you solve it using Dynamic Programming? (Yes, O(R*C) time and O(C) space, but logic is harder to remember than histogram conversion)"
+    ],
+    "relatedProblems": [
+      "Largest Rectangle in Histogram",
+      "Maximal Square"
+    ],
+    "visualization": "Matrix:                         Histogram heights at row 1:\n[ [1, 0, 1, 0],                 [ 2, 1, 2, 1 ]\n  [1, 1, 1, 1] ]                (Run histogram area solver directly)\nArea = 4",
+    "commonMistakes": [
+      "Forgetting to reset `heights[j] = 0` when `matrix[i][j] == '0'`, which yields incorrect height accumulation."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "stack_9",
+    "title": "Basic Calculator",
+    "statement": "Given a string `s` representing a valid expression, implement a basic calculator to evaluate it. Evaluates `+`, `-`, parentheses, and spaces.",
+    "difficulty": "Hard",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Amazon"
+    ],
+    "pattern": "Stack Sign Cache State",
+    "bruteForce": {
+      "description": "Recursively call evaluation subroutines when meeting parentheses. (O(N^2) worst case on deeply nested brackets).",
+      "timeComplexity": "O(N^2)",
+      "spaceComplexity": "O(N)"
+    },
+    "optimized": {
+      "description": "Use a Stack. Maintain a running sum `res`, current parsed number `num`, and current `sign` (+1 or -1). Iterate through the string: 1. If it is a digit, parse it: `num = num * 10 + val`. 2. If it is `+` or `-`, flush current number to total: `res += sign * num`, reset `num = 0`, and set `sign = +/-1`. 3. If it is `(`, push current `res` and `sign` onto the stack, and reset `res = 0`, `sign = 1`. 4. If it is `)`, flush current total, then multiply by popped sign and add popped original total.",
+      "timeComplexity": "O(N)",
+      "spaceComplexity": "O(N)"
+    },
+    "pythonCode": "def calculate(s):\n    st = []\n    res, num, sign = 0, 0, 1\n    for c in s:\n        if c.isdigit():\n            num = num * 10 + int(c)\n        elif c in '+-':\n            res += sign * num\n            num = 0\n            sign = 1 if c == '+' else -1\n        elif c == '(':\n            st.append(res)\n            st.append(sign)\n            res, sign = 0, 1\n        elif c == ')':\n            res += sign * num\n            num = 0\n            res *= st.pop() # Popped sign\n            res += st.pop() # Popped previous res\n    res += sign * num\n    return res",
+    "cppCode": "int calculate(string s) {\n    stack<int> st;\n    int res = 0, num = 0, sign = 1;\n    for (char c : s) {\n        if (isdigit(c)) {\n            num = num * 10 + (c - '0');\n        } else if (c == '+' || c == '-') {\n            res += sign * num;\n            num = 0;\n            sign = (c == '+') ? 1 : -1;\n        } else if (c == '(') {\n            st.push(res);\n            st.push(sign);\n            res = 0; sign = 1;\n        } else if (c == ')') {\n            res += sign * num;\n            num = 0;\n            res *= st.top(); st.pop();\n            res += st.top(); st.pop();\n        }\n    }\n    res += sign * num;\n    return res;\n}",
+    "pythonExplanation": [
+      {
+        "line": "num = num * 10 + int(c)",
+        "explanation": "Accumulate multi-digit integers."
+      },
+      {
+        "line": "st.append(res); st.append(sign)",
+        "explanation": "Save outer scope context (result and sign preceding parentheses) onto the stack before starting evaluation of parenthesized expression."
+      },
+      {
+        "line": "res *= st.pop(); res += st.pop()",
+        "explanation": "Add sub-expression result to saved outer result, multiplying it by the preceding sign."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "res *= st.top(); st.pop();",
+        "explanation": "Pop sign preceding parentheses and multiply current result."
+      },
+      {
+        "line": "res += st.top(); st.pop();",
+        "explanation": "Pop saved result preceding parentheses and add to current sum."
+      }
+    ],
+    "timeComplexity": "O(N) - Single pass through the string of length N.",
+    "spaceComplexity": "O(N) - Stack call depth depends on the nesting depth of parentheses.",
+    "dryRun": [
+      "Input: s = '1 + (4 + 5 - 2)'",
+      "c = '1': num = 1",
+      "c = '+': res = 0 + 1*1 = 1. num = 0. sign = 1",
+      "c = '(': push res(1), push sign(1). st = [1, 1]. res = 0. sign = 1",
+      "c = '4': num = 4",
+      "c = '+': res = 0 + 1*4 = 4. num = 0. sign = 1",
+      "c = '5': num = 5",
+      "c = '-': res = 4 + 1*5 = 9. num = 0. sign = -1",
+      "c = '2': num = 2",
+      "c = ')': res = 9 + (-1)*2 = 7. num = 0. res *= pop_sign(1) -> 7. res += pop_prev(1) -> 8. st = []",
+      "Result: 8"
+    ],
+    "edgeCases": [
+      "Deeply nested parentheses",
+      "Unary operators like '- ( 3 + 5 )'",
+      "White spaces"
+    ],
+    "followUps": [
+      "Can you support * and / operators? (Basic Calculator II / III)"
+    ],
+    "relatedProblems": [
+      "Basic Calculator II",
+      "Evaluate Reverse Polish Notation"
+    ],
+    "visualization": "Stack caches outer total and sign when bracket opens. Evaluates bracket and merges on bracket close.",
+    "commonMistakes": [
+      "Forgetting to flush the last parsed number `num` at the end of the string, causing missed values."
+    ],
+    "whenNotToUse": "None"
+  }
+]

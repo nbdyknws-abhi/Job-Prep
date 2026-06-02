@@ -1,0 +1,739 @@
+[
+  {
+    "id": "graphs_1",
+    "title": "Center of Star Graph",
+    "statement": "There is an undirected star graph consisting of `n` nodes labeled from 1 to `n`. A star graph is a graph where there is one center node and exactly `n - 1` edges that connect it with every other node. Find the center node.",
+    "difficulty": "Easy",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Amazon"
+    ],
+    "pattern": "Node Degree Analysis / Common Vertex Match",
+    "bruteForce": {
+      "description": "Calculate the degree of all nodes by counting edges, and find the node with a degree of n - 1.",
+      "timeComplexity": "O(N)",
+      "spaceComplexity": "O(N)"
+    },
+    "optimized": {
+      "description": "Since the center node must connect to all other n-1 nodes, it must appear in every edge. Therefore, the center node is simply the common vertex between the first two edges.",
+      "timeComplexity": "O(1)",
+      "spaceComplexity": "O(1)"
+    },
+    "pythonCode": "def findCenter(edges):\n    # Center must appear in the first two edges\n    u1, v1 = edges[0]\n    u2, v2 = edges[1]\n    if u1 == u2 or u1 == v2:\n        return u1\n    return v1",
+    "cppCode": "int findCenter(vector<vector<int>>& edges) {\n    int u1 = edges[0][0], v1 = edges[0][1];\n    int u2 = edges[1][0], v2 = edges[1][1];\n    if (u1 == u2 || u1 == v2) {\n        return u1;\n    }\n    return v1;\n}",
+    "pythonExplanation": [
+      {
+        "line": "u1, v1 = edges[0]",
+        "explanation": "Extract vertices from the first edge."
+      },
+      {
+        "line": "u2, v2 = edges[1]",
+        "explanation": "Extract vertices from the second edge."
+      },
+      {
+        "line": "if u1 == u2 or u1 == v2: return u1",
+        "explanation": "If the first vertex of the first edge matches either vertex of the second edge, it is the center."
+      },
+      {
+        "line": "return v1",
+        "explanation": "Otherwise, the second vertex of the first edge must be the center."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "int u1 = edges[0][0], v1 = edges[0][1];",
+        "explanation": "Extract endpoints of the first edge link."
+      },
+      {
+        "line": "int u2 = edges[1][0], v2 = edges[1][1];",
+        "explanation": "Extract endpoints of the second edge link."
+      },
+      {
+        "line": "if (u1 == u2 || u1 == v2) return u1;",
+        "explanation": "The center node must repeat in both edges. Check if u1 is common."
+      },
+      {
+        "line": "return v1;",
+        "explanation": "If u1 is not common, then v1 must be the common center."
+      }
+    ],
+    "timeComplexity": "O(1) - The algorithm performs a constant number of comparisons, checking only the first two edges.",
+    "spaceComplexity": "O(1) - No extra structures or recursion stacks are used.",
+    "dryRun": [
+      "Input: edges = [[1, 2], [2, 3], [4, 2]]",
+      "Edge 1 vertices: 1, 2. Edge 2 vertices: 2, 3.",
+      "Check: Is 1 equal to 2 or 3? No.",
+      "Return 2 (the other vertex of edge 1)."
+    ],
+    "edgeCases": [
+      "Graph containing only 3 nodes (minimum size)",
+      "Edges given in reverse sorting order"
+    ],
+    "followUps": [
+      "Can you solve it using a hash map/frequency array? (Yes, O(N) time and space, but slower than this O(1) approach)"
+    ],
+    "relatedProblems": [
+      "Find the Town Judge",
+      "Minimum Height Trees"
+    ],
+    "visualization": "  1\n   \\\n    2 (Center)   - Edge 1: 1-2\n   / \\\n  3   4          - Edge 2: 2-3 -> 2 is repeating! Center node = 2",
+    "commonMistakes": [
+      "Counting degrees for all nodes unnecessarily, which wastes CPU cycles and memory (increases complexity to O(N) time and space)."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "graphs_2",
+    "title": "Find if Path Exists in Graph",
+    "statement": "Given an undirected graph, determine if there is a valid path from a `source` vertex to a `destination` vertex. You are given the edges array and the number of vertices `n`.",
+    "difficulty": "Easy",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Amazon"
+    ],
+    "pattern": "BFS / Queue Graph Traversal",
+    "bruteForce": {
+      "description": "Check all possible paths using permutations or dfs without backtracking optimization.",
+      "timeComplexity": "O(N!)",
+      "spaceComplexity": "O(N)"
+    },
+    "optimized": {
+      "description": "Build an adjacency list from the edges. Perform a Breadth-First Search (BFS) starting from the `source` vertex. Keep track of visited nodes using a boolean array. If the queue is popped and matches `destination`, return true. If BFS ends without reaching destination, return false.",
+      "timeComplexity": "O(V + E)",
+      "spaceComplexity": "O(V + E) list & queue"
+    },
+    "pythonCode": "from collections import deque, defaultdict\ndef validPath(n, edges, source, destination):\n    if source == destination:\n        return True\n    adj = defaultdict(list)\n    for u, v in edges:\n        adj[u].append(v)\n        adj[v].append(u)\n        \n    visited = {source}\n    queue = deque([source])\n    while queue:\n        curr = queue.popleft()\n        if curr == destination:\n            return True\n        for neighbor in adj[curr]:\n            if neighbor not in visited:\n                visited.add(neighbor)\n                queue.append(neighbor)\n    return False",
+    "cppCode": "bool validPath(int n, vector<vector<int>>& edges, int source, int destination) {\n    if (source == destination) return true;\n    vector<vector<int>> adj(n);\n    for (auto& edge : edges) {\n        adj[edge[0]].push_back(edge[1]);\n        adj[edge[1]].push_back(edge[0]);\n    }\n    vector<bool> visited(n, false);\n    visited[source] = true;\n    queue<int> q;\n    q.push(source);\n    while (!q.empty()) {\n        int curr = q.front();\n        q.pop();\n        if (curr == destination) return true;\n        for (int neighbor : adj[curr]) {\n            if (!visited[neighbor]) {\n                visited[neighbor] = true;\n                q.push(neighbor);\n            }\n        }\n    }\n    return false;\n}",
+    "pythonExplanation": [
+      {
+        "line": "adj[u].append(v)",
+        "explanation": "Build an adjacency list for bidirectional links since graph is undirected."
+      },
+      {
+        "line": "visited = {source}",
+        "explanation": "Initialize the visited set with source to avoid cycles."
+      },
+      {
+        "line": "curr = queue.popleft()",
+        "explanation": "De-queue node from BFS queue queue."
+      },
+      {
+        "line": "if neighbor not in visited:",
+        "explanation": "Only visit neighbors that haven't been visited to prevent infinite loops."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "vector<vector<int>> adj(n);",
+        "explanation": "Declare adjacency representation for quick neighbor lookup."
+      },
+      {
+        "line": "visited[neighbor] = true;",
+        "explanation": "Mark node as visited as soon as it is enqueued."
+      },
+      {
+        "line": "if (curr == destination) return true;",
+        "explanation": "Short circuit evaluation if target vertex is reached."
+      }
+    ],
+    "timeComplexity": "O(V + E) - We visit every vertex V and every edge E at most once during traversal.",
+    "spaceComplexity": "O(V + E) - Needed to store the adjacency list representation and queue/visited tracking buffers.",
+    "dryRun": [
+      "Input: n = 3, edges = [[0,1], [1,2], [2,0]], source = 0, destination = 2",
+      "Build adjacency list: {0: [1, 2], 1: [0, 2], 2: [1, 0]}",
+      "Queue: [0], visited = {0}",
+      "Pop 0: Neighbors: 1, 2. Add both to queue. Queue: [1, 2], visited = {0, 1, 2}",
+      "Pop 1: Destination not met. Neighbors: 0, 2 already visited.",
+      "Pop 2: Matches destination! Return True."
+    ],
+    "edgeCases": [
+      "Graph is disconnected",
+      "Self-loop edge cycles",
+      "source and destination are the same"
+    ],
+    "followUps": [
+      "Can you solve it using a Union-Find (Disjoint Set) data structure? (Yes, merge vertices and check if source and destination have same parent)"
+    ],
+    "relatedProblems": [
+      "Number of Islands",
+      "Clone Graph"
+    ],
+    "visualization": "0 --- 1\n \\   /\n   2      Start at 0 -> Queue: [1, 2] -> pop 1 -> pop 2 (Found Destination!) -> Path exists",
+    "commonMistakes": [
+      "Forgetting to check the `visited` map, causing infinite cycles on cyclic undirected graphs."
+    ],
+    "whenNotToUse": "If Union-Find is already implemented in the project, it can check connectedness in O(alpha(N)) without graph traversals."
+  },
+  {
+    "id": "graphs_3",
+    "title": "Flood Fill",
+    "statement": "An image is represented by an `m x n` integer grid `image` where `image[i][j]` represents the pixel value. Perform a flood fill starting at pixel `(sr, sc)` with a new color `color`. To perform a flood fill, update the starting pixel, plus any pixels connected 4-directionally to the starting pixel of the same original color.",
+    "difficulty": "Easy",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Amazon"
+    ],
+    "pattern": "DFS Grid Traversal",
+    "bruteForce": {
+      "description": "Iterate over the entire image grid several times, coloring pixels whose neighbors match target color.",
+      "timeComplexity": "O(N^2 * M^2)",
+      "spaceComplexity": "O(1)"
+    },
+    "optimized": {
+      "description": "Use Depth-First Search (DFS) recursion. Store the starting pixel's original color. If the original color matches the target color, return the image immediately (to avoid infinite recursion). Recursively update neighbors matching the original color.",
+      "timeComplexity": "O(R * C)",
+      "spaceComplexity": "O(R * C) recursion stack"
+    },
+    "pythonCode": "def floodFill(image, sr, sc, color):\n    start_color = image[sr][sc]\n    if start_color == color:\n        return image\n        \n    r, c = len(image), len(image[0])\n    \n    def dfs(i, j):\n        if i < 0 or i >= r or j < 0 or j >= c or image[i][j] != start_color:\n            return\n        image[i][j] = color\n        dfs(i + 1, j)\n        dfs(i - 1, j)\n        dfs(i, j + 1)\n        dfs(i, j - 1)\n        \n    dfs(sr, sc)\n    return image",
+    "cppCode": "vector<vector<int>> floodFill(vector<vector<int>>& image, int sr, int sc, int color) {\n    int start_color = image[sr][sc];\n    if (start_color == color) return image;\n    int r = image.size();\n    int c = image[0].size();\n    \n    auto dfs = [&](auto& self, int i, int j) -> void {\n        if (i < 0 || i >= r || j < 0 || j >= c || image[i][j] != start_color) return;\n        image[i][j] = color;\n        self(self, i + 1, j);\n        self(self, i - 1, j);\n        self(self, i, j + 1);\n        self(self, i, j - 1);\n    };\n    \n    dfs(dfs, sr, sc);\n    return image;\n}",
+    "pythonExplanation": [
+      {
+        "line": "start_color = image[sr][sc]",
+        "explanation": "Save the original color to know which connected pixels need coloring."
+      },
+      {
+        "line": "if start_color == color: return image",
+        "explanation": "Base case to prevent infinite loops when coloring with same color."
+      },
+      {
+        "line": "image[i][j] = color",
+        "explanation": "Update the color of the current matching pixel in-place."
+      },
+      {
+        "line": "dfs(i + 1, j)",
+        "explanation": "Recurse in all four cardinal directions (Down, Up, Right, Left)."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "int start_color = image[sr][sc];",
+        "explanation": "Record the original color at starting coordinates."
+      },
+      {
+        "line": "if (start_color == color) return image;",
+        "explanation": "Prevent infinite loops if target color matches existing color."
+      },
+      {
+        "line": "image[i][j] = color;",
+        "explanation": "Recolor current pixel on match."
+      },
+      {
+        "line": "self(self, i + 1, j);",
+        "explanation": "Recursively perform DFS on cardinal direction neighbors."
+      }
+    ],
+    "timeComplexity": "O(R * C) - In the worst case, we recolor every pixel in the grid image of size R x C.",
+    "spaceComplexity": "O(R * C) - Space used by the recursion call stack, which can be up to R * C stack frames.",
+    "dryRun": [
+      "Input: image = [[1,1,1],[1,1,0],[1,0,1]], sr = 1, sc = 1, color = 2",
+      "Original color: 1. Target color: 2.",
+      "DFS(1,1): Recolors pixel (1,1) to 2. Calls DFS on neighbors (0,1), (2,1), (1,0), (1,2).",
+      "DFS(0,1): Recolor to 2. Calls neighbors...",
+      "Eventually recolors all connected pixels having value 1. Returns [[2,2,2],[2,2,0],[2,0,1]]"
+    ],
+    "edgeCases": [
+      "Starting pixel color matches target color",
+      "Grid size is 1x1",
+      "Cardinal boundaries of the image"
+    ],
+    "followUps": [
+      "Can you solve it iteratively? (Yes, using a Queue/BFS to process coordinates)"
+    ],
+    "relatedProblems": [
+      "Number of Islands",
+      "Word Search"
+    ],
+    "visualization": "Before:                 After:\n[ [1, 1, 1],          [ [2, 2, 2],\n  [1, 1, 0],    ==>     [2, 2, 0],\n  [1, 0, 1] ]           [2, 0, 1] ]\n  (DFS expansion from center pixel (1,1))",
+    "commonMistakes": [
+      "Forgetting to early-exit when `start_color == color`, causing recursion stack overflows (infinite loops)."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "graphs_4",
+    "title": "Number of Islands",
+    "statement": "Given an `m x n` 2D binary grid `grid` which represents a map of `'1'`s (land) and `'0'`s (water), return the number of islands. An island is surrounded by water and is formed by connecting adjacent lands horizontally or vertically.",
+    "difficulty": "Medium",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Amazon"
+    ],
+    "pattern": "DFS Connected Components Sink",
+    "bruteForce": {
+      "description": "Compare all coordinates and verify if they are separated by zeros using permutations.",
+      "timeComplexity": "O(R! * C!)",
+      "spaceComplexity": "O(R * C)"
+    },
+    "optimized": {
+      "description": "Traverse the grid. When a land cell `'1'` is found, increment the island count and trigger a Depth-First Search (DFS) to 'sink' the entire island (convert all connected `'1'`s to `'0'`s). This prevents double counting without needing extra visited memory.",
+      "timeComplexity": "O(R * C)",
+      "spaceComplexity": "O(R * C) stack space"
+    },
+    "pythonCode": "def numIslands(grid):\n    if not grid:\n        return 0\n    r, c = len(grid), len(grid[0])\n    islands = 0\n    \n    def dfs(i, j):\n        if i < 0 or i >= r or j < 0 or j >= c or grid[i][j] == '0':\n            return\n        # Sink the land\n        grid[i][j] = '0'\n        # Visit neighbors\n        dfs(i + 1, j)\n        dfs(i - 1, j)\n        dfs(i, j + 1)\n        dfs(i, j - 1)\n        \n    for i in range(r):\n        for j in range(c):\n            if grid[i][j] == '1':\n                islands += 1\n                dfs(i, j)\n    return islands",
+    "cppCode": "int numIslands(vector<vector<char>>& grid) {\n    if (grid.empty()) return 0;\n    int r = grid.size();\n    int c = grid[0].size();\n    int islands = 0;\n    \n    auto dfs = [&](auto& self, int i, int j) -> void {\n        if (i < 0 || i >= r || j < 0 || j >= c || grid[i][j] == '0') return;\n        grid[i][j] = '0'; // Sink current land\n        self(self, i + 1, j);\n        self(self, i - 1, j);\n        self(self, i, j + 1);\n        self(self, i, j - 1);\n    };\n    \n    for (int i = 0; i < r; ++i) {\n        for (int j = 0; j < c; ++j) {\n            if (grid[i][j] == '1') {\n                islands++;\n                dfs(dfs, i, j);\n            }\n        }\n    }\n    return islands;\n}",
+    "pythonExplanation": [
+      {
+        "line": "grid[i][j] = '0'",
+        "explanation": "Sink the land cell to '0' to mark it visited in-place."
+      },
+      {
+        "line": "islands += 1",
+        "explanation": "Found a new island starting point. Increment the counter."
+      },
+      {
+        "line": "dfs(i, j)",
+        "explanation": "Call DFS to sink all connected land components belonging to this island."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "grid[i][j] = '0';",
+        "explanation": "Mark visited by mutating land cell to water cell."
+      },
+      {
+        "line": "dfs(dfs, i, j);",
+        "explanation": "Recursively sink all land cells connected to this island component."
+      }
+    ],
+    "timeComplexity": "O(R * C) - We visit each cell in the grid of size R x C at most twice (once in the traversal, once in DFS).",
+    "spaceComplexity": "O(R * C) - In the worst case (all land), the recursion call stack can reach a depth of R * C.",
+    "dryRun": [
+      "Input: grid = [\n  ['1', '1', '0'],\n  ['1', '0', '0'],\n  ['0', '0', '1']\n]",
+      "Iterate to (0,0): val = '1'. islands = 1. Call DFS.",
+      "DFS(0,0): sinks (0,0), (0,1), (1,0) to '0'. Island 1 sunk.",
+      "Iterate forward. Skip zeros. At (2,2): val = '1'. islands = 2. Call DFS.",
+      "DFS(2,2): sinks (2,2). Island 2 sunk.",
+      "End traversal. Result: 2"
+    ],
+    "edgeCases": [
+      "All land grid",
+      "All water grid",
+      "Islands separated diagonally (do not connect)"
+    ],
+    "followUps": [
+      "Can you solve it without mutating the input grid? (Yes, by maintaining a boolean `visited` matrix)"
+    ],
+    "relatedProblems": [
+      "Flood Fill",
+      "Max Area of Island"
+    ],
+    "visualization": "Grid:                 DFS 1:                 DFS 2:\n1 1 0                 0 0 0                  0 0 0\n1 0 0    ==[Count 1]=> 0 0 0   ==[Count 2]=>  0 0 0\n0 0 1                 0 0 1                  0 0 0\nIsland 1 Sunk          Island 2 Sunk          Completed",
+    "commonMistakes": [
+      "Sinking only 2 directions instead of 4, or off-by-one bounds checks on array limits."
+    ],
+    "whenNotToUse": "If input grid is read-only, we must instantiate an auxiliary `visited` table, raising auxiliary space to O(R * C)."
+  },
+  {
+    "id": "graphs_5",
+    "title": "Clone Graph",
+    "statement": "Given a reference of a node in a connected undirected graph, return a deep copy (clone) of the graph. Each node contains a value (`int`) and a list of its neighbors (`List[Node]`).",
+    "difficulty": "Medium",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Facebook"
+    ],
+    "pattern": "HashMap DFS Reference Cloning",
+    "bruteForce": {
+      "description": "Perform DFS to copy nodes, then run secondary searches to map neighbor lists by node values.",
+      "timeComplexity": "O(N^2)",
+      "spaceComplexity": "O(N)"
+    },
+    "optimized": {
+      "description": "Use a hash map to map original nodes to their cloned node copies. Use recursion (DFS) to traverse the graph. If a node is already cloned, return its copy from the map. Otherwise, create a copy of the node, save it in the map, and recursively clone and append all neighbors to the copy's neighbor list.",
+      "timeComplexity": "O(V + E)",
+      "spaceComplexity": "O(V) storage"
+    },
+    "pythonCode": "class Node:\n    def __init__(self, val = 0, neighbors = None):\n        self.val = val\n        self.neighbors = neighbors if neighbors is not None else []\n\ndef cloneGraph(node):\n    if not node:\n        return None\n    cloned = {}\n    \n    def dfs(curr):\n        if curr in cloned:\n            return cloned[curr]\n        # Create copy\n        copy = Node(curr.val)\n        cloned[curr] = copy\n        # Map neighbors\n        for neighbor in curr.neighbors:\n            copy.neighbors.append(dfs(neighbor))\n        return copy\n        \n    return dfs(node)",
+    "cppCode": "Node* cloneGraph(Node* node) {\n    if (!node) return nullptr;\n    unordered_map<Node*, Node*> cloned;\n    \n    auto dfs = [&](auto& self, Node* curr) -> Node* {\n        if (cloned.find(curr) != cloned.end()) {\n            return cloned[curr];\n        }\n        Node* copy = new Node(curr->val);\n        cloned[curr] = copy;\n        for (Node* neighbor : curr->neighbors) {\n            copy->neighbors.push_back(self(self, neighbor));\n        }\n        return copy;\n    };\n    \n    return dfs(dfs, node);\n}",
+    "pythonExplanation": [
+      {
+        "line": "cloned = {}",
+        "explanation": "Initialize hash map to store original-to-clone node mappings to prevent cycles."
+      },
+      {
+        "line": "if curr in cloned: return cloned[curr]",
+        "explanation": "If node was already cloned, return the existing cloned node reference."
+      },
+      {
+        "line": "copy = Node(curr.val)",
+        "explanation": "Create deep copy node with matching value."
+      },
+      {
+        "line": "copy.neighbors.append(dfs(neighbor))",
+        "explanation": "Recursively clone neighbors and append them to the copy's neighbors list."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "unordered_map<Node*, Node*> cloned;",
+        "explanation": "Store pointers mapping original graph nodes to their copies."
+      },
+      {
+        "line": "if (cloned.find(curr) != cloned.end()) return cloned[curr];",
+        "explanation": "Avoid duplicate node creations on cycles."
+      },
+      {
+        "line": "copy->neighbors.push_back(self(self, neighbor));",
+        "explanation": "DFS-recurse on neighbor node references and attach to copies vector."
+      }
+    ],
+    "timeComplexity": "O(V + E) - We visit every vertex V and every edge E exactly once.",
+    "spaceComplexity": "O(V) - The hash map stores V elements, and recursion stack can go up to V frames in a skewed graph.",
+    "dryRun": [
+      "Input: Node 1 connected to Node 2. Node 2 connected to Node 3.",
+      "DFS(Node 1): Clones Node 1 -> Copy 1. cloned = {1: Copy 1}. Calls DFS(Node 2).",
+      "DFS(Node 2): Clones Node 2 -> Copy 2. cloned = {1: Copy 1, 2: Copy 2}. Calls DFS(Node 1) -> returns Copy 1.",
+      "Copy 2 neighbors gets Copy 1. returns Copy 2. Copy 1 neighbors gets Copy 2.",
+      "Graph cloning complete."
+    ],
+    "edgeCases": [
+      "Graph is empty (returns Null)",
+      "Single node graph with no neighbors",
+      "Highly cyclic graph"
+    ],
+    "followUps": [
+      "Can you solve it iteratively using BFS? (Yes, enqueue nodes and clone neighbor listings in a queue loop)"
+    ],
+    "relatedProblems": [
+      "Clone Binary Tree",
+      "All Paths From Source to Target"
+    ],
+    "visualization": "Original: Node 1 <---> Node 2\n  1. Create Copy 1 -> map {1: Copy 1}\n  2. Move to Node 2 neighbor -> Create Copy 2 -> map {1: Copy 1, 2: Copy 2}\n  3. Link Copy 2 neighbors (Copy 1) -> Link Copy 1 neighbors (Copy 2) -> Deep copy complete",
+    "commonMistakes": [
+      "Shallow copying neighbors vector (sharing references with the original node, which leaves graph references modified)."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "graphs_6",
+    "title": "Course Schedule",
+    "statement": "There are a total of `numCourses` courses you have to take, labeled from 0 to `numCourses - 1`. You are given an array `prerequisites` where `prerequisites[i] = [ai, bi]` indicates that you must take course `bi` first if you want to take course `ai`. Determine if you can finish all courses.",
+    "difficulty": "Medium",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Amazon"
+    ],
+    "pattern": "Topological Sort Cycle Detection",
+    "bruteForce": {
+      "description": "Backtrack and trace all possible permutations of schedules. (Extremely slow).",
+      "timeComplexity": "O(N!)",
+      "spaceComplexity": "O(N)"
+    },
+    "optimized": {
+      "description": "Represent courses as a directed graph. Detect if a cycle exists using DFS cycle detection (three states: unvisited (0), visiting (1), and visited (2)). If a cycle is detected, topological sorting is impossible, meaning courses cannot be finished.",
+      "timeComplexity": "O(V + E)",
+      "spaceComplexity": "O(V + E) list representation"
+    },
+    "pythonCode": "def canFinish(numCourses, prerequisites):\n    # Build graph\n    adj = {i: [] for i in range(numCourses)}\n    for course, pre in prerequisites:\n        adj[pre].append(course)\n        \n    # 0 = unvisited, 1 = visiting, 2 = visited\n    state = [0] * numCourses\n    \n    def has_cycle(curr):\n        if state[curr] == 1:\n            return True # Cycle found\n        if state[curr] == 2:\n            return False\n            \n        state[curr] = 1 # Mark visiting\n        for neighbor in adj[curr]:\n            if has_cycle(neighbor):\n                return True\n        state[curr] = 2 # Mark visited\n        return False\n        \n    for i in range(numCourses):\n        if has_cycle(i):\n            return False\n    return True",
+    "cppCode": "bool canFinish(int numCourses, vector<vector<int>>& prerequisites) {\n    vector<vector<int>> adj(numCourses);\n    for (auto& pre : prerequisites) {\n        adj[pre[1]].push_back(pre[0]);\n    }\n    // 0 = unvisited, 1 = visiting, 2 = visited\n    vector<int> state(numCourses, 0);\n    \n    auto has_cycle = [&](auto& self, int curr) -> bool {\n        if (state[curr] == 1) return true;\n        if (state[curr] == 2) return false;\n        \n        state[curr] = 1;\n        for (int neighbor : adj[curr]) {\n            if (self(self, neighbor)) return true;\n        }\n        state[curr] = 2;\n        return false;\n    };\n    \n    for (int i = 0; i < numCourses; ++i) {\n        if (has_cycle(has_cycle, i)) return false;\n    }\n    return true;\n}",
+    "pythonExplanation": [
+      {
+        "line": "state = [0] * numCourses",
+        "explanation": "Maintain unvisited (0), visiting (1), and visited (2) states to perform cycle detection."
+      },
+      {
+        "line": "if state[curr] == 1: return True",
+        "explanation": "If we hit a node that is currently in the 'visiting' stack, we found a back edge! Cycle exists."
+      },
+      {
+        "line": "state[curr] = 1",
+        "explanation": "Mark node as visiting before scanning neighbors."
+      },
+      {
+        "line": "state[curr] = 2",
+        "explanation": "Mark node as visited once DFS on neighbors is fully resolved."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "vector<int> state(numCourses, 0);",
+        "explanation": "State array: 0 for fresh, 1 for current recursion stack path, 2 for fully sorted."
+      },
+      {
+        "line": "if (state[curr] == 1) return true;",
+        "explanation": "Cycle detected (back edge encountered in DFS tree)."
+      },
+      {
+        "line": "state[curr] = 2;",
+        "explanation": "DFS backtracking step: mark course as completed safely."
+      }
+    ],
+    "timeComplexity": "O(V + E) - We visit every course (vertex V) and prerequisite link (edge E) at most once.",
+    "spaceComplexity": "O(V + E) - Adjacency lists and state arrays require linear memory allocation.",
+    "dryRun": [
+      "Input: numCourses = 2, prerequisites = [[1, 0]]",
+      "Graph: 0 -> 1. Prerequisites link indicates: take 0 then 1.",
+      "DFS(0): state[0]=1. Calls DFS(1).",
+      "DFS(1): state[1]=1. No neighbors. state[1]=2. Returns False (no cycle).",
+      "DFS(0): state[0]=2. Returns False (no cycle).",
+      "DFS(1): state[1]=2. Returns False immediately.",
+      "No cycle detected. Returns True."
+    ],
+    "edgeCases": [
+      "No prerequisites (returns True)",
+      "Direct dependency cycle (e.g. [[1, 0], [0, 1]])",
+      "Disconnected dependencies"
+    ],
+    "followUps": [
+      "Can you solve it using BFS? (Kahn's BFS In-Degree elimination algorithm)"
+    ],
+    "relatedProblems": [
+      "Course Schedule II",
+      "Minimum Height Trees"
+    ],
+    "visualization": "Dependency: 0 ---> 1 ---> 2\n  - DFS(0): state[0]=1 -> state[1]=1 -> state[2]=1\n  - Node 2 has no neighbors -> state[2]=2 -> state[1]=2 -> state[0]=2\n  - No cycle, valid order found!",
+    "commonMistakes": [
+      "Not tracking visiting vs visited states correctly. Using a single binary visited set fails because it cannot distinguish between cross edges and back edges (causes false positives for cycles)."
+    ],
+    "whenNotToUse": "If topological order is requested, Kahn's algorithm (BFS with in-degree tracking) is cleaner to output node sequence."
+  },
+  {
+    "id": "graphs_7",
+    "title": "Alien Dictionary",
+    "statement": "There is a new alien language that uses the English alphabet. However, the order of the letters is unknown to you. You are given a list of strings `words` from the alien language's dictionary. Return a string of the unique letters in the new alien language sorted in lexicographically increasing order. If no order exists, return `\"\"`.",
+    "difficulty": "Hard",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Facebook"
+    ],
+    "pattern": "Adjacency Topological Sort with Edge Slicing",
+    "bruteForce": {
+      "description": "Compare adjacent words and sort all alphabet combinations manually.",
+      "timeComplexity": "O(V!)",
+      "spaceComplexity": "O(V)"
+    },
+    "optimized": {
+      "description": "1. Build graph: extract character relationships by comparing adjacent words. If word A has prefix equal to word B but is longer, it violates prefix sorting, return empty string. 2. Detect cycles and record topological sort using post-order DFS. Reverse result for final order.",
+      "timeComplexity": "O(C) total characters in input",
+      "spaceComplexity": "O(V) vertices space"
+    },
+    "pythonCode": "def alienOrder(words):\n    adj = {char: set() for word in words for char in word}\n    \n    # Build edges\n    for i in range(len(words) - 1):\n        w1, w2 = words[i], words[i+1]\n        min_len = min(len(w1), len(w2))\n        if len(w1) > len(w2) and w1[:min_len] == w2[:min_len]:\n            return \"\" # Mismatch: prefix word must be shorter\n        for j in range(min_len):\n            if w1[j] != w2[j]:\n                adj[w1[j]].add(w2[j])\n                break\n                \n    state = {} # char -> False (visiting), True (visited)\n    res = []\n    \n    def dfs(char):\n        if char in state:\n            return state[char]\n        state[char] = False # Visiting\n        for neighbor in adj[char]:\n            if not dfs(neighbor):\n                return False\n        state[char] = True # Visited\n        res.append(char)\n        return True\n        \n    for char in adj:\n        if not dfs(char):\n            return \"\"\n            \n    res.reverse()\n    return \"\".join(res)",
+    "cppCode": "string alienOrder(vector<string>& words) {\n    unordered_map<char, unordered_set<char>> adj;\n    for (const string& word : words) {\n        for (char c : word) adj[c] = unordered_set<char>();\n    }\n    \n    for (size_t i = 0; i < words.size() - 1; ++i) {\n        string w1 = words[i], w2 = words[i + 1];\n        size_t min_len = min(w1.size(), w2.size());\n        if (w1.size() > w2.size() && w1.substr(0, min_len) == w2.substr(0, min_len)) {\n            return \"\"; // Prefix constraint violation\n        }\n        for (size_t j = 0; j < min_len; ++j) {\n            if (w1[j] != w2[j]) {\n                adj[w1[j]].insert(w2[j]);\n                break;\n            }\n        }\n    }\n    \n    unordered_map<char, bool> state; // false = visiting, true = visited\n    string res = \"\";\n    \n    auto dfs = [&](auto& self, char c) -> bool {\n        if (state.count(c)) return state[c];\n        state[c] = false; // Visiting\n        for (char neighbor : adj[c]) {\n            if (!self(self, neighbor)) return false;\n        }\n        state[c] = true; // Visited\n        res += c;\n        return true;\n    };\n    \n    for (auto& [c, neighbors] : adj) {\n        if (!dfs(dfs, c)) return \"\";\n    }\n    \n    reverse(res.begin(), res.end());\n    return res;\n}",
+    "pythonExplanation": [
+      {
+        "line": "if len(w1) > len(w2) and w1[:min_len] == w2[:min_len]: return \"\"",
+        "explanation": "If A is longer than B and is its prefix (e.g. ['abc', 'ab']), the lexicographical order is violated."
+      },
+      {
+        "line": "if w1[j] != w2[j]: adj[w1[j]].add(w2[j])",
+        "explanation": "Find the first mismatching letter: w1[j] must come before w2[j]. Add edge."
+      },
+      {
+        "line": "state[char] = False",
+        "explanation": "Mark character state as 'visiting' to detect cycle links."
+      },
+      {
+        "line": "res.reverse()",
+        "explanation": "Reverse post-order topological sort path to obtain sorted sequence."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "if (w1.size() > w2.size() && w1.substr(0, min_len) == w2.substr(0, min_len)) return \"\";",
+        "explanation": "Prefix edge case constraint check."
+      },
+      {
+        "line": "state[c] = false;",
+        "explanation": "Mark character state as visiting on recursion path."
+      },
+      {
+        "line": "reverse(res.begin(), res.end());",
+        "explanation": "Reverse output string to match topological sort sequence."
+      }
+    ],
+    "timeComplexity": "O(C) - C is total characters in input words. Building graph compares letters in adjacent words. Topological sort takes O(V + E) where V <= 26 and E <= 26.",
+    "spaceComplexity": "O(1) - Adjacency lists and state structures are bounded by the alphabet size (26 vertices maximum).",
+    "dryRun": [
+      "Input: words = ['wrt', 'wrf', 'er', 'ett', 'rftt']",
+      "Edges derived:",
+      "1. wrt vs wrf: t -> f",
+      "2. wrf vs er: w -> e",
+      "3. er vs ett: r -> t",
+      "4. ett vs rftt: e -> r",
+      "Graph: w->e->r->t->f. Cycle check: None.",
+      "Sorted Result: 'wertf'"
+    ],
+    "edgeCases": [
+      "Invalid cycles (e.g. a->b->a, returns '')",
+      "Mismatching prefixes (e.g. ['abcd', 'abc'], returns '')",
+      "Isolated words with no connections (returns letters in arbitrary valid orders)"
+    ],
+    "followUps": [
+      "Can you solve it using Kahn's BFS? (Yes, calculate in-degrees and extract nodes from queue)"
+    ],
+    "relatedProblems": [
+      "Course Schedule II",
+      "Sequence Reconstruction"
+    ],
+    "visualization": "Words: ['wrt', 'wrf', 'er']\n  Compare wrt & wrf -> t & f differ -> edge: t ---> f\n  Compare wrf & er  -> w & e differ -> edge: w ---> e\n  Perform topological sort on w->e, t->f",
+    "commonMistakes": [
+      "Failing to return empty string when a longer prefix word is placed before its base (e.g. ['apple', 'app'] is sorted incorrectly)."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "graphs_8",
+    "title": "Word Ladder",
+    "statement": "Given two words, `beginWord` and `endWord`, and a dictionary `wordList`, return the number of words in the shortest transformation sequence from `beginWord` to `endWord`, such that: 1. Only one letter can be changed at a time. 2. Each transformed word must exist in `wordList`. Return 0 if no path exists.",
+    "difficulty": "Hard",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Amazon"
+    ],
+    "pattern": "BFS Shortest Path Queue with Word Patterns",
+    "bruteForce": {
+      "description": "DFS path traversal checking all words to find the shortest depth. (Slow, causes TLE).",
+      "timeComplexity": "O(N * 26^L) DFS search",
+      "spaceComplexity": "O(N)"
+    },
+    "optimized": {
+      "description": "Use Breadth-First Search (BFS) to find the shortest path. To optimize neighbor searches, replace each index of words with a wild-card pattern (e.g., `*ot` for `hot`). Group words by matching patterns. Traverse BFS queue; for each word, find all matches using patterns, check if they exist in dictionary, and enqueue them.",
+      "timeComplexity": "O(N * L^2)",
+      "spaceComplexity": "O(N * L^2) mapping space"
+    },
+    "pythonCode": "from collections import deque, defaultdict\ndef ladderLength(beginWord, endWord, wordList):\n    if endWord not in wordList:\n        return 0\n        \n    L = len(beginWord)\n    # Map patterns to words\n    patterns = defaultdict(list)\n    for word in wordList:\n        for i in range(L):\n            pattern = word[:i] + '*' + word[i+1:]\n            patterns[pattern].append(word)\n            \n    queue = deque([(beginWord, 1)]) # (word, steps)\n    visited = {beginWord}\n    \n    while queue:\n        curr_word, steps = queue.popleft()\n        if curr_word == endWord:\n            return steps\n            \n        for i in range(L):\n            pattern = curr_word[:i] + '*' + curr_word[i+1:]\n            for neighbor in patterns[pattern]:\n                if neighbor not in visited:\n                    visited.add(neighbor)\n                    queue.append((neighbor, steps + 1))\n    return 0",
+    "cppCode": "int ladderLength(string beginWord, string endWord, vector<string>& wordList) {\n    unordered_set<string> dict(wordList.begin(), wordList.end());\n    if (dict.find(endWord) == dict.end()) return 0;\n    \n    queue<pair<string, int>> q; // word, steps\n    q.push({beginWord, 1});\n    \n    while (!q.empty()) {\n        auto [word, steps] = q.front();\n        q.pop();\n        if (word == endWord) return steps;\n        \n        for (int i = 0; i < word.size(); ++i) {\n            char original = word[i];\n            for (char c = 'a'; c <= 'z'; ++c) {\n                word[i] = c;\n                if (dict.find(word) != dict.end()) {\n                    dict.erase(word);\n                    q.push({word, steps + 1});\n                }\n            }\n            word[i] = original; // Restore\n        }\n    }\n    return 0;\n}",
+    "pythonExplanation": [
+      {
+        "line": "patterns[pattern].append(word)",
+        "explanation": "Build lookup map grouping words under pattern wildcards (e.g. h*t -> [hot, hit])."
+      },
+      {
+        "line": "queue = deque([(beginWord, 1)])",
+        "explanation": "Enqueue starting word with step level 1."
+      },
+      {
+        "line": "for neighbor in patterns[pattern]",
+        "explanation": "Extract adjacent words by testing wildcard patterns rather than comparing the word with every dictionary item."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "unordered_set<string> dict(wordList.begin(), wordList.end());",
+        "explanation": "Convert list of words to set for O(1) validations."
+      },
+      {
+        "line": "word[i] = c;",
+        "explanation": "Mutate characters locally to find valid dictionary entries."
+      },
+      {
+        "line": "dict.erase(word);",
+        "explanation": "Remove word from dict to act as visited set (avoids duplicate cycles)."
+      }
+    ],
+    "timeComplexity": "O(N * L^2) - N is number of words, L is word length. For each word popped from the queue, we generate L pattern strings. Lookup takes O(L) time.",
+    "spaceComplexity": "O(N * L^2) - Space to store patterns dictionary.",
+    "dryRun": [
+      "Input: beginWord = 'hit', endWord = 'cog', wordList = ['hot','dot','dog','lot','log','cog']",
+      "Queue: [('hit', 1)]",
+      "Pop 'hit': mutate -> 'hot' matches. Queue: [('hot', 2)]",
+      "Pop 'hot': mutate -> 'dot' and 'lot' match. Queue: [('dot', 3), ('lot', 3)]",
+      "Pop 'dot': mutate -> 'dog' matches. Queue: [('lot', 3), ('dog', 4)]",
+      "Pop 'lot': mutate -> 'log' matches. Queue: [('dog', 4), ('log', 4)]",
+      "Pop 'dog': mutate -> 'cog' matches. Queue: [('log', 4), ('cog', 5)]",
+      "Pop 'cog': matches endWord! Return 5."
+    ],
+    "edgeCases": [
+      "endWord not in wordList",
+      "No path exists (returns 0)",
+      "beginWord and endWord are identical"
+    ],
+    "followUps": [
+      "Can you optimize it using Bidirectional BFS? (Yes, search concurrently from both ends, which reduces search space tree width)"
+    ],
+    "relatedProblems": [
+      "Word Ladder II",
+      "Minimum Genetic Mutation"
+    ],
+    "visualization": "hit --- hot --- dot --- dog --- cog (Steps: 5)\n          \\       / \n             lot\n  BFS queue naturally finds shortest route.",
+    "commonMistakes": [
+      "Using DFS to find shortest path (leads to Stack Overflow or TLE). Shortest path in unweighted graphs requires BFS."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "graphs_9",
+    "title": "Critical Connections in a Network",
+    "statement": "An edge in an undirected connected graph is a critical connection (bridge) if and only if removing it increases the number of connected components. Find all critical connections in the graph.",
+    "difficulty": "Hard",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Amazon"
+    ],
+    "pattern": "DFS Tarjan Bridge Algorithm / Low Link Tracking",
+    "bruteForce": {
+      "description": "Iteratively remove each edge, run DFS to count components, and restore edge. (Extremely slow, O(E * (V + E))).",
+      "timeComplexity": "O(E * (V + E))",
+      "spaceComplexity": "O(V)"
+    },
+    "optimized": {
+      "description": "Use Tarjan's Bridge-Finding Algorithm (DFS). Maintain `discovery_time` (increasing timestamp counter when node is first visited) and `low` (the lowest discovery time reachable from that node). An edge `u -> v` is a bridge if and only if `low[v] > discovery_time[u]` (meaning `v` has no paths to visit nodes above `u` without using the edge `u -> v`).",
+      "timeComplexity": "O(V + E)",
+      "spaceComplexity": "O(V + E) graphs memory"
+    },
+    "pythonCode": "def criticalConnections(n, connections):\n    # Build adjacency list\n    adj = {i: [] for i in range(n)}\n    for u, v in connections:\n        adj[u].append(v)\n        adj[v].append(u)\n        \n    discovery = [-1] * n\n    low = [-1] * n\n    bridges = []\n    time = 0\n    \n    def dfs(curr, parent):\n        nonlocal time\n        discovery[curr] = low[curr] = time\n        time += 1\n        \n        for neighbor in adj[curr]:\n            if neighbor == parent:\n                continue\n            if discovery[neighbor] == -1:\n                # Recurse\n                dfs(neighbor, curr)\n                low[curr] = min(low[curr], low[neighbor])\n                # Bridge check condition\n                if low[neighbor] > discovery[curr]:\n                    bridges.append([curr, neighbor])\n            else:\n                # Back-edge update\n                low[curr] = min(low[curr], discovery[neighbor])\n                \n    dfs(0, -1)\n    return bridges",
+    "cppCode": "vector<vector<int>> criticalConnections(int n, vector<vector<int>>& connections) {\n    vector<vector<int>> adj(n);\n    for (auto& conn : connections) {\n        adj[conn[0]].push_back(conn[1]);\n        adj[conn[1]].push_back(conn[0]);\n    }\n    vector<int> discovery(n, -1);\n    vector<int> low(n, -1);\n    vector<vector<int>> bridges;\n    int time = 0;\n    \n    auto dfs = [&](auto& self, int curr, int parent) -> void {\n        discovery[curr] = low[curr] = time++;\n        for (int neighbor : adj[curr]) {\n            if (neighbor == parent) continue;\n            if (discovery[neighbor] == -1) {\n                self(self, neighbor, curr);\n                low[curr] = min(low[curr], low[neighbor]);\n                if (low[neighbor] > discovery[curr]) {\n                    bridges.push_back({curr, neighbor});\n                }\n            } else {\n                low[curr] = min(low[curr], discovery[neighbor]);\n            }\n        }\n    };\n    \n    dfs(dfs, 0, -1);\n    return bridges;\n}",
+    "pythonExplanation": [
+      {
+        "line": "discovery[curr] = low[curr] = time",
+        "explanation": "Initialize discovery and low values to the current global step counter timestamp."
+      },
+      {
+        "line": "low[curr] = min(low[curr], low[neighbor])",
+        "explanation": "Propagate back the minimum reachable node discovery time from the child."
+      },
+      {
+        "line": "if low[neighbor] > discovery[curr]:",
+        "explanation": "If the neighbor cannot reach any node above `curr` without passing through `curr`, then the edge `curr-neighbor` is a critical bridge."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "discovery[curr] = low[curr] = time++;",
+        "explanation": "Record discovery step time and low-link index."
+      },
+      {
+        "line": "if (low[neighbor] > discovery[curr])",
+        "explanation": "Bridge condition: child cannot loop back to any ancestor of the parent."
+      }
+    ],
+    "timeComplexity": "O(V + E) - Single DFS traversal visiting all vertices V and edges E in the graph.",
+    "spaceComplexity": "O(V + E) - Recursion call stack depth of V, and vectors to store discovery times and low values.",
+    "dryRun": [
+      "Input: n = 4, connections = [[0,1], [1,2], [2,0], [1,3]]",
+      "Graph has a loop 0-1-2-0 and a dangling tail bridge 1-3.",
+      "DFS(0, -1): disc[0]=low[0]=0.",
+      "DFS(1, 0): disc[1]=low[1]=1.",
+      "DFS(2, 1): disc[2]=low[2]=2. Neighbor 0 is already visited -> updates low[2] to min(2, disc[0]=0) = 0.",
+      "Backtrack to DFS(1, 0): updates low[1] to min(1, low[2]=0) = 0.",
+      "At DFS(1, 0): calls DFS(3, 1): disc[3]=low[3]=3. No children. Returns. Bridge check: low[3]=3 > disc[1]=1 -> Bridge [1, 3] found!",
+      "Result: [[1, 3]]"
+    ],
+    "edgeCases": [
+      "Graph is a tree (all edges are critical bridges)",
+      "Graph is a complete clique (no bridges)",
+      "Graph containing multiple disconnected cycles (assuming connected)"
+    ],
+    "followUps": [
+      "Can you explain the difference between a cut-vertex (articulation point) and a bridge? (Articulation point removal splits graph, bridge removal increases components count)"
+    ],
+    "relatedProblems": [
+      "Redundant Connection",
+      "Reconstruct Itinerary"
+    ],
+    "visualization": "0 --- 1 --- 3  (Node 3 is isolated if edge 1-3 is cut)\n \\   / \n   2           - Cycle 0-1-2: low[2] = 0 -> no bridges in cycle\n               - Bridge: 1-3 (low[3]=3 > disc[1]=1)",
+    "commonMistakes": [
+      "Using `low[curr] = min(low[curr], low[neighbor])` on back edges, which violates Tarjan's definition (should use `discovery[neighbor]`)."
+    ],
+    "whenNotToUse": "None"
+  }
+]

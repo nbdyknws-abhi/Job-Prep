@@ -1,0 +1,586 @@
+[
+  {
+    "id": "queue_1",
+    "title": "Number of Recent Calls",
+    "statement": "You have a `RecentCounter` class which counts the number of recent requests within a certain time frame. Implement the class that counts requests in `[t - 3000, t]`.",
+    "difficulty": "Easy",
+    "companies": [
+      "Infosys",
+      "TCS",
+      "Wipro"
+    ],
+    "pattern": "Queue Sliding Window",
+    "bruteForce": {
+      "description": "Store all request timestamps in an array list, and scan linearly from the start on every ping to count elements that are >= `t - 3000`.",
+      "timeComplexity": "O(N)",
+      "spaceComplexity": "O(N)"
+    },
+    "optimized": {
+      "description": "Use a Queue. Since pings are strictly increasing, we can use a FIFO structure. When `ping(t)` is called, push `t` to the queue. While the front of the queue is smaller than `t - 3000`, pop elements out. Return the size of the queue.",
+      "timeComplexity": "O(1) amortized",
+      "spaceComplexity": "O(W) where W is max window elements"
+    },
+    "pythonCode": "import collections\nclass RecentCounter:\n    def __init__(self):\n        self.q = collections.deque()\n    def ping(self, t: int) -> int:\n        self.q.append(t)\n        while self.q[0] < t - 3000:\n            self.q.popleft()\n        return len(self.q)",
+    "cppCode": "class RecentCounter {\n    queue<int> q;\npublic:\n    RecentCounter() {}\n    int ping(int t) {\n        q.push(t);\n        while (q.front() < t - 3000) {\n            q.pop();\n        }\n        return q.size();\n    }\n};",
+    "pythonExplanation": [
+      {
+        "line": "self.q.append(t)",
+        "explanation": "Add current timestamp to the queue tail."
+      },
+      {
+        "line": "self.q.popleft()",
+        "explanation": "Evict timestamps that are older than 3000ms from the queue head."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "q.push(t);",
+        "explanation": "Push current timestamp onto queue."
+      },
+      {
+        "line": "q.pop();",
+        "explanation": "Pop older timestamp from the front of the queue."
+      }
+    ],
+    "timeComplexity": "O(1) Amortized - Each element is pushed and popped at most once.",
+    "spaceComplexity": "O(W) - Storing timestamps in the active 3000ms window.",
+    "dryRun": [
+      "Initialize: counter = RecentCounter(). q = []",
+      "ping(1): q = [1]. returns 1",
+      "ping(100): q = [1, 100]. returns 2",
+      "ping(3001): q = [1, 100, 3001]. returns 3",
+      "ping(3002): q = [1, 100, 3001, 3002]. 1 is < 3002 - 3000 (2). Pop 1. q = [100, 3001, 3002]. returns 3"
+    ],
+    "edgeCases": [
+      "Large gap between pings",
+      "Empty queue"
+    ],
+    "followUps": [
+      "Can you use Binary Search on a list? (Yes, search for lower bound and slice list)"
+    ],
+    "relatedProblems": [
+      "Design Hit Counter",
+      "Logger Rate Limiter"
+    ],
+    "visualization": "Front of Queue -----------------> Rear of Queue\n[ 1, 100, 3001, 3002 ]  (Remove elements < 3002-3000=2)\n[ 100, 3001, 3002 ] -> Length 3",
+    "commonMistakes": [
+      "Using a list with pop(0) in Python (which is O(N) due to element shifting) instead of O(1) collections.deque."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "queue_2",
+    "title": "Implement Stack using Queues",
+    "statement": "Implement a last-in-first-out (LIFO) stack using only one or two queues.",
+    "difficulty": "Easy",
+    "companies": [
+      "Infosys",
+      "Google",
+      "TCS"
+    ],
+    "pattern": "Queue Element Rotation",
+    "bruteForce": {
+      "description": "Use two queues, copying all elements to a secondary queue for every push operation.",
+      "timeComplexity": "O(N)",
+      "spaceComplexity": "O(N)"
+    },
+    "optimized": {
+      "description": "Use a single Queue. During `push(x)`, append `x` to the queue. Then, rotate the queue: pop elements from the front and push them back to the rear for `size - 1` times. This shifts the newly added element to the front, making `pop()` and `top()` O(1).",
+      "timeComplexity": "O(1) pop, O(N) push",
+      "spaceComplexity": "O(N)"
+    },
+    "pythonCode": "import collections\nclass MyStack:\n    def __init__(self):\n        self.q = collections.deque()\n    def push(self, x: int) -> None:\n        self.q.append(x)\n        for _ in range(len(self.q) - 1):\n            self.q.append(self.q.popleft())\n    def pop(self) -> int:\n        return self.q.popleft()\n    def top(self) -> int:\n        return self.q[0]\n    def empty(self) -> bool:\n        return not self.q",
+    "cppCode": "class MyStack {\n    queue<int> q;\npublic:\n    MyStack() {}\n    void push(int x) {\n        q.push(x);\n        int sz = q.size();\n        for (int i = 0; i < sz - 1; ++i) {\n            q.push(q.front());\n            q.pop();\n        }\n    }\n    int pop() {\n        int val = q.front(); q.pop();\n        return val;\n    }\n    int top() { return q.front(); }\n    bool empty() { return q.empty(); }\n};",
+    "pythonExplanation": [
+      {
+        "line": "self.q.append(self.q.popleft())",
+        "explanation": "Rotate front element to the rear of the queue to reverse order (LIFO)."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "q.push(q.front()); q.pop();",
+        "explanation": "Shift elements front-to-back to rotate the queue."
+      }
+    ],
+    "timeComplexity": "O(N) for push, O(1) for pop/top.",
+    "spaceComplexity": "O(N) - Queue holds at most N elements.",
+    "dryRun": [
+      "Initialize: stack = MyStack(). q = []",
+      "push(1): q = [1]",
+      "push(2): push 2 to q -> [1, 2]. Rotate size-1 (1) times -> pop 1, push 1. q = [2, 1]",
+      "top() -> returns 2",
+      "pop() -> returns 2, q = [1]"
+    ],
+    "edgeCases": [
+      "Popping from empty stack"
+    ],
+    "followUps": [
+      "Can you write this using two queues? (Yes, push O(1) and pop O(N))"
+    ],
+    "relatedProblems": [
+      "Implement Queue using Stacks"
+    ],
+    "visualization": "Queue: [1] -> push 2 -> [1, 2] -> rotate -> [2, 1] (New element is at front)",
+    "commonMistakes": [
+      "Incorrect rotation count (causes element disorder)."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "queue_3",
+    "title": "First Unique Character in a String",
+    "statement": "Given a string `s`, find the first non-repeating character in it and return its index. If it does not exist, return `-1`.",
+    "difficulty": "Easy",
+    "companies": [
+      "Infosys",
+      "Amazon",
+      "Wipro"
+    ],
+    "pattern": "Queue-based character stream",
+    "bruteForce": {
+      "description": "Use two nested loops to check uniqueness of each character in string.",
+      "timeComplexity": "O(N^2)",
+      "spaceComplexity": "O(1)"
+    },
+    "optimized": {
+      "description": "Use a hash map to track character frequencies and a Queue storing pairs `(char, index)`. For each character, update map frequency, and push to queue. Then, check queue front: if front character is repeating, pop it. Repeat until front is unique. Return front index.",
+      "timeComplexity": "O(N)",
+      "spaceComplexity": "O(1) auxiliary"
+    },
+    "pythonCode": "import collections\ndef firstUniqChar(s: str) -> int:\n    counts = {}\n    q = collections.deque()\n    for i, c in enumerate(s):\n        counts[c] = counts.get(c, 0) + 1\n        q.append((c, i))\n        while q and counts[q[0][0]] > 1:\n            q.popleft()\n    return q[0][1] if q else -1",
+    "cppCode": "int firstUniqChar(string s) {\n    vector<int> counts(256, 0);\n    queue<pair<char, int>> q;\n    for (int i = 0; i < s.length(); ++i) {\n        counts[s[i]]++;\n        q.push({s[i], i});\n        while (!q.empty() && counts[q.front().first] > 1) {\n            q.pop();\n        }\n    }\n    return q.empty() ? -1 : q.front().second;\n}",
+    "pythonExplanation": [
+      {
+        "line": "counts[q[0][0]] > 1",
+        "explanation": "If character at front of queue has appeared more than once, it is no longer unique. Pop it."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "q.push({s[i], i});",
+        "explanation": "Push character and index onto stream queue."
+      }
+    ],
+    "timeComplexity": "O(N) - single pass.",
+    "spaceComplexity": "O(1) - alphabet size limits set/map size to 256.",
+    "dryRun": [
+      "s = 'leetcode'",
+      "i = 0: 'l'. counts = {'l':1}, q = [('l', 0)]",
+      "i = 1: 'e'. counts = {'l':1, 'e':1}, q = [('l', 0), ('e', 1)]",
+      "i = 2: 'e'. counts = {'l':1, 'e':2}, q = [('l', 0), ('e', 1), ('e', 2)]",
+      "Front of queue is 'l' (count is 1). Loop stops. Result: index 0"
+    ],
+    "edgeCases": [
+      "All duplicate characters",
+      "Single character string"
+    ],
+    "followUps": [
+      "Can you do it in one pass without queue? (Yes, using a hash map storing index/frequencies)"
+    ],
+    "relatedProblems": [
+      "First Unique Number"
+    ],
+    "visualization": "Queue: [(l,0), (e,1), (e,2)] -> frequencies[e] > 1 -> pop (e,1) -> Front is (l,0)",
+    "commonMistakes": [
+      "Failing to clean up repeated characters from queue head, resulting in stale data."
+    ],
+    "whenNotToUse": "If entire string is available, simple two-pass map array is cleaner."
+  },
+  {
+    "id": "queue_4",
+    "title": "Design Circular Queue",
+    "statement": "Design your implementation of the circular queue. The circular queue is a linear data structure in which the operations are performed based on FIFO (First In First Out) principle and the last position is connected back to the first position to make a circle.",
+    "difficulty": "Medium",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Amazon"
+    ],
+    "pattern": "Fixed-size Array with Head/Tail pointers",
+    "bruteForce": {
+      "description": "Use a dynamic list and shift elements on deletion.",
+      "timeComplexity": "O(N)",
+      "spaceComplexity": "O(N)"
+    },
+    "optimized": {
+      "description": "Use a fixed-size array of size K, and maintain `head` and `tail` index pointers along with `size`. For enqueue: set `tail = (tail + 1) % capacity` and insert. For dequeue: set `head = (head + 1) % capacity` and decrement size.",
+      "timeComplexity": "O(1)",
+      "spaceComplexity": "O(K)"
+    },
+    "pythonCode": "class MyCircularQueue:\n    def __init__(self, k: int):\n        self.cap = k\n        self.q = [0] * k\n        self.head = 0\n        self.tail = -1\n        self.size = 0\n    def enQueue(self, value: int) -> bool:\n        if self.isFull(): return False\n        self.tail = (self.tail + 1) % self.cap\n        self.q[self.tail] = value\n        self.size += 1\n        return True\n    def deQueue(self) -> bool:\n        if self.isEmpty(): return False\n        self.head = (self.head + 1) % self.cap\n        self.size -= 1\n        return True\n    def Front(self) -> int:\n        return -1 if self.isEmpty() else self.q[self.head]\n    def Rear(self) -> int:\n        return -1 if self.isEmpty() else self.q[self.tail]\n    def isEmpty(self) -> bool:\n        return self.size == 0\n    def isFull(self) -> bool:\n        return self.size == self.cap",
+    "cppCode": "class MyCircularQueue {\n    int cap, size, head, tail;\n    vector<int> q;\npublic:\n    MyCircularQueue(int k) : cap(k), size(0), head(0), tail(-1), q(k) {}\n    bool enQueue(int value) {\n        if (isFull()) return false;\n        tail = (tail + 1) % cap;\n        q[tail] = value;\n        size++;\n        return true;\n    }\n    bool deQueue() {\n        if (isEmpty()) return false;\n        head = (head + 1) % cap;\n        size--;\n        return true;\n    }\n    int Front() {\n        return isEmpty() ? -1 : q[head];\n    }\n    int Rear() {\n        return isEmpty() ? -1 : q[tail];\n    }\n    bool isEmpty() { return size == 0; }\n    bool isFull() { return size == cap; }\n};",
+    "pythonExplanation": [
+      {
+        "line": "(self.tail + 1) % self.cap",
+        "explanation": "Wrap tail index circularly when adding elements."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "head = (head + 1) % cap;",
+        "explanation": "Shift head index circularly on deletion."
+      }
+    ],
+    "timeComplexity": "O(1)",
+    "spaceComplexity": "O(K) - array size K.",
+    "dryRun": [
+      "circularQueue = MyCircularQueue(3)",
+      "enQueue(1) -> True. q=[1,0,0], head=0, tail=0",
+      "enQueue(2) -> True. q=[1,2,0], head=0, tail=1",
+      "enQueue(3) -> True. q=[1,2,3], head=0, tail=2",
+      "enQueue(4) -> False (full)",
+      "Rear() -> returns 3",
+      "deQueue() -> True. head=1. size=2"
+    ],
+    "edgeCases": [
+      "Index wrap overflow errors",
+      "Reading values from empty queue"
+    ],
+    "followUps": [
+      "Linked List circular implementation"
+    ],
+    "relatedProblems": [
+      "Design Circular Deque"
+    ],
+    "visualization": "Array: [1, 2, 3] (Head at 1, Tail at 3) -> Dequeue -> [_, 2, 3] (Head at 2)",
+    "commonMistakes": [
+      "Setting tail index to `(tail + 1) % capacity` without checking if queue is full first."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "queue_5",
+    "title": "Rotting Oranges",
+    "statement": "You are given an `m x n` grid where each cell can have one of three values: 0 (empty), 1 (fresh), or 2 (rotten). Return the minimum number of minutes that must elapse until no cell has a fresh orange. If this is impossible, return `-1`.",
+    "difficulty": "Medium",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Amazon"
+    ],
+    "pattern": "Multi-source BFS (Queue)",
+    "bruteForce": {
+      "description": "Run BFS individually for each rotten orange to compute distance to fresh ones.",
+      "timeComplexity": "O((R * C)^2)",
+      "spaceComplexity": "O(R * C)"
+    },
+    "optimized": {
+      "description": "Use Multi-Source BFS. Add all initially rotten oranges to a Queue, and count fresh oranges. Run BFS level-by-level (each level represents 1 minute). Pop rotten orange, infect adjacent fresh oranges, add them to queue, and decrement fresh count. Return elapsed time if fresh count is 0.",
+      "timeComplexity": "O(R * C)",
+      "spaceComplexity": "O(R * C)"
+    },
+    "pythonCode": "from collections import deque\ndef orangesRotting(grid: list[list[int]]) -> int:\n    r_len, c_len = len(grid), len(grid[0])\n    q = deque()\n    fresh = 0\n    for r in range(r_len):\n        for c in range(c_len):\n            if grid[r][c] == 2: q.append((r, c))\n            elif grid[r][c] == 1: fresh += 1\n    if fresh == 0: return 0\n    minutes = -1\n    directions = [(1, 0), (-1, 0), (0, 1), (0, -1)]\n    while q:\n        minutes += 1\n        for _ in range(len(q)):\n            r, c = q.popleft()\n            for dr, dc in directions:\n                nr, nc = r + dr, c + dc\n                if 0 <= nr < r_len and 0 <= nc < c_len and grid[nr][nc] == 1:\n                    grid[nr][nc] = 2\n                    fresh -= 1\n                    q.append((nr, nc))\n    return minutes if fresh == 0 else -1",
+    "cppCode": "int orangesRotting(vector<vector<int>>& grid) {\n    int r_len = grid.size(), c_len = grid[0].size();\n    queue<pair<int, int>> q;\n    int fresh = 0;\n    for (int r = 0; r < r_len; ++r) {\n        for (int c = 0; c < c_len; ++c) {\n            if (grid[r][c] == 2) q.push({r, c});\n            else if (grid[r][c] == 1) fresh++;\n        }\n    }\n    if (fresh == 0) return 0;\n    int minutes = -1;\n    int dirs[4][2] = {{1,0}, {-1,0}, {0,1}, {0,-1}};\n    while (!q.empty()) {\n        minutes++;\n        int sz = q.size();\n        for (int i = 0; i < sz; ++i) {\n            auto [r, c] = q.front(); q.pop();\n            for (auto& dir : dirs) {\n                int nr = r + dir[0], nc = c + dir[1];\n                if (nr >= 0 && nr < r_len && nc >= 0 && nc < c_len && grid[nr][nc] == 1) {\n                    grid[nr][nc] = 2;\n                    fresh--;\n                    q.push({nr, nc});\n                }\n            }\n        }\n    }\n    return fresh == 0 ? minutes : -1;\n}",
+    "pythonExplanation": [
+      {
+        "line": "grid[nr][nc] = 2",
+        "explanation": "Infect fresh orange to prevent infinite BFS cycles."
+      },
+      {
+        "line": "fresh -= 1",
+        "explanation": "Decrease fresh oranges count to verify complete rotting coverage."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "q.push({nr, nc});",
+        "explanation": "Add newly infected orange index to queue."
+      }
+    ],
+    "timeComplexity": "O(R * C) - visits all grid cells.",
+    "spaceComplexity": "O(R * C) - queue storage.",
+    "dryRun": [
+      "Input: grid = [[2,1,1],[1,1,0],[0,1,1]]",
+      "Seed queue: q=[(0,0)], fresh=6",
+      "Minute 1: pop (0,0) -> infects (0,1), (1,0) -> q=[(0,1), (1,0)], fresh=4",
+      "Minute 2: pop (0,1) -> infects (0,2) -> q=[(1,0), (0,2)], fresh=3. pop (1,0) -> infects (1,1) -> q=[(0,2), (1,1)], fresh=2",
+      "Minute 3: pop (0,2) -> no infect. pop (1,1) -> no infect. q=[]",
+      "Result: fresh (2) > 0 -> returns -1"
+    ],
+    "edgeCases": [
+      "No fresh oranges",
+      "Oranges completely isolated",
+      "Empty grid"
+    ],
+    "followUps": [
+      "Solve using DFS? (No, DFS finds path depth first and does not compute shortest time correctly)"
+    ],
+    "relatedProblems": [
+      "Shortest Path in Binary Matrix",
+      "Walls and Gates"
+    ],
+    "visualization": "Seed queue with all rotten oranges -> propagate infection level-by-level -> check leftovers",
+    "commonMistakes": [
+      "Counting minutes incorrectly when no rotting steps occur, or not checking fresh count at end."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "queue_6",
+    "title": "Task Scheduler",
+    "statement": "Given a characters array `tasks`, representing the tasks a CPU needs to do, where each character represents a different task. Tasks could be done in any order. Each task is done in one unit of time. For each unit of time, the CPU could complete either one task or be idle. However, there is a non-negative integer `n` that represents the cooldown period between two same tasks.",
+    "difficulty": "Medium",
+    "companies": [
+      "Infosys",
+      "Amazon",
+      "Microsoft"
+    ],
+    "pattern": "HashMap + Max Heap + Queue",
+    "bruteForce": {
+      "description": "Simulate task executions sequentially while keeping track of task cooldown timers.",
+      "timeComplexity": "O(Answer)",
+      "spaceComplexity": "O(1)"
+    },
+    "optimized": {
+      "description": "Use a Max-Heap to track task frequencies, and a Queue to store task cooldown wait-states: `(frequency, available_time)`. Increment time. Pop tasks from heap, execute, decrement frequency, and add to queue with available time = current + n. Pop from queue and push back to heap if task cooldown expires.",
+      "timeComplexity": "O(Tasks)",
+      "spaceComplexity": "O(1) space limit"
+    },
+    "pythonCode": "import collections, heapq\ndef leastInterval(tasks: list[str], n: int) -> int:\n    counts = collections.Counter(tasks)\n    max_heap = [-cnt for cnt in counts.values()]\n    heapq.heapify(max_heap)\n    q = collections.deque() # stores (neg_cnt, available_time)\n    time = 0\n    while max_heap or q:\n        time += 1\n        if max_heap:\n            cnt = heapq.heappop(max_heap) + 1 # pop max and decrease count\n            if cnt: q.append((cnt, time + n))\n        if q and q[0][1] == time:\n            heapq.heappush(max_heap, q.popleft()[0])\n    return time",
+    "cppCode": "int leastInterval(vector<char>& tasks, int n) {\n    unordered_map<char, int> counts;\n    for (char c : tasks) counts[c]++;\n    priority_queue<int> pq;\n    for (auto p : counts) pq.push(p.second);\n    queue<pair<int, int>> q; // {count, available_time}\n    int time = 0;\n    while (!pq.empty() || !q.empty()) {\n        time++;\n        if (!pq.empty()) {\n            int cnt = pq.top() - 1; pq.pop();\n            if (cnt > 0) q.push({cnt, time + n});\n        }\n        if (!q.empty() && q.front().second == time) {\n            pq.push(q.front().first);\n            q.pop();\n        }\n    }\n    return time;\n}",
+    "pythonExplanation": [
+      {
+        "line": "cnt = heapq.heappop(max_heap) + 1",
+        "explanation": "Decrease task count (since counts are negative max heap, adding 1 decreases frequency)."
+      },
+      {
+        "line": "time + n",
+        "explanation": "Available time is current time + cooldown duration N."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "pq.push(q.front().first);",
+        "explanation": "Push task back onto heap when cooldown expires."
+      }
+    ],
+    "timeComplexity": "O(T) - T is task count.",
+    "spaceComplexity": "O(1) - hash map stores at most 26 elements.",
+    "dryRun": [
+      "tasks = ['A','A','A','B','B','B'], n = 2",
+      "counts = {A:3, B:3}. max_heap = [-3, -3]",
+      "Time 1: Pop A (cnt:-2). Add A to q: [(-2, 3)]. heap = [-3]",
+      "Time 2: Pop B (cnt:-2). Add B to q: [(-2, 3), (-2, 4)]. heap = []",
+      "Time 3: heap empty. q head is A (avail 3 == time). Push A back to heap: [-2]. Pop A. heap empty. q = [(-1, 5)]... continues",
+      "Result: 8"
+    ],
+    "edgeCases": [
+      "N is 0",
+      "All tasks identical"
+    ],
+    "followUps": [
+      "Math formula solution O(Tasks) time and O(1) space"
+    ],
+    "relatedProblems": [
+      "Reorganize String"
+    ],
+    "visualization": "Execute highest count task -> place in cooldown queue -> push to heap when free -> repeat",
+    "commonMistakes": [
+      "Not executing the task with maximum remaining frequency first (leads to redundant idle spaces)."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "queue_7",
+    "title": "Shortest Subarray Sum at Least K",
+    "statement": "Given an integer array `nums` and an integer `k`, return the length of the shortest non-empty contiguous subarray of `nums` with a sum of at least `k`.",
+    "difficulty": "Hard",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Amazon"
+    ],
+    "pattern": "Prefix Sums + Monotonic Deque",
+    "bruteForce": {
+      "description": "Compute sum of all possible subarrays, tracking min length.",
+      "timeComplexity": "O(N^2)",
+      "spaceComplexity": "O(1)"
+    },
+    "optimized": {
+      "description": "Maintain prefix sums. Maintain a Deque of indices. Ensure prefix sums at indices in deque are monotonically increasing. For each index `i`: 1. While `pref[i] - pref[deque.front] >= k`, update min length and pop front. 2. While `pref[i] <= pref[deque.back]`, pop back (preserves shorter window boundary). Push `i`.",
+      "timeComplexity": "O(N)",
+      "spaceComplexity": "O(N)"
+    },
+    "pythonCode": "from collections import deque\ndef shortestSubarray(nums: list[int], k: int) -> int:\n    n = len(nums)\n    pref = [0] * (n + 1)\n    for i in range(n): pref[i+1] = pref[i] + nums[i]\n    q = deque()\n    res = float('inf')\n    for i in range(n + 1):\n        while q and pref[i] - pref[q[0]] >= k:\n            res = min(res, i - q.popleft())\n        while q and pref[i] <= pref[q[-1]]:\n            q.pop()\n        q.append(i)\n    return res if res != float('inf') else -1",
+    "cppCode": "int shortestSubarray(vector<int>& nums, int k) {\n    int n = nums.size();\n    vector<long long> pref(n + 1, 0);\n    for (int i = 0; i < n; ++i) pref[i+1] = pref[i] + nums[i];\n    deque<int> q;\n    int res = INT_MAX;\n    for (int i = 0; i <= n; ++i) {\n        while (!q.empty() && pref[i] - pref[q.front()] >= k) {\n            res = min(res, i - q.front());\n            q.pop_front();\n        }\n        while (!q.empty() && pref[i] <= pref[q.back()]) {\n            q.pop_back();\n        }\n        q.push_back(i);\n    }\n    return res == INT_MAX ? -1 : res;\n}",
+    "pythonExplanation": [
+      {
+        "line": "pref[i] - pref[q[0]] >= k",
+        "explanation": "If current window sum is >= K, update shortest length and pop index from queue head."
+      },
+      {
+        "line": "pref[i] <= pref[q[-1]]",
+        "explanation": "Maintain increasing order by popping indices of larger prefix sums from queue tail (shorter paths are preferred)."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "q.pop_front()",
+        "explanation": "Pop index satisfying condition to test smaller bounds."
+      }
+    ],
+    "timeComplexity": "O(N) - single pass.",
+    "spaceComplexity": "O(N) - prefix sum and deque storage.",
+    "dryRun": [
+      "nums = [2,-1,2], k = 3",
+      "pref = [0, 2, 1, 3]",
+      "i = 0: q = [0]",
+      "i = 1: pref[1](2)-pref[0](0)=2 < 3. q = [0, 1]",
+      "i = 2: pref[2]=1. pref[2]<=pref[1](2) -> pop 1. pref[2]>pref[0] -> q=[0, 2]",
+      "i = 3: pref[3]=3. pref[3]-pref[0](0)=3 >= 3 -> res=min(inf, 3-0=3). pop 0. q=[2, 3]",
+      "Result: 3"
+    ],
+    "edgeCases": [
+      "Array has negative numbers",
+      "No subarray matches"
+    ],
+    "followUps": [
+      "Minimum Size Subarray Sum (only positive values)"
+    ],
+    "relatedProblems": [
+      "Sliding Window Maximum"
+    ],
+    "visualization": "Monotonic Deque keeps prefix sums. Left is popped if sum is met, right popped if sum is smaller.",
+    "commonMistakes": [
+      "Attempting standard Sliding Window without monotonic queue (fails under negative values)."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "queue_8",
+    "title": "Max Value of Equation",
+    "statement": "You are given an array `points` containing the coordinates of points on a 2D plane, sorted by the x-values, and an integer `k`. Find the maximum value of the equation `yi + yj + |xi - xj|` where `|xi - xj| <= k`.",
+    "difficulty": "Hard",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Amazon"
+    ],
+    "pattern": "Monotonic Deque Optimization",
+    "bruteForce": {
+      "description": "Compare all pairs of points using nested loops. (O(N^2) time).",
+      "timeComplexity": "O(N^2)",
+      "spaceComplexity": "O(1)"
+    },
+    "optimized": {
+      "description": "Equation is `(yi - xi) + (yj + xj)`. For a point `j`, we want to maximize `(yi - xi)` for all `i < j` under constraints. Maintain a Deque of indices storing `(yi - xi)`. For each point: pop front if `xj - xi > k`. Compute equation using front. Maintain decreasing order of `(y - x)` by popping back. Push current.",
+      "timeComplexity": "O(N)",
+      "spaceComplexity": "O(N)"
+    },
+    "pythonCode": "from collections import deque\ndef findMaxValueOfEquation(points: list[list[int]], k: int) -> int:\n    q = deque() # stores (y - x, x)\n    res = float('-inf')\n    for x, y in points:\n        while q and x - q[0][1] > k:\n            q.popleft()\n        if q:\n            res = max(res, y + x + q[0][0])\n        while q and q[-1][0] <= y - x:\n            q.pop()\n        q.append((y - x, x))\n    return res",
+    "cppCode": "int findMaxValueOfEquation(vector<vector<int>>& points, int k) {\n    deque<pair<int, int>> q; // {y - x, x}\n    int res = INT_MIN;\n    for (auto& p : points) {\n        int x = p[0], y = p[1];\n        while (!q.empty() && x - q.front().second > k) {\n            q.pop_front();\n        }\n        if (!q.empty()) {\n            res = max(res, y + x + q.front().first);\n        }\n        while (!q.empty() && q.back().first <= y - x) {\n            q.pop_back();\n        }\n        q.push_back({y - x, x});\n    }\n    return res;\n}",
+    "pythonExplanation": [
+      {
+        "line": "y + x + q[0][0]",
+        "explanation": "Calculate max equation sum using optimal prefix peak in queue."
+      },
+      {
+        "line": "q[-1][0] <= y - x",
+        "explanation": "Bypass smaller y - x values in monotonic deque."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "q.pop_front();",
+        "explanation": "Evict nodes violating distance constraint K."
+      }
+    ],
+    "timeComplexity": "O(N) - single pass.",
+    "spaceComplexity": "O(N) - queue storage.",
+    "dryRun": [
+      "points = [[1,3],[2,0],[5,10]], k = 1",
+      "p = [1,3]: y-x = 2. q = [(2, 1)]",
+      "p = [2,0]: x-q[0][1] = 2-1 = 1 <= 1. res = max(inf, 0+2+2) = 4. y-x = -2. q = [(2,1), (-2,2)]",
+      "p = [5,10]: 5-1 = 4 > 1 -> pop (2,1). 5-2 = 3 > 1 -> pop (-2,2). q empty. push (5,5)",
+      "Result: 4"
+    ],
+    "edgeCases": [
+      "All negative coordinates",
+      "No points satisfying gap K"
+    ],
+    "followUps": [
+      "Can you write this using a Priority Queue heap? (Yes, O(N log N) time)"
+    ],
+    "relatedProblems": [
+      "Sliding Window Maximum",
+      "Shortest Subarray Sum at Least K"
+    ],
+    "visualization": "Rewrite equation to split indices variables -> optimize search with monotonic queue",
+    "commonMistakes": [
+      "Incorrect equation variables representation (sign errors during translation)."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "queue_9",
+    "title": "Sliding Window Maximum",
+    "statement": "You are given an array of integers `nums`, there is a sliding window of size `k` which is moving from the very left of the array to the very right. Return the max sliding window.",
+    "difficulty": "Hard",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Amazon"
+    ],
+    "pattern": "Monotonic Deque Queue",
+    "bruteForce": {
+      "description": "Scan each window of size K and find the maximum element. (O(N * K) time).",
+      "timeComplexity": "O(N * K)",
+      "spaceComplexity": "O(1)"
+    },
+    "optimized": {
+      "description": "Use a Double-Ended Queue (Deque) to store indices of elements in the window. Maintain a monotonic decreasing queue: before inserting `i`, pop all indices from the back whose values are <= `nums[i]`. Also pop indices from the front if they fall outside the current window boundary `[i - k + 1, i]`. The maximum is always at `deque[0]`.",
+      "timeComplexity": "O(N)",
+      "spaceComplexity": "O(K) deque space"
+    },
+    "pythonCode": "from collections import deque\ndef maxSlidingWindow(nums, k):\n    res = []\n    q = deque() # Stores indices of elements\n    \n    for i, num in enumerate(nums):\n        # 1. Maintain monotonic decreasing queue\n        while q and nums[q[-1]] <= num:\n            q.pop()\n        q.append(i)\n        \n        # 2. Evict indices outside current window bounds\n        if q[0] < i - k + 1:\n            q.popleft()\n            \n        # 3. Add max element to results once window is established\n        if i >= k - 1:\n            res.append(nums[q[0]])\n    return res",
+    "cppCode": "vector<int> maxSlidingWindow(vector<int>& nums, int k) {\n    vector<int> res;\n    deque<int> q; // Stores indices\n    for (int i = 0; i < nums.size(); ++i) {\n        while (!q.empty() && nums[q.back()] <= nums[i]) {\n            q.pop_back();\n        }\n        q.push_back(i);\n        \n        if (q.front() < i - k + 1) {\n            q.pop_front();\n        }\n        if (i >= k - 1) {\n            res.push_back(nums[q.front()]);\n        }\n    }\n    return res;\n}",
+    "pythonExplanation": [
+      {
+        "line": "while q and nums[q[-1]] <= num: q.pop()",
+        "explanation": "Remove indices of smaller values from the back because they cannot be the maximum of the current or future windows."
+      },
+      {
+        "line": "if q[0] < i - k + 1: q.popleft()",
+        "explanation": "Evict index from front if it is outside the sliding window boundaries."
+      },
+      {
+        "line": "res.append(nums[q[0]])",
+        "explanation": "The front of the deque always stores the index of the maximum element in the window."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "while (!q.empty() && nums[q.back()] <= nums[i])",
+        "explanation": "Monotonic loop: pop elements smaller than current element."
+      }
+    ],
+    "timeComplexity": "O(N) - Each index is pushed and popped from the deque at most once.",
+    "spaceComplexity": "O(K) - The deque stores at most K elements.",
+    "dryRun": [
+      "Input: nums = [1, 3, -1, -3, 5], k = 3",
+      "i = 0: num = 1. st = [0]",
+      "i = 1: num = 3. 3 > 1. pop 0. st = [1]",
+      "i = 2: num = -1. -1 <= 3. st = [1, 2]. window [0..2] is complete -> add nums[1]=3. res=[3]",
+      "i = 3: num = -3. -3 <= -1. st = [1, 2, 3]. window [1..3] is complete -> add nums[1]=3. res=[3, 3]...",
+      "Result: res = [3, 3, 5]"
+    ],
+    "edgeCases": [
+      "K is 1",
+      "K matches length of array",
+      "All elements identical"
+    ],
+    "followUps": [
+      "Can you write this using a Max Heap? (Yes, O(N log N) time)"
+    ],
+    "relatedProblems": [
+      "Sliding Window Median",
+      "Max Value of Equation"
+    ],
+    "visualization": "Monotonic Deque: stores indices, values decreasing. Front is always max.",
+    "commonMistakes": [
+      "Using Priority Queue (heap) which gives O(N log N) instead of linear O(N)."
+    ],
+    "whenNotToUse": "None"
+  }
+]

@@ -1,0 +1,610 @@
+[
+  {
+    "id": "sliding_window_1",
+    "title": "Minimum Difference Between Highest and Lowest of K Scores",
+    "statement": "You are given a 0-indexed integer array `nums`, where `nums[i]` represents the score of the `i`th student. You are also given an integer `k`. Pick the scores of any `k` students from the array so that the difference between the highest and the lowest of the `k` scores is minimized. Return the minimum possible difference.",
+    "difficulty": "Easy",
+    "companies": [
+      "Infosys",
+      "TCS",
+      "Wipro"
+    ],
+    "pattern": "Sort + Fixed Sliding Window",
+    "bruteForce": {
+      "description": "Generate all subsets of size K, compute differences between their max and min values, and find the minimum.",
+      "timeComplexity": "O(N^K)",
+      "spaceComplexity": "O(K)"
+    },
+    "optimized": {
+      "description": "Sort the array. Any subset of size K with the minimum difference must be contiguous in the sorted array. Use a fixed-size sliding window of size `K`. The difference for a window starting at `i` is `nums[i + k - 1] - nums[i]`. Find the minimum difference over all possible windows.",
+      "timeComplexity": "O(N log N)",
+      "spaceComplexity": "O(1) sorting space"
+    },
+    "pythonCode": "def minimumDifference(nums, k):\n    if k == 1:\n        return 0\n    nums.sort()\n    res = float('inf')\n    for i in range(len(nums) - k + 1):\n        res = min(res, nums[i + k - 1] - nums[i])\n    return res",
+    "cppCode": "int minimumDifference(vector<int>& nums, int k) {\n    if (k == 1) return 0;\n    sort(nums.begin(), nums.end());\n    int res = INT_MAX;\n    for (int i = 0; i <= nums.size() - k; ++i) {\n        res = min(res, nums[i + k - 1] - nums[i]);\n    }\n    return res;\n}",
+    "pythonExplanation": [
+      {
+        "line": "if k == 1: return 0",
+        "explanation": "A single student has no difference between max and min score; return 0."
+      },
+      {
+        "line": "nums.sort()",
+        "explanation": "Sort the array to group similar scores together contiguous in memory."
+      },
+      {
+        "line": "res = min(res, nums[i + k - 1] - nums[i])",
+        "explanation": "Calculate difference between largest and smallest elements of the sorted K-sized window."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "sort(nums.begin(), nums.end());",
+        "explanation": "Sort input elements."
+      },
+      {
+        "line": "res = min(res, nums[i + k - 1] - nums[i]);",
+        "explanation": "Check difference of first and last elements in active window."
+      }
+    ],
+    "timeComplexity": "O(N log N) - Dominating step is sorting the array of size N.",
+    "spaceComplexity": "O(1) - Done in place with constant auxiliary space.",
+    "dryRun": [
+      "Input: nums = [9, 4, 1, 7], k = 2",
+      "Sorted: nums = [1, 4, 7, 9].",
+      "i = 0: nums[1] - nums[0] = 4 - 1 = 3. res = 3.",
+      "i = 1: nums[2] - nums[1] = 7 - 4 = 3. res = 3.",
+      "i = 2: nums[3] - nums[2] = 9 - 7 = 2. res = min(3, 2) = 2.",
+      "Result: 2"
+    ],
+    "edgeCases": [
+      "k = 1",
+      "k matches length of array",
+      "Array contains identical values"
+    ],
+    "followUps": [
+      "Can you explain why we sort? (Sorting ensures elements in any window are as close as possible, guaranteeing that the minimum difference subset is contiguous in the sorted array)"
+    ],
+    "relatedProblems": [
+      "Contains Duplicate II",
+      "Minimum Difference in Three Moves"
+    ],
+    "visualization": "Sorted: [ 1,  4,  7,  9 ]  k = 2\n  W1:    [1,  4]          -> diff = 3\n  W2:        [4,  7]      -> diff = 3\n  W3:            [7,  9]  -> diff = 2 (Minimum!)",
+    "commonMistakes": [
+      "Attempting to find combinations without sorting first, causing slow O(N^K) runtimes."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "sliding_window_2",
+    "title": "Longest Nice Substring",
+    "statement": "A string `s` is nice if, for every letter of the alphabet that `s` contains, it appears in both uppercase and lowercase. Return the longest nice substring of `s`. If there are multiple, return the earliest. If none exist, return `\"\"`.",
+    "difficulty": "Easy",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Amazon"
+    ],
+    "pattern": "Divide & Conquer Recursion Splitting",
+    "bruteForce": {
+      "description": "Test all possible substrings combinations for niceness and find the longest. (O(N^3) time).",
+      "timeComplexity": "O(N^3)",
+      "spaceComplexity": "O(N)"
+    },
+    "optimized": {
+      "description": "Use divide and conquer recursion. Insert all characters of `s` in a set. Iterate through `s`: if a character `c` is found where its opposite case is not in the set, the nice substring cannot contain `c`. Split `s` at `c` into left and right substrings, recursively find the longest nice substring in both, and return the longer one.",
+      "timeComplexity": "O(N^2) worst case",
+      "spaceComplexity": "O(N) stack"
+    },
+    "pythonCode": "def longestNiceSubstring(s):\n    if len(s) < 2:\n        return \"\"\n    char_set = set(s)\n    for i, c in enumerate(s):\n        # If opposite case not in set, split here\n        if c.swapcase() not in char_set:\n            left = longestNiceSubstring(s[:i])\n            right = longestNiceSubstring(s[i + 1:])\n            return left if len(left) >= len(right) else right\n    return s",
+    "cppCode": "string longestNiceSubstring(string s) {\n    if (s.size() < 2) return \"\";\n    unordered_set<char> char_set(s.begin(), s.end());\n    for (int i = 0; i < s.size(); ++i) {\n        char c = s[i];\n        char swapped = islower(c) ? toupper(c) : tolower(c);\n        if (char_set.find(swapped) == char_set.end()) {\n            string left = longestNiceSubstring(s.substr(0, i));\n            string right = longestNiceSubstring(s.substr(i + 1));\n            return left.size() >= right.size() ? left : right;\n        }\n    }\n    return s;\n}",
+    "pythonExplanation": [
+      {
+        "line": "if len(s) < 2: return \"\"",
+        "explanation": "Base case: a nice string must have at least one lowercase and one uppercase letter, so size must be >= 2."
+      },
+      {
+        "line": "if c.swapcase() not in char_set:",
+        "explanation": "Find the invalid character that violates the nice condition."
+      },
+      {
+        "line": "left = longestNiceSubstring(s[:i])",
+        "explanation": "Recursively search the left partition before the invalid character."
+      },
+      {
+        "line": "return left if len(left) >= len(right) else right",
+        "explanation": "Return the longer nice string. If lengths are equal, returning left preserves the earliest occurrence constraint."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "char swapped = islower(c) ? toupper(c) : tolower(c);",
+        "explanation": "Swap character case in C++."
+      },
+      {
+        "line": "return left.size() >= right.size() ? left : right;",
+        "explanation": "Select and return the longest valid substring."
+      }
+    ],
+    "timeComplexity": "O(N^2) - In the worst case, we split the string at each level of recursion, doing O(N) operations at each level.",
+    "spaceComplexity": "O(N) - Recursion stack depth can go up to N levels.",
+    "dryRun": [
+      "Input: s = 'YazaAay'",
+      "Set: {'Y','y','a','z','A'}.",
+      "i = 2: 'z'. Opp case 'Z' not in set -> Split! Recurse left 'Ya', right 'aAay'.",
+      "Left 'Ya': 'Y' has no 'y' -> Split! returns ''.",
+      "Right 'aAay': All elements have opposite case ('a' has 'A', 'A' has 'a', 'y' has 'Y'). Returns 'aAay'.",
+      "Result: 'aAay'"
+    ],
+    "edgeCases": [
+      "String containing no nice letters (returns '')",
+      "Entire string is already nice",
+      "Single character string"
+    ],
+    "followUps": [
+      "Can you solve it in O(26 * N) using sliding window? (Yes, by limiting window to have U unique characters from 1 to 26, but code is far more complex)"
+    ],
+    "relatedProblems": [
+      "Longest Substring Without Repeating Characters"
+    ],
+    "visualization": "s = 'Y a z a A a y'  -> Set contains 'y' and 'Y', 'a' and 'A', but 'z' has no 'Z'\nSplit at 'z':\n   - Left: 'Ya' -> not nice -> returns ''\n   - Right: 'aAay' -> nice -> returns 'aAay'",
+    "commonMistakes": [
+      "Using `len(left) > len(right)` instead of `>=`. The problem asks for the earliest substring on ties, so left must be preferred."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "sliding_window_3",
+    "title": "Defuse the Bomb",
+    "statement": "You have a circular code array of size `N`. If `k > 0`, replace the `i`th number with the sum of the next `k` numbers. If `k < 0`, replace with the sum of the previous `|k|` numbers. If `k == 0`, replace with 0. Return the defused code.",
+    "difficulty": "Easy",
+    "companies": [
+      "Infosys",
+      "TCS",
+      "Accenture"
+    ],
+    "pattern": "Circular Sliding Window",
+    "bruteForce": {
+      "description": "Calculate sum for each element by looping k times modulo N. (O(N * K) time).",
+      "timeComplexity": "O(N * K)",
+      "spaceComplexity": "O(1)"
+    },
+    "optimized": {
+      "description": "Use a sliding window of size `|k|`. For `k > 0`, start the window at indices `[1, k]`. For `k < 0`, start window at indices `[N - |k|, N - 1]`. Slide the window circular-wise: subtract the leaving element, and add the entering element using modulo N indices.",
+      "timeComplexity": "O(N)",
+      "spaceComplexity": "O(1)"
+    },
+    "pythonCode": "def decrypt(code, k):\n    n = len(code)\n    res = [0] * n\n    if k == 0:\n        return res\n        \n    # Initialize sliding window bounds\n    l, r = (1, k) if k > 0 else (n + k, n - 1)\n    curr_sum = sum(code[i % n] for i in range(l, r + 1))\n    \n    for i in range(n):\n        res[i] = curr_sum\n        # Slide window circular-wise\n        curr_sum -= code[l % n]\n        l += 1\n        r += 1\n        curr_sum += code[r % n]\n    return res",
+    "cppCode": "vector<int> decrypt(vector<int>& code, int k) {\n    int n = code.size();\n    vector<int> res(n, 0);\n    if (k == 0) return res;\n    \n    int l = (k > 0) ? 1 : n + k;\n    int r = (k > 0) ? k : n - 1;\n    \n    int curr_sum = 0;\n    for (int i = l; i <= r; ++i) {\n        curr_sum += code[i % n];\n    }\n    \n    for (int i = 0; i < n; ++i) {\n        res[i] = curr_sum;\n        curr_sum -= code[l % n];\n        l++;\n        r++;\n        curr_sum += code[r % n];\n    }\n    return res;\n}",
+    "pythonExplanation": [
+      {
+        "line": "l, r = (1, k) if k > 0 else (n + k, n - 1)",
+        "explanation": "Define initial window boundary. If k is negative, the window sits at the circular back of the array."
+      },
+      {
+        "line": "curr_sum -= code[l % n]",
+        "explanation": "Deduct the element exiting the window from the left."
+      },
+      {
+        "line": "curr_sum += code[r % n]",
+        "explanation": "Add the element entering the window from the right."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "curr_sum += code[i % n];",
+        "explanation": "Sum initial window values circular-wise using modulo n."
+      },
+      {
+        "line": "curr_sum -= code[l % n]; l++; r++; curr_sum += code[r % n];",
+        "explanation": "Slide window step-by-step updating the sum in O(1)."
+      }
+    ],
+    "timeComplexity": "O(N) - We slide the window N times. Each slide takes O(1) time.",
+    "spaceComplexity": "O(1) - Space complexity is constant if not counting the result list.",
+    "dryRun": [
+      "Input: code = [5, 7, 1, 4], k = 3",
+      "Initial window: indices [1, 3] -> sum = 7+1+4 = 12.",
+      "i = 0: res[0] = 12. Slide window: deduct code[1]=7, add code[4%4=0]=5. sum = 12-7+5 = 10.",
+      "i = 1: res[1] = 10. Slide window: deduct code[2]=1, add code[5%4=1]=7. sum = 10-1+7 = 16.",
+      "i = 2: res[2] = 16. Slide: deduct code[3]=4, add code[6%4=2]=1. sum = 16-4+1 = 13.",
+      "i = 3: res[3] = 13. Returns [12, 10, 16, 13]."
+    ],
+    "edgeCases": [
+      "k = 0 (returns all zeros)",
+      "k is negative",
+      "k is larger than n (assuming |k| < n)"
+    ],
+    "followUps": [
+      "Can you write this using a simple nested loop? (Yes, but it takes O(N * K) time, which is slower for large K)"
+    ],
+    "relatedProblems": [
+      "Circular Array Loop"
+    ],
+    "visualization": "circular code = [5,  7,  1,  4]  k = 3\n  i=0: target next 3 -> [7,  1,  4] -> sum = 12\n  i=1: target next 3 -> [1,  4,  5] -> sum = 10\n  Slide window by subtracting leaving and adding entering.",
+    "commonMistakes": [
+      "Incorrectly applying modulo indexing when sliding boundaries, leading to out-of-bounds errors."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "sliding_window_4",
+    "title": "Longest Substring Without Repeating Characters",
+    "statement": "Given a string `s`, find the length of the longest substring without repeating characters.",
+    "difficulty": "Medium",
+    "companies": [
+      "Infosys",
+      "Amazon",
+      "Google"
+    ],
+    "pattern": "Dynamic Sliding Window / Seen Hash Map",
+    "bruteForce": {
+      "description": "Check all substrings for duplicates using a set. (O(N^3) time).",
+      "timeComplexity": "O(N^3)",
+      "spaceComplexity": "O(N)"
+    },
+    "optimized": {
+      "description": "Use a sliding window with `left` and `right` pointers. Maintain a hash map to store characters and their last seen indices. As `right` sweeps the string, if `s[right]` is already in map and its index is >= `left`, shrink window by moving `left` to `last_seen[s[right]] + 1`. Track max window size.",
+      "timeComplexity": "O(N)",
+      "spaceComplexity": "O(N)"
+    },
+    "pythonCode": "def lengthOfLongestSubstring(s):\n    seen = {}\n    l = 0\n    res = 0\n    for r, char in enumerate(s):\n        if char in seen and seen[char] >= l:\n            # Slide left pointer past the duplicate occurrence\n            l = seen[char] + 1\n        seen[char] = r\n        res = max(res, r - l + 1)\n    return res",
+    "cppCode": "int lengthOfLongestSubstring(string s) {\n    vector<int> seen(256, -1); // ASCII lookup\n    int l = 0, res = 0;\n    for (int r = 0; r < s.size(); ++r) {\n        if (seen[s[r]] >= l) {\n            l = seen[s[r]] + 1;\n        }\n        seen[s[r]] = r;\n        res = max(res, r - l + 1);\n    }\n    return res;\n}",
+    "pythonExplanation": [
+      {
+        "line": "if char in seen and seen[char] >= l:",
+        "explanation": "Verify if character was encountered and is inside the active sliding window bounds."
+      },
+      {
+        "line": "l = seen[char] + 1",
+        "explanation": "Slide left boundary pointer past the previous index of the duplicate character."
+      },
+      {
+        "line": "res = max(res, r - l + 1)",
+        "explanation": "Update maximum length of the substring."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "vector<int> seen(256, -1);",
+        "explanation": "Use a direct ASCII vector initialized to -1 to map characters to their indices in constant time."
+      }
+    ],
+    "timeComplexity": "O(N) - Single pass of the string of size N.",
+    "spaceComplexity": "O(1) - Auxiliary space is bounded by the alphabet size (26 letters or 256 ASCII characters).",
+    "dryRun": [
+      "Input: s = 'abcabcbb'",
+      "r = 0: char='a'. seen = {'a': 0}, l = 0. res = 1.",
+      "r = 1: char='b'. seen = {'a':0, 'b':1}, l = 0. res = 2.",
+      "r = 2: char='c'. seen = {'a':0, 'b':1, 'c':2}, l = 0. res = 3.",
+      "r = 3: char='a'. seen['a'](0) >= l(0) -> l = 1. seen['a'] = 3. res = max(3, 3) = 3.",
+      "Result: 3"
+    ],
+    "edgeCases": [
+      "Empty string",
+      "String with all repeating characters (e.g. 'bbbbb')",
+      "String with unique characters"
+    ],
+    "followUps": [
+      "Can you solve it using a Set instead of a Map? (Yes, but requires incrementing `left` step-by-step in a while loop, which is slightly slower)"
+    ],
+    "relatedProblems": [
+      "Longest Substring with At Most K Distinct Characters",
+      "Longest Substring with At Most Two Distinct Characters"
+    ],
+    "visualization": "s = 'a b c a b c b b'\n    L     R             -> window = 'abc'\n      L     R           -> 'a' repeated, L shifts to index 1, window = 'bca'",
+    "commonMistakes": [
+      "Checking `char in seen` but forgetting to check if the seen index is `>= left`, shifting `left` backwards incorrectly."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "sliding_window_5",
+    "title": "Longest Repeating Character Replacement",
+    "statement": "You are given a string `s` and an integer `k`. You can choose any character of the string and change it to any other uppercase English character. You can perform this operation at most `k` times. Return the length of the longest substring containing the same letter after replacements.",
+    "difficulty": "Medium",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Amazon"
+    ],
+    "pattern": "Sliding Window Max Frequency Track",
+    "bruteForce": {
+      "description": "Test all substrings, count most frequent letter, verify if other letters <= K. (O(N^3) time).",
+      "timeComplexity": "O(N^3)",
+      "spaceComplexity": "O(1)"
+    },
+    "optimized": {
+      "description": "Use a sliding window. Maintain a frequency map of characters in the window and a variable `max_f` (highest frequency of any character seen in the window so far). If `(window_size) - max_f > k`, the current window is invalid (requires > K replacements). Shrink window from left by 1. Track max window size.",
+      "timeComplexity": "O(N)",
+      "spaceComplexity": "O(26) = O(1)"
+    },
+    "pythonCode": "def characterReplacement(s, k):\n    count = {}\n    l = 0\n    max_f = 0\n    for r in range(len(s)):\n        count[s[r]] = count.get(s[r], 0) + 1\n        max_f = max(max_f, count[s[r]])\n        \n        # Window size - max_f is the number of changes needed\n        if (r - l + 1) - max_f > k:\n            count[s[l]] -= 1\n            l += 1\n            \n    return (r - l + 1)",
+    "cppCode": "int characterReplacement(string s, int k) {\n    int count[26] = {0};\n    int l = 0, max_f = 0;\n    int r = 0;\n    for (r = 0; r < s.size(); ++r) {\n        count[s[r] - 'A']++;\n        max_f = max(max_f, count[s[r] - 'A']);\n        \n        if ((r - l + 1) - max_f > k) {\n            count[s[l] - 'A']--;\n            l++;\n        }\n    }\n    return s.size() - l;\n}",
+    "pythonExplanation": [
+      {
+        "line": "max_f = max(max_f, count[s[r]])",
+        "explanation": "Track the maximum frequency of a single character in the window."
+      },
+      {
+        "line": "if (r - l + 1) - max_f > k:",
+        "explanation": "If total elements minus max frequency is greater than k, we need more than k replacements; shrink window."
+      },
+      {
+        "line": "count[s[l]] -= 1",
+        "explanation": "Deduct leaving character frequency count before sliding left pointer."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "count[s[l] - 'A']--; l++;",
+        "explanation": "Deduct left boundary value and slide pointer."
+      }
+    ],
+    "timeComplexity": "O(N) - Single pass through the string of size N.",
+    "spaceComplexity": "O(1) - Space to store character frequencies is bounded by alphabet size (26).",
+    "dryRun": [
+      "s = 'AABABBA', k = 1 -> returns 4"
+    ],
+    "edgeCases": [
+      "K is larger than string length"
+    ],
+    "followUps": [
+      "Can we use a dynamic map for unicode characters?"
+    ],
+    "relatedProblems": [
+      "Max Consecutive Ones III"
+    ],
+    "visualization": "Window: AAB. Max_F=2. Len=3. Replacements needed: 3-2=1 <= K (1). Valid!",
+    "commonMistakes": [
+      "Recalculating max_f inside the entire map on every contraction (not required; it only increases or stays same during window expansion)."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "sliding_window_6",
+    "title": "Minimum Size Subarray Sum",
+    "statement": "Given an array of positive integers `nums` and a positive integer `target`, return the minimal length of a contiguous subarray of which the sum is greater than or equal to `target`. If there is no such subarray, return 0.",
+    "difficulty": "Medium",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Amazon"
+    ],
+    "pattern": "Sliding Window Shrink-Expand",
+    "bruteForce": {
+      "description": "Calculate sum of all possible subarrays, and find the minimum length whose sum >= target.",
+      "timeComplexity": "O(N^2)",
+      "spaceComplexity": "O(1)"
+    },
+    "optimized": {
+      "description": "Use a sliding window. Loop `right` from 0 to N-1: add `nums[right]` to `curr_sum`. While `curr_sum >= target`, record the minimum window size `right - left + 1`, subtract `nums[left]` from `curr_sum`, and increment `left`. Return min size.",
+      "timeComplexity": "O(N)",
+      "spaceComplexity": "O(1)"
+    },
+    "pythonCode": "def minSubArrayLen(target, nums):\n    l = 0\n    curr_sum = 0\n    res = float('inf')\n    for r in range(len(nums)):\n        curr_sum += nums[r]\n        while curr_sum >= target:\n            res = min(res, r - l + 1)\n            curr_sum -= nums[l]\n            l += 1\n    return res if res != float('inf') else 0",
+    "cppCode": "int minSubArrayLen(int target, vector<int>& nums) {\n    int l = 0, curr_sum = 0, res = INT_MAX;\n    for (int r = 0; r < nums.size(); ++r) {\n        curr_sum += nums[r];\n        while (curr_sum >= target) {\n            res = min(res, r - l + 1);\n            curr_sum -= nums[l++];\n        }\n    }\n    return res == INT_MAX ? 0 : res;\n}",
+    "pythonExplanation": [
+      {
+        "line": "while curr_sum >= target:",
+        "explanation": "Inner loop shrinks the window from left as long as target sum constraint is satisfied to find minimal length."
+      },
+      {
+        "line": "res = min(res, r - l + 1)",
+        "explanation": "Update candidate minimum length of subarray."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "curr_sum -= nums[l++];",
+        "explanation": "Subtract left value from sum and advance left boundary pointer."
+      }
+    ],
+    "timeComplexity": "O(N) - Both pointers left and right traverse the array at most once.",
+    "spaceComplexity": "O(1) - Constant auxiliary space.",
+    "dryRun": [
+      "target = 7, nums = [2,3,1,2,4,3]",
+      "r=0..3: sum=8 >= 7 -> len=4, left contract to L=1, sum=6 < 7",
+      "returns 2"
+    ],
+    "edgeCases": [
+      "No solution exists (returns 0)"
+    ],
+    "followUps": [
+      "O(N log N) using binary search and prefix sums (useful if negative numbers are present)"
+    ],
+    "relatedProblems": [
+      "Shortest Subarray with Sum at Least K"
+    ],
+    "visualization": "Expand right -> contract left when criteria met",
+    "commonMistakes": [
+      "Using a fixed size window search instead of dynamic contraction window."
+    ],
+    "whenNotToUse": "If array contains negative values, this O(1) space sliding window does not work."
+  },
+  {
+    "id": "sliding_window_7",
+    "title": "Minimum Window Substring",
+    "statement": "Given two strings `s` and `t` of lengths `m` and `n` respectively, return the minimum window substring of `s` such that every character in `t` (including duplicates) is included in the window. If no such substring exists, return `\"\"`.",
+    "difficulty": "Hard",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Amazon"
+    ],
+    "pattern": "HashMap Sliding Window Matching",
+    "bruteForce": {
+      "description": "Check all substrings, count character frequencies to verify if they contain t. (O(M^3) time).",
+      "timeComplexity": "O(M^3)",
+      "spaceComplexity": "O(1)"
+    },
+    "optimized": {
+      "description": "Use two hash maps: `dictT` (target character counts) and `window` (counts in current window). Sweep `right`: if `s[right]` in `dictT` and counts match, increment `have` counter. While `have == need`, record minimum window, then shrink `left` by decrementing its count. If `have` drops, exit inner loop.",
+      "timeComplexity": "O(M + N)",
+      "spaceComplexity": "O(M + N)"
+    },
+    "pythonCode": "def minWindow(s, t):\n    if not t or not s:\n        return \"\"\n    dictT = {}\n    for c in t: dictT[c] = dictT.get(c, 0) + 1\n    \n    window = {}\n    have, need = 0, len(dictT)\n    res, res_len = [-1, -1], float('inf')\n    l = 0\n    \n    for r, char in enumerate(s):\n        if char in dictT:\n            window[char] = window.get(char, 0) + 1\n            if window[char] == dictT[char]:\n                have += 1\n                \n        while have == need:\n            # Update minimum window\n            if (r - l + 1) < res_len:\n                res = [l, r]\n                res_len = r - l + 1\n                \n            # Shrink from left\n            left_char = s[l]\n            if left_char in dictT:\n                window[left_char] -= 1\n                if window[left_char] < dictT[left_char]:\n                    have -= 1\n            l += 1\n            \n    l, r = res\n    return s[l:r+1] if res_len != float('inf') else \"\"",
+    "cppCode": "string minWindow(string s, string t) {\n    if (s.empty() || t.empty()) return \"\";\n    vector<int> dictT(128, 0);\n    for (char c : t) dictT[c]++;\n    \n    vector<int> window(128, 0);\n    int have = 0, need = 0;\n    for (int count : dictT) if (count > 0) need++;\n    \n    int l = 0, min_l = 0, min_len = INT_MAX;\n    for (int r = 0; r < s.size(); ++r) {\n        char c = s[r];\n        if (dictT[c] > 0) {\n            window[c]++;\n            if (window[c] == dictT[c]) have++;\n        }\n        \n        while (have == need) {\n            if (r - l + 1 < min_len) {\n                min_len = r - l + 1;\n                min_l = l;\n            }\n            char left_char = s[l];\n            if (dictT[left_char] > 0) {\n                window[left_char]--;\n                if (window[left_char] < dictT[left_char]) have--;\n            }\n            l++;\n        }\n    }\n    return min_len == INT_MAX ? \"\" : s.substr(min_l, min_len);\n}",
+    "pythonExplanation": [
+      {
+        "line": "have, need = 0, len(dictT)",
+        "explanation": "have tracks how many unique characters match target counts; need is total unique characters in t."
+      },
+      {
+        "line": "if window[char] == dictT[char]: have += 1",
+        "explanation": "If character counts in window match target counts, increment matches."
+      },
+      {
+        "line": "if window[left_char] < dictT[left_char]: have -= 1",
+        "explanation": "When shrinking left, if a target character count drops below needed frequency, decrement matches to exit inner loop."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "vector<int> dictT(128, 0);",
+        "explanation": "ASCII table mappings of target frequencies."
+      }
+    ],
+    "timeComplexity": "O(M + N) - M, N are lengths of s and t. Populating dictT is O(N). The sliding window traversal is O(M).",
+    "spaceComplexity": "O(1) - Constant auxiliary space (ASCII table is size 128).",
+    "dryRun": [
+      "s = 'ADOBECODEBANC', t = 'ABC' -> returns 'BANC'"
+    ],
+    "edgeCases": [
+      "T is longer than s"
+    ],
+    "followUps": [
+      "Can we solve this if duplicates are not allowed?"
+    ],
+    "relatedProblems": [
+      "Substring with Concatenation of All Words"
+    ],
+    "visualization": "Expand right to find match -> contract left to minimize size",
+    "commonMistakes": [
+      "Incrementing formed count repeatedly for already satisfied letters (use strict equal check `==`)."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "sliding_window_8",
+    "title": "Sliding Window Maximum",
+    "statement": "You are given an array of integers `nums`, there is a sliding window of size `k` which is moving from the very left of the array to the very right. Return the max sliding window. Solve in O(N) time.",
+    "difficulty": "Hard",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Amazon"
+    ],
+    "pattern": "Monotonic Deque Queue",
+    "bruteForce": {
+      "description": "Scan each window of size K and find the maximum element. (O(N * K) time).",
+      "timeComplexity": "O(N * K)",
+      "spaceComplexity": "O(1)"
+    },
+    "optimized": {
+      "description": "Use a Double-Ended Queue (Deque) to store indices of elements in the window. Maintain a monotonic decreasing queue: before inserting `i`, pop all indices from the back whose values are <= `nums[i]`. Also pop indices from the front if they fall outside the current window boundary `[i - k + 1, i]`. The maximum is always at `deque[0]`.",
+      "timeComplexity": "O(N)",
+      "spaceComplexity": "O(K) deque space"
+    },
+    "pythonCode": "from collections import deque\ndef maxSlidingWindow(nums, k):\n    res = []\n    q = deque() # Stores indices of elements\n    \n    for i, num in enumerate(nums):\n        # 1. Maintain monotonic decreasing queue\n        while q and nums[q[-1]] <= num:\n            q.pop()\n        q.append(i)\n        \n        # 2. Evict indices outside current window bounds\n        if q[0] < i - k + 1:\n            q.popleft()\n            \n        # 3. Add max element to results once window is established\n        if i >= k - 1:\n            res.append(nums[q[0]])\n    return res",
+    "cppCode": "vector<int> maxSlidingWindow(vector<int>& nums, int k) {\n    vector<int> res;\n    deque<int> q; // Stores indices\n    for (int i = 0; i < nums.size(); ++i) {\n        while (!q.empty() && nums[q.back()] <= nums[i]) {\n            q.pop_back();\n        }\n        q.push_back(i);\n        \n        if (q.front() < i - k + 1) {\n            q.pop_front();\n        }\n        if (i >= k - 1) {\n            res.push_back(nums[q.front()]);\n        }\n    }\n    return res;\n}",
+    "pythonExplanation": [
+      {
+        "line": "while q and nums[q[-1]] <= num: q.pop()",
+        "explanation": "Remove indices of smaller values from the back because they cannot be the maximum of the current or future windows."
+      },
+      {
+        "line": "if q[0] < i - k + 1: q.popleft()",
+        "explanation": "Evict index from front if it is outside the sliding window boundaries."
+      },
+      {
+        "line": "res.append(nums[q[0]])",
+        "explanation": "The front of the deque always stores the index of the maximum element in the window."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "while (!q.empty() && nums[q.back()] <= nums[i])",
+        "explanation": "Monotonic loop: pop elements smaller than current element."
+      }
+    ],
+    "timeComplexity": "O(N) - Each index is pushed and popped from the deque at most once.",
+    "spaceComplexity": "O(K) - The deque stores at most K elements.",
+    "dryRun": [
+      "nums = [1,3,-1,-3,5,3,6,7], k = 3 -> returns [3,3,5,5,6,7]"
+    ],
+    "edgeCases": [
+      "K is 1",
+      "Array smaller than K"
+    ],
+    "followUps": [
+      "Heap solution O(N log N)"
+    ],
+    "relatedProblems": [
+      "Longest Continuous Subarray With Absolute Diff Less Than or Equal to Limit"
+    ],
+    "visualization": "Monotonic Deque: stores indices, values decreasing. Front is always max.",
+    "commonMistakes": [
+      "Using Priority Queue (heap) which gives O(N log N) instead of linear O(N)."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "sliding_window_9",
+    "title": "Subarrays with K Different Integers",
+    "statement": "Given an integer array `nums` and an integer `k`, return the number of good subarrays of `nums`. A good subarray is a subarray that has exactly `k` different integers.",
+    "difficulty": "Hard",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Amazon"
+    ],
+    "pattern": "Exactly K = At Most K - At Most K-1",
+    "bruteForce": {
+      "description": "Use nested loops to check all subarrays and count unique values. (O(N^2) time).",
+      "timeComplexity": "O(N^2)",
+      "spaceComplexity": "O(N)"
+    },
+    "optimized": {
+      "description": "The number of subarrays with exactly K distinct values is equal to the number of subarrays with `atMost(K)` distinct values minus the number of subarrays with `atMost(K - 1)` distinct values. A helper function `atMost(limit)` runs sliding window: as `right` sweeps, if unique values count exceeds limit, shrink `left` until count is valid. Accumulate window sizes `right - left + 1`.",
+      "timeComplexity": "O(N)",
+      "spaceComplexity": "O(K) map"
+    },
+    "pythonCode": "def subarraysWithKDistinct(nums, k):\n    def atMost(limit):\n        count = {}\n        l = 0\n        subarrays = 0\n        for r in range(len(nums)):\n            if nums[r] not in count:\n                count[nums[r]] = 0\n            count[nums[r]] += 1\n            \n            while len(count) > limit:\n                count[nums[l]] -= 1\n                if count[nums[l]] == 0:\n                    del count[nums[l]]\n                l += 1\n            subarrays += r - l + 1\n        return subarrays\n        \n    return atMost(k) - atMost(k - 1)",
+    "cppCode": "int subarraysWithKDistinct(vector<int>& nums, int k) {\n    auto atMost = [&](int limit) -> int {\n        unordered_map<int, int> count;\n        int l = 0, subarrays = 0;\n        for (int r = 0; r < nums.size(); ++r) {\n            count[nums[r]]++;\n            while (count.size() > limit) {\n                count[nums[l]]--;\n                if (count[nums[l]] == 0) {\n                    count.erase(nums[l]);\n                }\n                l++;\n            }\n            subarrays += r - l + 1;\n        }\n        return subarrays;\n    };\n    return atMost(k) - atMost(k - 1);\n}",
+    "pythonExplanation": [
+      {
+        "line": "return atMost(k) - atMost(k - 1)",
+        "explanation": "Subtracting atMost(K-1) from atMost(K) yields the exact number of subarrays containing exactly K elements."
+      },
+      {
+        "line": "subarrays += r - l + 1",
+        "explanation": "Add the size of the valid window. This represents the number of subarrays ending at index r that have at most `limit` unique integers."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "subarrays += r - l + 1;",
+        "explanation": "Accumulate count of valid sliding windows."
+      }
+    ],
+    "timeComplexity": "O(N) - We run the `atMost` sliding window function twice. Each run takes O(N) time.",
+    "spaceComplexity": "O(K) - Storing unique keys in counts map.",
+    "dryRun": [
+      "nums = [1,2,1,2,3], k = 2 -> returns 7"
+    ],
+    "edgeCases": [
+      "K is larger than unique numbers in array"
+    ],
+    "followUps": [
+      "Can we do it in a single pass? (Yes, by tracking prefix counts of leftmost duplicated element in active window)"
+    ],
+    "relatedProblems": [
+      "Fruit Into Baskets"
+    ],
+    "visualization": "exactly(K) = atMost(K) - atMost(K-1)",
+    "commonMistakes": [
+      "Attempting to compute exactly K using single pass sliding window without tracking duplicate offsets."
+    ],
+    "whenNotToUse": "None"
+  }
+]

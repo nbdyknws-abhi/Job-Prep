@@ -1,0 +1,579 @@
+[
+  {
+    "id": "heap_1",
+    "title": "Kth Largest Element in a Stream",
+    "statement": "Design a class to find the K-th largest element in a stream. Note that it is the K-th largest element in the sorted order, not the K-th distinct element.",
+    "difficulty": "Easy",
+    "companies": [
+      "Infosys",
+      "Amazon",
+      "Google"
+    ],
+    "pattern": "Min-Heap Size K Tracker",
+    "bruteForce": {
+      "description": "Store all elements in an array. Each time a new element is added, sort the entire array in descending order and return the element at index `K - 1`.",
+      "timeComplexity": "O(N log N) per add",
+      "spaceComplexity": "O(N)"
+    },
+    "optimized": {
+      "description": "Maintain a Min-Heap of size K containing the K largest elements seen so far. During `add(val)`: push `val` to heap. If heap size exceeds K, pop. The root of the min-heap will always contain the K-th largest element in O(1) time.",
+      "timeComplexity": "O(log K) per add",
+      "spaceComplexity": "O(K)"
+    },
+    "pythonCode": "import heapq\nclass KthLargest:\n    def __init__(self, k: int, nums: list[int]):\n        self.k = k\n        self.heap = nums\n        heapq.heapify(self.heap)\n        while len(self.heap) > k:\n            heapq.heappop(self.heap)\n    def add(self, val: int) -> int:\n        heapq.heappush(self.heap, val)\n        if len(self.heap) > self.k:\n            heapq.heappop(self.heap)\n        return self.heap[0]",
+    "cppCode": "class KthLargest {\n    int k;\n    priority_queue<int, vector<int>, greater<int>> pq;\npublic:\n    KthLargest(int k, vector<int>& nums) : k(k) {\n        for (int n : nums) {\n            pq.push(n);\n            if (pq.size() > k) pq.pop();\n        }\n    }\n    int add(int val) {\n        pq.push(val);\n        if (pq.size() > k) pq.pop();\n        return pq.top();\n    }\n};",
+    "pythonExplanation": [
+      {
+        "line": "heapq.heapify(self.heap)",
+        "explanation": "Convert input list to min-heap in-place in O(N) time."
+      },
+      {
+        "line": "self.heap[0]",
+        "explanation": "The top/root of min-heap contains the smallest value of K largest numbers (K-th largest)."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "pq.top();",
+        "explanation": "Return root of min priority queue."
+      }
+    ],
+    "timeComplexity": "O(log K) per add operation.",
+    "spaceComplexity": "O(K) - heap memory.",
+    "dryRun": [
+      "K = 3, nums = [4, 5, 8, 2]",
+      "Initial heap size matches K: self.heap = [4, 5, 8]",
+      "add(3) -> heap becomes [3, 4, 5, 8] -> pop 3 -> heap is [4, 5, 8]. Return root = 4",
+      "add(5) -> heap becomes [4, 5, 5, 8] -> pop 4 -> heap is [5, 5, 8]. Return root = 5"
+    ],
+    "edgeCases": [
+      "K is larger than initial elements count",
+      "Duplicate values exist in stream"
+    ],
+    "followUps": [
+      "Can you write this using a self-balancing Binary Search Tree? (Yes, search depth O(log N))"
+    ],
+    "relatedProblems": [
+      "Kth Largest Element in an Array",
+      "Top K Frequent Elements"
+    ],
+    "visualization": "Min-Heap size K keeps K largest. Root is the smallest (K-th largest).\nHeap values: [ 5, 5, 8 ] (k=3)\nRoot element is 5 (K-th largest)",
+    "commonMistakes": [
+      "Using a Max-Heap instead of a Min-Heap, requiring sorting or complete pops to find the K-th element."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "heap_2",
+    "title": "Last Stone Weight",
+    "statement": "You are given an array of integers `stones` where `stones[i]` is the weight of the `i`th stone. Smash the two heaviest stones. Return the leftover stone weight. If no stones are left, return 0.",
+    "difficulty": "Easy",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Amazon"
+    ],
+    "pattern": "Max-Heap Simulation",
+    "bruteForce": {
+      "description": "Sort the array on each smash step to find the two heaviest elements.",
+      "timeComplexity": "O(N^2 log N)",
+      "spaceComplexity": "O(1)"
+    },
+    "optimized": {
+      "description": "Insert all stones into a Max-Heap. While heap size > 1, pop the two largest stones x and y. If x != y, push the difference `y - x` back into heap. Return 0 if heap is empty, otherwise top value.",
+      "timeComplexity": "O(N log N)",
+      "spaceComplexity": "O(N)"
+    },
+    "pythonCode": "import heapq\ndef lastStoneWeight(stones: list[int]) -> int:\n    max_heap = [-s for s in stones]\n    heapq.heapify(max_heap)\n    while len(max_heap) > 1:\n        s1 = -heapq.heappop(max_heap)\n        s2 = -heapq.heappop(max_heap)\n        if s1 != s2:\n            heapq.heappush(max_heap, -(s1 - s2))\n    return -max_heap[0] if max_heap else 0",
+    "cppCode": "int lastStoneWeight(vector<int>& stones) {\n    priority_queue<int> pq(stones.begin(), stones.end());\n    while (pq.size() > 1) {\n        int s1 = pq.top(); pq.pop();\n        int s2 = pq.top(); pq.pop();\n        if (s1 != s2) {\n            pq.push(s1 - s2);\n        }\n    }\n    return pq.empty() ? 0 : pq.top();\n}",
+    "pythonExplanation": [
+      {
+        "line": "max_heap = [-s for s in stones]",
+        "explanation": "Python heapq is min-heap by default. Push negative values to simulate Max-Heap."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "priority_queue<int> pq(...)",
+        "explanation": "Initialize max priority queue directly with vector elements."
+      }
+    ],
+    "timeComplexity": "O(N log N)",
+    "spaceComplexity": "O(N) - heap storage.",
+    "dryRun": [
+      "stones = [2, 7, 4, 1, 8, 1]",
+      "Max-Heap: [8, 7, 4, 2, 1, 1]",
+      "Smash 8 and 7 -> diff = 1. Push 1 -> heap: [4, 2, 1, 1, 1, 1]",
+      "Smash 4 and 2 -> diff = 2. Push 2 -> heap: [2, 1, 1, 1, 1]",
+      "Smash 2 and 1 -> diff = 1. Push 1 -> heap: [1, 1, 1, 1, 1] ... eventually returns 1"
+    ],
+    "edgeCases": [
+      "Single stone",
+      "No stones left",
+      "All stones of identical weight"
+    ],
+    "followUps": [
+      "Can you write this iteratively without heap? (Not efficiently, sorting takes O(N^2 log N))"
+    ],
+    "relatedProblems": [
+      "Kth Largest Element in an Array",
+      "Top K Frequent Elements"
+    ],
+    "visualization": "Extract 2 max -> push difference -> repeat until 1 left\nSmash 8, 7 -> push 1. Heap is [4, 2, 1, 1, 1, 1]",
+    "commonMistakes": [
+      "Incorrect sign handling during negation conversions in Python max heaps."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "heap_3",
+    "title": "Relative Ranks",
+    "statement": "You are given an integer array `score` of size `n`, where `score[i]` is the score of the `i`th athlete in a competition. All the scores are guaranteed to be unique. Return their relative ranks with custom labels for the top 3.",
+    "difficulty": "Easy",
+    "companies": [
+      "Infosys",
+      "Goldman Sachs",
+      "Wipro"
+    ],
+    "pattern": "Max-Heap Indexing Mapping",
+    "bruteForce": {
+      "description": "Sort the scores list, then search original positions for indices.",
+      "timeComplexity": "O(N^2)",
+      "spaceComplexity": "O(N)"
+    },
+    "optimized": {
+      "description": "Use a Max-Heap. Push tuples `(score, index)` onto the heap. Pop elements sequentially to assign ranks: first is 'Gold Medal', second 'Silver Medal', third 'Bronze Medal', and the rest as string indices.",
+      "timeComplexity": "O(N log N)",
+      "spaceComplexity": "O(N)"
+    },
+    "pythonCode": "import heapq\ndef findRelativeRanks(score: list[int]) -> list[str]:\n    max_heap = [(-s, i) for i, s in enumerate(score)]\n    heapq.heapify(max_heap)\n    res = [''] * len(score)\n    rank = 1\n    while max_heap:\n        s, i = heapq.heappop(max_heap)\n        if rank == 1: res[i] = 'Gold Medal'\n        elif rank == 2: res[i] = 'Silver Medal'\n        elif rank == 3: res[i] = 'Bronze Medal'\n        else: res[i] = str(rank)\n        rank += 1\n    return res",
+    "cppCode": "vector<string> findRelativeRanks(vector<int>& score) {\n    int n = score.size();\n    priority_queue<pair<int, int>> pq; // {score, index}\n    for (int i = 0; i < n; ++i) {\n        pq.push({score[i], i});\n    }\n    vector<string> res(n);\n    int rank = 1;\n    while (!pq.empty()) {\n        auto [val, idx] = pq.top(); pq.pop();\n        if (rank == 1) res[idx] = \"Gold Medal\";\n        else if (rank == 2) res[idx] = \"Silver Medal\";\n        else if (rank == 3) res[idx] = \"Bronze Medal\";\n        else res[idx] = to_string(rank);\n        rank++;\n    }\n    return res;\n}",
+    "pythonExplanation": [
+      {
+        "line": "(-s, i)",
+        "explanation": "Create max-heap pair containing negative score for sorting order and original array index."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "pq.push({score[i], i});",
+        "explanation": "Push score value and index pair."
+      }
+    ],
+    "timeComplexity": "O(N log N)",
+    "spaceComplexity": "O(N) - output rank list and heap mapping.",
+    "dryRun": [
+      "score = [10, 3, 8, 9, 4]",
+      "Pushing to Max-Heap pq = [(10, 0), (9, 3), (8, 2), (4, 4), (3, 1)]",
+      "Rank 1 (Gold Medal) -> index 0: res[0] = 'Gold Medal'",
+      "Rank 2 (Silver Medal) -> index 3: res[3] = 'Silver Medal'",
+      "Rank 3 (Bronze Medal) -> index 2: res[2] = 'Bronze Medal'",
+      "Rank 4 -> index 4: res[4] = '4'",
+      "Rank 5 -> index 1: res[1] = '5'",
+      "Result: ['Gold Medal', '5', 'Bronze Medal', 'Silver Medal', '4']"
+    ],
+    "edgeCases": [
+      "Less than 3 athletes",
+      "Array contains negative scores"
+    ],
+    "followUps": [
+      "Can you write this using custom sorting rules? (Yes, sort index arrays based on score values)"
+    ],
+    "relatedProblems": [
+      "Top K Frequent Elements",
+      "Sort Characters By Frequency"
+    ],
+    "visualization": "Max-Heap pops sorted scores -> maps ranks back to original indices\npq = { (10, 0), (9, 3), (8, 2) } -> Pop (10, 0) Gold Medal",
+    "commonMistakes": [
+      "Wrong indices mapping during output assignment."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "heap_4",
+    "title": "Kth Largest Element in an Array",
+    "statement": "Given an integer array `nums` and an integer `k`, return the K-th largest element in the array.",
+    "difficulty": "Medium",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Amazon"
+    ],
+    "pattern": "Min-Heap Size K Tracker",
+    "bruteForce": {
+      "description": "Sort the entire array and return index `len - k`.",
+      "timeComplexity": "O(N log N)",
+      "spaceComplexity": "O(1)"
+    },
+    "optimized": {
+      "description": "Maintain a Min-Heap of size K. Iterate through the array: push elements to heap and pop if size exceeds K. The root of heap is K-th largest. Takes O(N log K) time.",
+      "timeComplexity": "O(N log K)",
+      "spaceComplexity": "O(K)"
+    },
+    "pythonCode": "import heapq\ndef findKthLargest(nums: list[int], k: int) -> int:\n    heap = nums[:k]\n    heapq.heapify(heap)\n    for n in nums[k:]:\n        if n > heap[0]:\n            heapq.heappushpop(heap, n)\n    return heap[0]",
+    "cppCode": "int findKthLargest(vector<int>& nums, int k) {\n    priority_queue<int, vector<int>, greater<int>> pq;\n    for (int n : nums) {\n        pq.push(n);\n        if (pq.size() > k) pq.pop();\n    }\n    return pq.top();\n}",
+    "pythonExplanation": [
+      {
+        "line": "heapq.heappushpop(heap, n)",
+        "explanation": "Saves overhead by pushing new element and popping root in single atomic execution."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "pq.pop();",
+        "explanation": "Maintain heap capacity at size K."
+      }
+    ],
+    "timeComplexity": "O(N log K) - linear search under K limits.",
+    "spaceComplexity": "O(K) - heap memory.",
+    "dryRun": [
+      "nums = [3, 2, 1, 5, 6, 4], k = 2",
+      "Seed heap of size k (2) with first elements: [3, 2] -> min_heap = [2, 3]",
+      "Iterate remainder:",
+      "n = 1: 1 < 2 -> skip",
+      "n = 5: 5 > 2 -> push 5, pop 2 -> min_heap = [3, 5]",
+      "n = 6: 6 > 3 -> push 6, pop 3 -> min_heap = [5, 6]",
+      "n = 4: 4 < 5 -> skip",
+      "Result: heap[0] = 5"
+    ],
+    "edgeCases": [
+      "K equals array length",
+      "All identical values"
+    ],
+    "followUps": [
+      "Can you write this using QuickSelect? (Yes, average O(N) time and O(1) space, but worst case is O(N^2))"
+    ],
+    "relatedProblems": [
+      "Top K Frequent Elements",
+      "Kth Largest Element in a Stream"
+    ],
+    "visualization": "Min-Heap size K holds K largest. Root is the smallest (Kth largest).\nheap = [ 5, 6 ] -> Root is 5",
+    "commonMistakes": [
+      "Using a Max-Heap of size N which consumes O(N) space and takes O(N log N) worst-case time to pop K times."
+    ],
+    "whenNotToUse": "If memory is critical, QuickSelect has O(1) auxiliary space."
+  },
+  {
+    "id": "heap_5",
+    "title": "Top K Frequent Elements",
+    "statement": "Given an integer array `nums` and an integer `k`, return the `k` most frequent elements.",
+    "difficulty": "Medium",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Amazon"
+    ],
+    "pattern": "HashMap + Min-Heap size K",
+    "bruteForce": {
+      "description": "Count frequencies, sort frequencies list in descending order, and return top K keys.",
+      "timeComplexity": "O(N log N)",
+      "spaceComplexity": "O(N)"
+    },
+    "optimized": {
+      "description": "Count frequencies in map. Push pairs `(frequency, element)` onto a Min-Heap. Keep heap size at K by popping smaller frequencies. Return remaining heap elements.",
+      "timeComplexity": "O(N log K)",
+      "spaceComplexity": "O(N)"
+    },
+    "pythonCode": "import collections, heapq\ndef topKFrequent(nums: list[int], k: int) -> list[int]:\n    counts = collections.Counter(nums)\n    heap = []\n    for num, freq in counts.items():\n        heapq.heappush(heap, (freq, num))\n        if len(heap) > k:\n            heapq.heappop(heap)\n    return [item[1] for item in heap]",
+    "cppCode": "vector<int> topKFrequent(vector<int>& nums, int k) {\n    unordered_map<int, int> counts;\n    for (int n : nums) counts[n]++;\n    priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;\n    for (auto p : counts) {\n        pq.push({p.second, p.first});\n        if (pq.size() > k) pq.pop();\n    }\n    vector<int> res;\n    while (!pq.empty()) {\n        res.push_back(pq.top().second);\n        pq.pop();\n    }\n    return res;\n}",
+    "pythonExplanation": [
+      {
+        "line": "(freq, num)",
+        "explanation": "Map frequency as first element in heap tuple to ensure comparison by occurrence count."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "pq.push({p.second, p.first});",
+        "explanation": "Pair of {frequency, value} pushed to heap."
+      }
+    ],
+    "timeComplexity": "O(N log K) - linear processing under K limits.",
+    "spaceComplexity": "O(N) - frequency map.",
+    "dryRun": [
+      "nums = [1, 1, 1, 2, 2, 3], k = 2",
+      "counts = {1: 3, 2: 2, 3: 1}",
+      "Iterate counts:",
+      "num = 1, freq = 3: heap = [(3, 1)]",
+      "num = 2, freq = 2: heap = [(2, 2), (3, 1)]",
+      "num = 3, freq = 1: heap = [(1, 3), (2, 2), (3, 1)] -> size > k -> pop (1, 3). heap = [(2, 2), (3, 1)]",
+      "Result: [2, 1]"
+    ],
+    "edgeCases": [
+      "K equals unique elements count",
+      "Frequencies of all elements are identical"
+    ],
+    "followUps": [
+      "Can you write this in O(N) using Bucket Sort? (Yes, map frequencies to lists of values)"
+    ],
+    "relatedProblems": [
+      "Kth Largest Element in an Array",
+      "Sort Characters By Frequency"
+    ],
+    "visualization": "Map frequencies -> Min-Heap size K sorting -> collect values\nheap = [ (2, 2), (3, 1) ] -> Remaining values are 2 and 1",
+    "commonMistakes": [
+      "Using values instead of frequencies as sorting criteria inside Heap."
+    ],
+    "whenNotToUse": "If unique count is close to N, Bucket Sort is more efficient."
+  },
+  {
+    "id": "heap_6",
+    "title": "Find K Pairs with Smallest Sums",
+    "statement": "You are given two integer arrays `nums1` and `nums2` sorted in non-decreasing order and an integer `k`. Find `k` pairs with the smallest sums.",
+    "difficulty": "Medium",
+    "companies": [
+      "Infosys",
+      "Amazon",
+      "Microsoft"
+    ],
+    "pattern": "Min-Heap Index Pairs Tracking",
+    "bruteForce": {
+      "description": "Generate all pairs, sort them, and return top K.",
+      "timeComplexity": "O(M * N log(M * N))",
+      "spaceComplexity": "O(M * N)"
+    },
+    "optimized": {
+      "description": "Use a Min-Heap. Push pairs `(sum, index1, index2)`. Initially insert `(nums1[i] + nums2[0], i, 0)` for all `i`. Pop min sum, add pair to output, and push next candidate index `(nums1[i] + nums2[j+1], i, j+1)`.",
+      "timeComplexity": "O(K log K)",
+      "spaceComplexity": "O(K)"
+    },
+    "pythonCode": "import heapq\ndef kSmallestPairs(nums1, nums2, k):\n    if not nums1 or not nums2: return []\n    heap = []\n    for i in range(min(len(nums1), k)):\n        heapq.heappush(heap, (nums1[i] + nums2[0], i, 0))\n    res = []\n    while heap and len(res) < k:\n        s, i, j = heapq.heappop(heap)\n        res.append([nums1[i], nums2[j]])\n        if j + 1 < len(nums2):\n            heapq.heappush(heap, (nums1[i] + nums2[j+1], i, j + 1))\n    return res",
+    "cppCode": "vector<vector<int>> kSmallestPairs(vector<int>& nums1, vector<int>& nums2, int k) {\n    vector<vector<int>> res;\n    if (nums1.empty() || nums2.empty()) return res;\n    priority_queue<pair<int, pair<int, int>>, vector<pair<int, pair<int, int>>>, greater<pair<int, pair<int, int>>>> pq; // {sum, {i, j}}\n    for (int i = 0; i < min((int)nums1.size(), k); ++i) {\n        pq.push({nums1[i] + nums2[0], {i, 0}});\n    }\n    while (!pq.empty() && res.size() < k) {\n        auto [val, p] = pq.top(); pq.pop();\n        int i = p.first, j = p.second;\n        res.push_back({nums1[i], nums2[j]});\n        if (j + 1 < nums2.size()) {\n            pq.push({nums1[i] + nums2[j+1], {i, j + 1}});\n        }\n    }\n    return res;\n}",
+    "pythonExplanation": [
+      {
+        "line": "min(len(nums1), k)",
+        "explanation": "Optimization: only seed first K elements as further indices exceed K result bounds."
+      },
+      {
+        "line": "nums1[i] + nums2[j+1]",
+        "explanation": "Push sum and updated index pair to trace next smallest candidate sum."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "pq.push({nums1[i] + nums2[j+1], {i, j + 1}});",
+        "explanation": "Insert next sorted combination pair onto heap."
+      }
+    ],
+    "timeComplexity": "O(K log K) - performs K extraction steps.",
+    "spaceComplexity": "O(K) - heap memory.",
+    "dryRun": [
+      "nums1 = [1, 7, 11], nums2 = [2, 4, 6], k = 3",
+      "Initial heap = [(1+2=3, 0, 0), (7+2=9, 1, 0), (11+2=13, 2, 0)]",
+      "Step 1: pop (3, 0, 0). res = [[1, 2]]. Push next (1+4=5, 0, 1) -> heap = [(5, 0, 1), (9, 1, 0), (13, 2, 0)]",
+      "Step 2: pop (5, 0, 1). res = [[1, 2], [1, 4]]. Push next (1+6=7, 0, 2) -> heap = [(7, 0, 2), (9, 1, 0), (13, 2, 0)]",
+      "Step 3: pop (7, 0, 2). res = [[1, 2], [1, 4], [1, 6]]."
+    ],
+    "edgeCases": [
+      "K is larger than total pairs count",
+      "Empty lists"
+    ],
+    "followUps": [
+      "Can you write this using binary search? (Yes, search for Kth smallest sum value)"
+    ],
+    "relatedProblems": [
+      "Merge k Sorted Lists",
+      "Kth Smallest Element in a Sorted Matrix"
+    ],
+    "visualization": "Seed heap with starting pairs -> pop min -> push next index adjacent pair\nheap = [ (3,0,0), (9,1,0) ] -> Pop (3,0,0), push (5,0,1)",
+    "commonMistakes": [
+      "Pushing all index pairs initially which leads to Out of Memory on large arrays."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "heap_7",
+    "title": "Find Median from Data Stream",
+    "statement": "Design a data structure that supports adding numbers from a data stream and finding the median of all numbers added so far in O(1) time.",
+    "difficulty": "Hard",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Amazon"
+    ],
+    "pattern": "Dual Heaps (Max & Min Heaps)",
+    "bruteForce": {
+      "description": "Sort the stream array on each median lookup query.",
+      "timeComplexity": "O(N log N) per query",
+      "spaceComplexity": "O(N)"
+    },
+    "optimized": {
+      "description": "Maintain two heaps: a Max-Heap for the lower half numbers, and a Min-Heap for the upper half. Ensure heights differ by at most 1. If max_heap top > min_heap top, swap them. Median is either top of larger heap or average of both tops.",
+      "timeComplexity": "O(log N) insert, O(1) median query",
+      "spaceComplexity": "O(N)"
+    },
+    "pythonCode": "import heapq\nclass MedianFinder:\n    def __init__(self):\n        self.small = [] # max heap\n        self.large = [] # min heap\n    def addNum(self, num: int) -> None:\n        heapq.heappush(self.small, -num)\n        # ensure values in small <= values in large\n        if self.small and self.large and (-self.small[0] > self.large[0]):\n            val = -heapq.heappop(self.small)\n            heapq.heappush(self.large, val)\n        # balance sizes\n        if len(self.small) > len(self.large) + 1:\n            val = -heapq.heappop(self.small)\n            heapq.heappush(self.large, val)\n        elif len(self.large) > len(self.small) + 1:\n            val = heapq.heappop(self.large)\n            heapq.heappush(self.small, -val)\n    def findMedian(self) -> float:\n        if len(self.small) > len(self.large): return -self.small[0]\n        elif len(self.large) > len(self.small): return self.large[0]\n        return (-self.small[0] + self.large[0]) / 2.0",
+    "cppCode": "class MedianFinder {\n    priority_queue<int> small; // max-heap\n    priority_queue<int, vector<int>, greater<int>> large; // min-heap\npublic:\n    MedianFinder() {}\n    void addNum(int num) {\n        small.push(num);\n        if (!small.empty() && !large.empty() && small.top() > large.top()) {\n            large.push(small.top()); small.pop();\n        }\n        if (small.size() > large.size() + 1) {\n            large.push(small.top()); small.pop();\n        } else if (large.size() > small.size() + 1) {\n            small.push(large.top()); large.pop();\n        }\n    }\n    double findMedian() {\n        if (small.size() > large.size()) return small.top();\n        else if (large.size() > small.size()) return large.top();\n        return (small.top() + large.top()) / 2.0;\n    }\n};",
+    "pythonExplanation": [
+      {
+        "line": "self.small = []",
+        "explanation": "Max-Heap containing lower half values."
+      },
+      {
+        "line": "self.large = []",
+        "explanation": "Min-Heap containing upper half values."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "small.top() > large.top()",
+        "explanation": "Enforce values in small heap are always <= values in large heap."
+      }
+    ],
+    "timeComplexity": "O(log N) - additions.",
+    "spaceComplexity": "O(N) - stream memory.",
+    "dryRun": [
+      "Steps:",
+      "1. add(1): small=[-1], large=[]",
+      "2. add(2): small=[-2], large=[] -> small size > large size + 1 -> Pop 2 from small, push to large. small=[-1], large=[2]",
+      "3. findMedian() -> (-(-1) + 2) / 2.0 = 1.5",
+      "4. add(3): small=[-3, -1], large=[2] -> 3 > 2 -> swap -> small=[-2, -1], large=[3]. Balance size: pop 2 from small, push to large. small=[-1], large=[2, 3]. Returns 2.0"
+    ],
+    "edgeCases": [
+      "Stream of identical numbers",
+      "Alternating insertions"
+    ],
+    "followUps": [
+      "Can you write this using dynamic tree array bucket splits? (No, heaps are optimal)"
+    ],
+    "relatedProblems": [
+      "Sliding Window Median",
+      "Find Median from Unsorted Array"
+    ],
+    "visualization": "Max-Heap (small half) | Min-Heap (large half) -> balance sizes -> median from roots\nsmall: [ 1, 2 ] | large: [ 3, 4 ] -> roots are 2 and 3",
+    "commonMistakes": [
+      "Incorrect size imbalance check or swapping signs during negations in Python max heaps."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "heap_8",
+    "title": "Merge k Sorted Lists",
+    "statement": "You are given an array of `k` linked-lists `lists`, each linked-list is sorted in ascending order. Merge all the linked-lists into one sorted linked-list.",
+    "difficulty": "Hard",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Amazon"
+    ],
+    "pattern": "Min-Heap Merging",
+    "bruteForce": {
+      "description": "Compare list heads sequentially in loops. (O(N * K) time).",
+      "timeComplexity": "O(N * K)",
+      "spaceComplexity": "O(1)"
+    },
+    "optimized": {
+      "description": "Use a Min-Heap. Insert head node of all K lists. Pop node, append it to result, and insert its next node. Repeat until heap is empty.",
+      "timeComplexity": "O(N log K)",
+      "spaceComplexity": "O(K)"
+    },
+    "pythonCode": "import heapq\ndef mergeKLists(lists):\n    heap = []\n    for i, lst in enumerate(lists):\n        if lst: heapq.heappush(heap, (lst.val, i, lst))\n    dummy = ListNode(0)\n    curr = dummy\n    while heap:\n        val, i, node = heapq.heappop(heap)\n        curr.next = node\n        curr = curr.next\n        if node.next:\n            heapq.heappush(heap, (node.next.val, i, node.next))\n    return dummy.next",
+    "cppCode": "struct Compare {\n    bool operator()(ListNode* const& p1, ListNode* const& p2) {\n        return p1->val > p2->val;\n    }\n};\nListNode* mergeKLists(vector<ListNode*>& lists) {\n    priority_queue<ListNode*, vector<ListNode*>, Compare> pq;\n    for (ListNode* l : lists) {\n        if (l) pq.push(l);\n    }\n    ListNode dummy(0);\n    ListNode* curr = &dummy;\n    while (!pq.empty()) {\n        ListNode* node = pq.top(); pq.pop();\n        curr->next = node;\n        curr = curr->next;\n        if (node->next) pq.push(node->next);\n    }\n    return dummy.next;\n}",
+    "pythonExplanation": [
+      {
+        "line": "heapq.heappush(heap, (lst.val, i, lst))",
+        "explanation": "Push tuple containing value, index i (avoids duplicate comparisons error on list nodes) and node reference."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "priority_queue<ListNode*, vector<ListNode*>, Compare> pq;",
+        "explanation": "Configure Min-Priority queue using custom comparator operator struct."
+      }
+    ],
+    "timeComplexity": "O(N log K)",
+    "spaceComplexity": "O(K)",
+    "dryRun": [
+      "lists = [[1, 4], [1, 3]]",
+      "Initial heap = [(1, 0, node1a), (1, 1, node2a)]",
+      "Step 1: pop (1, 0). curr = node1a. Push next (4, 0, node1b) -> heap = [(1, 1, node2a), (4, 0, node1b)]",
+      "Step 2: pop (1, 1). curr = node1a -> node2a. Push next (3, 1, node2b) -> heap = [(3, 1, node2b), (4, 0, node1b)]",
+      "Result: 1->1->3->4"
+    ],
+    "edgeCases": [
+      "Lists contain empty elements",
+      "Single list in array"
+    ],
+    "followUps": [
+      "Can you write this using Divide and Conquer? (Yes, merge lists in pairs)"
+    ],
+    "relatedProblems": [
+      "Merge Two Sorted Lists",
+      "Ugly Number II"
+    ],
+    "visualization": "Heap keeps current heads sorted -> Pop min -> Push next -> repeat",
+    "commonMistakes": [
+      "Custom comparisons compile bugs in C++ or duplicate node reference comparison in Python."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "heap_9",
+    "title": "Skyline Problem",
+    "statement": "A city's skyline is the outer contour of the silhouette formed by all the buildings in that city when viewed from a distance. Given the locations of buildings, return the key contours skyline coordinates.",
+    "difficulty": "Hard",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Amazon"
+    ],
+    "pattern": "Max-Heap Event Coordinate Sweep",
+    "bruteForce": {
+      "description": "Generate all X coordinates and scan all overlapping buildings manually. (O(N^2) time).",
+      "timeComplexity": "O(N^2)",
+      "spaceComplexity": "O(N)"
+    },
+    "optimized": {
+      "description": "Sort coordinates events. Left edge: `(start, -height, end)`. Right edge: `(end, 0, None)`. Maintain active building heights in a Max-Heap. When left edge is met, push height. When right edge is met, remove building. Compare max height changes to record skyline corners.",
+      "timeComplexity": "O(N log N)",
+      "spaceComplexity": "O(N)"
+    },
+    "pythonCode": "import heapq\ndef getSkyline(buildings: list[list[int]]) -> list[list[int]]:\n    events = []\n    for L, R, H in buildings:\n        events.append((L, -H, R)) # start event\n        events.append((R, 0, 0))   # end event\n    events.sort()\n    res = [[0, 0]]\n    active = [(0, float('inf'))] # stores (-height, right_edge)\n    for x, h, r in events:\n        if h < 0:\n            heapq.heappush(active, (h, r))\n        while active[0][1] <= x:\n            heapq.heappop(active)\n        curr_max = -active[0][0]\n        if res[-1][1] != curr_max:\n            res.append([x, curr_max])\n    return res[1:]",
+    "cppCode": "vector<vector<int>> getSkyline(vector<vector<int>>& buildings) {\n    vector<pair<int, int>> events;\n    for (auto& b : buildings) {\n        events.push_back({b[0], -b[2]});\n        events.push_back({b[1], b[2]});\n    }\n    sort(events.begin(), events.end());\n    multiset<int> active = {0};\n    vector<vector<int>> res;\n    int prev_max = 0;\n    for (auto& [x, h] : events) {\n        if (h < 0) {\n            active.insert(-h);\n        } else {\n            active.erase(active.find(h));\n        }\n        int curr_max = *active.rbegin();\n        if (curr_max != prev_max) {\n            res.push_back({x, curr_max});\n            prev_max = curr_max;\n        }\n    }\n    return res;\n}",
+    "pythonExplanation": [
+      {
+        "line": "events.sort()",
+        "explanation": "Sort events by X coordinate. Ties resolved naturally by height sorting order."
+      },
+      {
+        "line": "active[0][1] <= x",
+        "explanation": "Pop building heights that are no longer active at current X position."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "active.insert(-h);",
+        "explanation": "Insert active building height onto sorting multiset (acts as Max-Heap)."
+      }
+    ],
+    "timeComplexity": "O(N log N) - sorting and heap operations.",
+    "spaceComplexity": "O(N) - storing active heights.",
+    "dryRun": [
+      "buildings = [[2, 9, 10], [3, 7, 15]]",
+      "Events: [(2, -10, 9), (3, -15, 7), (7, 0, 0), (9, 0, 0)]",
+      "Iterate events:",
+      "x=2: push (-10, 9). max=10 -> res=[[2, 10]]",
+      "x=3: push (-15, 7). max=15 -> res=[[2,10], [3,15]]",
+      "x=7: active[0](-15) right edge is 7 <= 7 -> pop. max=10 -> res=[[2,10], [3,15], [7, 10]]",
+      "x=9: active[0](-10) right edge is 9 <= 9 -> pop. max=0 -> res=[[2,10], [3,15], [7,10], [9,0]]",
+      "Result: [[2, 10], [3, 15], [7, 10], [9, 0]]"
+    ],
+    "edgeCases": [
+      "Buildings with identical coordinates",
+      "Isolated buildings",
+      "No buildings"
+    ],
+    "followUps": [
+      "Can you solve it using a Segment Tree? (Yes, but memory is O(N))"
+    ],
+    "relatedProblems": [
+      "Falling Squares",
+      "Range Sum Query"
+    ],
+    "visualization": "Event sorting -> add/remove heights -> track max height changes to draw contour corners\nactive heap = { (-15, 7), (-10, 9) } -> root is -15",
+    "commonMistakes": [
+      "Incorrect event sorting, resulting in drawing vertical overlap mistakes."
+    ],
+    "whenNotToUse": "None"
+  }
+]

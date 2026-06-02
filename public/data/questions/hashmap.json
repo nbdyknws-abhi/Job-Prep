@@ -1,0 +1,636 @@
+[
+  {
+    "id": "hashmap_1",
+    "title": "Valid Anagram",
+    "statement": "Given two strings `s` and `t`, return `true` if `t` is an anagram of `s`, and `false` otherwise.",
+    "difficulty": "Easy",
+    "companies": [
+      "Infosys",
+      "Amazon",
+      "Google"
+    ],
+    "pattern": "Frequency Hash Map",
+    "bruteForce": {
+      "description": "Sort both strings in alphabetical order and compare if they are identical.",
+      "timeComplexity": "O(N log N)",
+      "spaceComplexity": "O(1)"
+    },
+    "optimized": {
+      "description": "Use a frequency map or an integer array of size 26 to count character occurrences. Traverse `s` and increment counts, then traverse `t` and decrement counts. Verify if all positions in the frequency array are 0.",
+      "timeComplexity": "O(N)",
+      "spaceComplexity": "O(1)"
+    },
+    "pythonCode": "def isAnagram(s: str, t: str) -> bool:\n    if len(s) != len(t):\n        return False\n    count = {}\n    for c in s:\n        count[c] = count.get(c, 0) + 1\n    for c in t:\n        if c not in count or count[c] == 0:\n            return False\n        count[c] -= 1\n    return True",
+    "cppCode": "bool isAnagram(string s, string t) {\n    if (s.length() != t.length()) return false;\n    int counts[26] = {0};\n    for (int i = 0; i < s.length(); ++i) {\n        counts[s[i] - 'a']++;\n        counts[t[i] - 'a']--;\n    }\n    for (int i = 0; i < 26; ++i) {\n        if (counts[i] != 0) return false;\n    }\n    return true;\n}",
+    "pythonExplanation": [
+      {
+        "line": "if len(s) != len(t): return False",
+        "explanation": "If strings have different lengths, they cannot be anagrams."
+      },
+      {
+        "line": "count[c] = count.get(c, 0) + 1",
+        "explanation": "Build frequency count for characters in s."
+      },
+      {
+        "line": "if c not in count or count[c] == 0: return False",
+        "explanation": "If character in t doesn't exist in s or is exhausted, return False."
+      },
+      {
+        "line": "count[c] -= 1",
+        "explanation": "Decrement character occurrences count mapping."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "if (s.length() != t.length()) return false;",
+        "explanation": "Length mismatch check."
+      },
+      {
+        "line": "counts[s[i] - 'a']++;",
+        "explanation": "Increment character index for string s."
+      },
+      {
+        "line": "counts[t[i] - 'a']--;",
+        "explanation": "Decrement character index for string t."
+      }
+    ],
+    "timeComplexity": "O(N) - Single loop pass to read both strings of size N.",
+    "spaceComplexity": "O(1) - Constant auxiliary space is used since the frequency array has a fixed size of 26.",
+    "dryRun": [
+      "Input: s = 'anagram', t = 'nagaram'",
+      "Step 1: Lengths match (7).",
+      "Step 2: Populate counts with s: {'a':3, 'n':1, 'g':1, 'r':1, 'm':1}.",
+      "Step 3: Scan t: deduct characters one by one. All counts drop to 0.",
+      "Result: True."
+    ],
+    "edgeCases": [
+      "Strings with different lengths",
+      "Empty strings",
+      "Unicode characters"
+    ],
+    "followUps": [
+      "Can you support unicode characters? (Yes, use a Hash Map instead of a fixed 26-size integer array)"
+    ],
+    "relatedProblems": [
+      "Group Anagrams",
+      "Find All Anagrams in a String"
+    ],
+    "visualization": "s = 'abc' -> count = {a:1, b:1, c:1}\nt = 'cab' -> subtracts values -> all counts are 0",
+    "commonMistakes": [
+      "Forgetting to check the initial length differences, which causes issues on string subsets."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "hashmap_2",
+    "title": "Isomorphic Strings",
+    "statement": "Given two strings `s` and `t`, determine if they are isomorphic. Two strings `s` and `t` are isomorphic if the characters in `s` can be replaced to get `t`.",
+    "difficulty": "Easy",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Uber"
+    ],
+    "pattern": "Double Character Mapping",
+    "bruteForce": {
+      "description": "Compare character mapping using nested loops checking all matching replacement pairs.",
+      "timeComplexity": "O(N^2)",
+      "spaceComplexity": "O(1)"
+    },
+    "optimized": {
+      "description": "Use two hash maps to build bidirectional mappings from `s` to `t` and `t` to `s`. During iteration, check if the mapping is consistent. If a character maps to a different value, return false.",
+      "timeComplexity": "O(N)",
+      "spaceComplexity": "O(N)"
+    },
+    "pythonCode": "def isIsomorphic(s: str, t: str) -> bool:\n    mapST, mapTS = {}, {}\n    for c1, c2 in zip(s, t):\n        if (c1 in mapST and mapST[c1] != c2) or (c2 in mapTS and mapTS[c2] != c1):\n            return False\n        mapST[c1] = c2\n        mapTS[c2] = c1\n    return True",
+    "cppCode": "bool isIsomorphic(string s, string t) {\n    int mapST[256] = {0}, mapTS[256] = {0};\n    for (int i = 0; i < s.length(); ++i) {\n        if (mapST[s[i]] != mapTS[t[i]]) return false;\n        mapST[s[i]] = i + 1;\n        mapTS[t[i]] = i + 1;\n    }\n    return true;\n}",
+    "pythonExplanation": [
+      {
+        "line": "mapST, mapTS = {}, {}",
+        "explanation": "Create two tracking dictionaries for bidirectional mapping."
+      },
+      {
+        "line": "if (c1 in mapST and mapST[c1] != c2) or ...",
+        "explanation": "Check if there is a conflict in the mapping from s to t, or t to s."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "if (mapST[s[i]] != mapTS[t[i]]) return false;",
+        "explanation": "Verify if the last seen index for s[i] and t[i] is matching."
+      }
+    ],
+    "timeComplexity": "O(N) - Single loop iteration over strings of length N.",
+    "spaceComplexity": "O(1) - Constant space used for ASCII character set maps of size 256.",
+    "dryRun": [
+      "Input: s = 'egg', t = 'add'",
+      "i = 0: 'e' -> 'a', mapST={'e':'a'}, mapTS={'a':'e'}.",
+      "i = 1: 'g' -> 'd', mapST={'e':'a', 'g':'d'}, mapTS={'a':'e', 'd':'g'}.",
+      "i = 2: 'g' -> 'd', match exists and is consistent. Return True."
+    ],
+    "edgeCases": [
+      "Empty strings",
+      "Different lengths",
+      "Multiple characters mapping to same target (e.g. 'ab' -> 'aa')"
+    ],
+    "followUps": [
+      "Can you solve it using a single map? (Yes, map character to index positions)"
+    ],
+    "relatedProblems": [
+      "Word Pattern",
+      "Isomorphic Strings II"
+    ],
+    "visualization": "e ---> a\ng ---> d\ng ---> d (Consistent mapping -> True)",
+    "commonMistakes": [
+      "Using only one map, which fails when different keys map to the same value (e.g. 'ab' -> 'aa'). Bidirectional tracking is required."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "hashmap_3",
+    "title": "Word Pattern",
+    "statement": "Given a `pattern` and a string `s`, find if `s` follows the same pattern.",
+    "difficulty": "Easy",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Amazon"
+    ],
+    "pattern": "HashMap Bidirectional",
+    "bruteForce": {
+      "description": "Check character mappings sequentially in nested loops.",
+      "timeComplexity": "O(N^2)",
+      "spaceComplexity": "O(1)"
+    },
+    "optimized": {
+      "description": "Split `s` into a list of words. Check if the length of pattern matches the number of words. Use two hash maps to create bidirectional mappings between pattern characters and words. Ensure the mapping remains consistent during iteration.",
+      "timeComplexity": "O(N)",
+      "spaceComplexity": "O(N)"
+    },
+    "pythonCode": "def wordPattern(pattern: str, s: str) -> bool:\n    words = s.split()\n    if len(pattern) != len(words):\n        return False\n    char_to_word, word_to_char = {}, {}\n    for c, w in zip(pattern, words):\n        if c in char_to_word and char_to_word[c] != w:\n            return False\n        if w in word_to_char and word_to_char[w] != c:\n            return False\n        char_to_word[c] = w\n        word_to_char[w] = c\n    return True",
+    "cppCode": "bool wordPattern(string pattern, string s) {\n    vector<string> words;\n    stringstream ss(s);\n    string word;\n    while (ss >> word) words.push_back(word);\n    if (pattern.size() != words.size()) return false;\n    \n    unordered_map<char, string> charToWord;\n    unordered_map<string, char> wordToChar;\n    for (int i = 0; i < pattern.size(); ++i) {\n        char c = pattern[i];\n        string w = words[i];\n        if (charToWord.count(c) && charToWord[c] != w) return false;\n        if (wordToChar.count(w) && wordToChar[w] != c) return false;\n        charToWord[c] = w;\n        wordToChar[w] = c;\n    }\n    return true;\n}",
+    "pythonExplanation": [
+      {
+        "line": "words = s.split()",
+        "explanation": "Split string s into a list of words by spaces."
+      },
+      {
+        "line": "if len(pattern) != len(words): return False",
+        "explanation": "Length mismatch check."
+      },
+      {
+        "line": "if c in char_to_word and char_to_word[c] != w: return False",
+        "explanation": "Check if current pattern character already maps to a different word."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "stringstream ss(s);",
+        "explanation": "Parse string space separations in C++ using stringstream."
+      }
+    ],
+    "timeComplexity": "O(N) - We iterate over pattern characters and words of size N.",
+    "spaceComplexity": "O(N) - Storing words and mappings in maps.",
+    "dryRun": [
+      "Input: pattern = 'abba', s = 'dog cat cat dog'",
+      "Words: ['dog', 'cat', 'cat', 'dog']. Length matches pattern size.",
+      "Step 1: 'a' -> 'dog'. mapST={'a':'dog'}, mapTS={'dog':'a'}.",
+      "Step 2: 'b' -> 'cat'. mapST={'a':'dog', 'b':'cat'}, mapTS={'dog':'a', 'cat':'b'}.",
+      "Step 3: 'b' -> 'cat'. Consistent mapping.",
+      "Step 4: 'a' -> 'dog'. Consistent mapping. Return True."
+    ],
+    "edgeCases": [
+      "Pattern length doesn't match word count",
+      "Multiple keys mapping to same word value"
+    ],
+    "followUps": [
+      "Can you solve it without splitting strings explicitly? (Yes, by keeping two-pointer markers, but harder to read)"
+    ],
+    "relatedProblems": [
+      "Isomorphic Strings",
+      "Word Pattern II"
+    ],
+    "visualization": "a ---> dog\nb ---> cat\nb ---> cat\na ---> dog (Consistent mapping -> True)",
+    "commonMistakes": [
+      "Not handling cases where different keys map to the same word (e.g. 'abba' -> 'dog dog dog dog')."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "hashmap_4",
+    "title": "Group Anagrams",
+    "statement": "Given an array of strings `strs`, group the anagrams together. You can return the answer in any order.",
+    "difficulty": "Medium",
+    "companies": [
+      "Infosys",
+      "Amazon",
+      "Microsoft"
+    ],
+    "pattern": "Sorting Keys / Map Grouping",
+    "bruteForce": {
+      "description": "Compare every string with every other string to see if they are anagrams.",
+      "timeComplexity": "O(N^2 * L log L)",
+      "spaceComplexity": "O(N)"
+    },
+    "optimized": {
+      "description": "Sort each string and use the sorted string as a key in a hash map. Group matching strings together in a list corresponding to the sorted key. Return values of the hash map.",
+      "timeComplexity": "O(N * L log L)",
+      "spaceComplexity": "O(N * L)"
+    },
+    "pythonCode": "def groupAnagrams(strs):\n    groups = {}\n    for s in strs:\n        key = ''.join(sorted(s))\n        if key not in groups:\n            groups[key] = []\n        groups[key].append(s)\n    return list(groups.values())",
+    "cppCode": "vector<vector<string>> groupAnagrams(vector<string>& strs) {\n    unordered_map<string, vector<string>> groups;\n    for (string s : strs) {\n        string key = s;\n        sort(key.begin(), key.end());\n        groups[key].push_back(s);\n    }\n    vector<vector<string>> result;\n    for (auto p : groups) result.push_back(p.second);\n    return result;\n}",
+    "pythonExplanation": [
+      {
+        "line": "key = ''.join(sorted(s))",
+        "explanation": "Sort word characters to obtain a unique anagram signature/key."
+      },
+      {
+        "line": "groups[key].append(s)",
+        "explanation": "Append the original word to its anagram key list."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "sort(key.begin(), key.end());",
+        "explanation": "Sort string key locally."
+      },
+      {
+        "line": "groups[key].push_back(s);",
+        "explanation": "Group matching strings by sorted key."
+      }
+    ],
+    "timeComplexity": "O(N * L log L) - N is number of words, L is max word length. Sorting each word takes O(L log L).",
+    "spaceComplexity": "O(N * L) - Space to store words and groups in the hash map.",
+    "dryRun": [
+      "Input: strs = ['eat', 'tea', 'tan']",
+      "eat -> sorted 'aet'. groups = {'aet': ['eat']}.",
+      "tea -> sorted 'aet'. groups = {'aet': ['eat', 'tea']}.",
+      "tan -> sorted 'ant'. groups = {'aet': ['eat', 'tea'], 'ant': ['tan']}.",
+      "Result: [['eat', 'tea'], ['tan']]"
+    ],
+    "edgeCases": [
+      "Empty strings array",
+      "Single letter words",
+      "No anagram groups exist"
+    ],
+    "followUps": [
+      "Can you group them in O(N * L) time? (Yes, by using a 26-size integer tuple representing character frequency counts as the hash map key instead of sorting)"
+    ],
+    "relatedProblems": [
+      "Valid Anagram",
+      "Group Shifted Strings"
+    ],
+    "visualization": "eat, tea -> sorted key 'aet' -> groups['aet'] = ['eat', 'tea']\ntan      -> sorted key 'ant' -> groups['ant'] = ['tan']",
+    "commonMistakes": [
+      "Using mutable lists or arrays as dictionary keys directly (in Python, convert to tuple or string first)."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "hashmap_5",
+    "title": "Top K Frequent Elements",
+    "statement": "Given an integer array `nums` and an integer `k`, return the `k` most frequent elements. Solve it in average O(N) time.",
+    "difficulty": "Medium",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Amazon"
+    ],
+    "pattern": "HashMap + Bucket Sort",
+    "bruteForce": {
+      "description": "Sort the array and extract top K frequency counts. (O(N log N) time).",
+      "timeComplexity": "O(N log N)",
+      "spaceComplexity": "O(1)"
+    },
+    "optimized": {
+      "description": "Use a hash map to count occurrences. Create a bucket array of size N + 1 where `buckets[i]` stores elements with frequency `i`. Iterate backwards from the end of the bucket list, collecting elements until we reach K elements.",
+      "timeComplexity": "O(N)",
+      "spaceComplexity": "O(N)"
+    },
+    "pythonCode": "import collections\ndef topKFrequent(nums, k):\n    counts = collections.Counter(nums)\n    # buckets[i] contains numbers with frequency i\n    buckets = [[] for _ in range(len(nums) + 1)]\n    for num, freq in counts.items():\n        buckets[freq].append(num)\n        \n    res = []\n    for i in range(len(buckets) - 1, 0, -1):\n        for num in buckets[i]:\n            res.append(num)\n            if len(res) == k:\n                return res\n    return res",
+    "cppCode": "vector<int> topKFrequent(vector<int>& nums, int k) {\n    unordered_map<int, int> counts;\n    for (int n : nums) counts[n]++;\n    \n    vector<vector<int>> buckets(nums.size() + 1);\n    for (auto p : counts) {\n        buckets[p.second].push_back(p.first);\n    }\n    \n    vector<int> res;\n    for (int i = buckets.size() - 1; i >= 0; --i) {\n        for (int n : buckets[i]) {\n            res.push_back(n);\n            if (res.size() == k) return res;\n        }\n    }\n    return res;\n}",
+    "pythonExplanation": [
+      {
+        "line": "buckets = [[] for _ in range(len(nums) + 1)]",
+        "explanation": "Create a bucket list to map frequency indices to matching elements."
+      },
+      {
+        "line": "buckets[freq].append(num)",
+        "explanation": "Store element in its corresponding frequency bucket."
+      },
+      {
+        "line": "for i in range(len(buckets) - 1, 0, -1):",
+        "explanation": "Walk backwards from the highest frequency bucket to collect top K elements."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "vector<vector<int>> buckets(nums.size() + 1);",
+        "explanation": "Initialize buckets vector where index represents element frequency."
+      }
+    ],
+    "timeComplexity": "O(N) - Populating counts map is O(N), building buckets is O(N), and retrieving K elements takes O(N) since we visit elements at most once.",
+    "spaceComplexity": "O(N) - Storage for the counts hash map and bucket list.",
+    "dryRun": [
+      "Input: nums = [1, 1, 1, 2, 2, 3], k = 2",
+      "counts = {1:3, 2:2, 3:1}.",
+      "buckets: 3 -> [1], 2 -> [2], 1 -> [3].",
+      "Iterate backwards: get 1 from bucket 3, get 2 from bucket 2. Collected 2 elements. Return [1, 2]."
+    ],
+    "edgeCases": [
+      "k matches array size",
+      "All elements have unique frequencies",
+      "k = 1"
+    ],
+    "followUps": [
+      "Can you solve it in O(N log K) using a Min-Heap? (Yes, push counts to heap, maintaining size K)"
+    ],
+    "relatedProblems": [
+      "Top K Frequent Words",
+      "Kth Largest Element in an Array"
+    ],
+    "visualization": "Counts: {1: 3, 2: 2, 3: 1}\nBuckets: 1->[3] | 2->[2] | 3->[1]\nScan backwards: Bucket 3 gives [1], Bucket 2 gives [2] -> [1, 2]",
+    "commonMistakes": [
+      "Using a Max-Heap which increases time complexity to O(N log N) in the worst case (compared to O(N) for Bucket Sort)."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "hashmap_6",
+    "title": "Subarray Sum Equals K",
+    "statement": "Given an array of integers `nums` and an integer `k`, return the total number of subarrays whose sum equals to `k`.",
+    "difficulty": "Medium",
+    "companies": [
+      "Infosys",
+      "Facebook",
+      "Microsoft"
+    ],
+    "pattern": "Prefix Sum Hash Map",
+    "bruteForce": {
+      "description": "Compute the sum of all possible subarrays using two nested loops.",
+      "timeComplexity": "O(N^2)",
+      "spaceComplexity": "O(1)"
+    },
+    "optimized": {
+      "description": "Maintain a running prefix sum `curr_sum`. Use a hash map to store the frequencies of prefix sums seen so far. If `curr_sum - k` exists in the map, add its frequency to the result. Then increment the frequency of `curr_sum` in the map. Seed the map with `{0: 1}` for edge cases.",
+      "timeComplexity": "O(N)",
+      "spaceComplexity": "O(N)"
+    },
+    "pythonCode": "def subarraySum(nums, k):\n    count = 0\n    curr_sum = 0\n    seen = {0: 1} # Base case: sum=0 seen once\n    for n in nums:\n        curr_sum += n\n        if curr_sum - k in seen:\n            count += seen[curr_sum - k]\n        seen[curr_sum] = seen.get(curr_sum, 0) + 1\n    return count",
+    "cppCode": "int subarraySum(vector<int>& nums, int k) {\n    unordered_map<int, int> seen;\n    seen[0] = 1;\n    int curr_sum = 0, count = 0;\n    for (int n : nums) {\n        curr_sum += n;\n        if (seen.count(curr_sum - k)) {\n            count += seen[curr_sum - k];\n        }\n        seen[curr_sum]++;\n    }\n    return count;\n}",
+    "pythonExplanation": [
+      {
+        "line": "seen = {0: 1}",
+        "explanation": "Seed the map with prefix sum 0 occurring once (handles subarrays starting from index 0)."
+      },
+      {
+        "line": "if curr_sum - k in seen:",
+        "explanation": "If the prefix sum (curr_sum - k) occurred before, the subarray between that occurrence and current index sums to k."
+      },
+      {
+        "line": "seen[curr_sum] = seen.get(curr_sum, 0) + 1",
+        "explanation": "Add the current prefix sum to the map or increment its frequency."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "seen[0] = 1;",
+        "explanation": "Initialize map with 0 sum mapping to handle prefix edge conditions."
+      }
+    ],
+    "timeComplexity": "O(N) - Single pass through the array of size N.",
+    "spaceComplexity": "O(N) - Storing prefix sum frequencies in the hash map.",
+    "dryRun": [
+      "Input: nums = [1, 1, 1], k = 2",
+      "seen = {0:1}.",
+      "i = 0: sum = 1. sum-k = -1 (not seen). seen = {0:1, 1:1}.",
+      "i = 1: sum = 2. sum-k = 0 (seen 1 time) -> count = 1. seen = {0:1, 1:1, 2:1}.",
+      "i = 2: sum = 3. sum-k = 1 (seen 1 time) -> count = 2. seen = {0:1, 1:1, 2:1, 3:1}.",
+      "Result: 2"
+    ],
+    "edgeCases": [
+      "Array containing negative numbers",
+      "No subarrays sum to k",
+      "All elements match k"
+    ],
+    "followUps": [
+      "Can you use Two Pointers if all numbers are positive? (Yes, O(N) time and O(1) space, but fails with negative numbers)"
+    ],
+    "relatedProblems": [
+      "Path Sum III",
+      "Subarray Product Less Than K"
+    ],
+    "visualization": "Prefix Sums: 0 -> 1 -> 2 -> 3  (nums = [1, 1, 1], k = 2)\n  Check (sum - k): 2 - 2 = 0 (seen at start) -> count = 1\n                   3 - 2 = 1 (seen at index 0) -> count = 2",
+    "commonMistakes": [
+      "Attempting to use Two Pointers/Sliding Window on arrays with negative numbers (sliding window bounds break when values decrease)."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "hashmap_7",
+    "title": "LRU Cache",
+    "statement": "Design a Least Recently Used (LRU) cache. Implement `get(key)` and `put(key, value)` in O(1) time complexity.",
+    "difficulty": "Hard",
+    "companies": [
+      "Infosys",
+      "Amazon",
+      "Microsoft"
+    ],
+    "pattern": "HashMap + Doubly Linked List",
+    "bruteForce": {
+      "description": "Use a list to store elements, scanning and shifting elements on access.",
+      "timeComplexity": "O(N)",
+      "spaceComplexity": "O(N)"
+    },
+    "optimized": {
+      "description": "Combine a Hash Map for O(1) key-to-node lookups with a Doubly Linked List (DLL) to maintain access order. The DLL head represents least recently used elements, and tail represents most recently used. Moving accessed nodes to the tail takes O(1) pointer updates.",
+      "timeComplexity": "O(1)",
+      "spaceComplexity": "O(Capacity)"
+    },
+    "pythonCode": "class Node:\n    def __init__(self, key, val):\n        self.key, self.val = key, val\n        self.prev = self.next = None\n\nclass LRUCache:\n    def __init__(self, capacity: int):\n        self.cap = capacity\n        self.cache = {}\n        # Sentinels\n        self.left, self.right = Node(0, 0), Node(0, 0)\n        self.left.next, self.right.prev = self.right, self.left\n        \n    def remove(self, node):\n        prev, nxt = node.prev, node.next\n        prev.next, nxt.prev = nxt, prev\n        \n    def insert(self, node):\n        prev, nxt = self.right.prev, self.right\n        prev.next = nxt.prev = node\n        node.prev, node.next = prev, nxt\n        \n    def get(self, key: int) -> int:\n        if key in self.cache:\n            self.remove(self.cache[key])\n            self.insert(self.cache[key])\n            return self.cache[key].val\n        return -1\n        \n    def put(self, key: int, value: int) -> None:\n        if key in self.cache:\n            self.remove(self.cache[key])\n        self.cache[key] = Node(key, value)\n        self.insert(self.cache[key])\n        if len(self.cache) > self.cap:\n            lru = self.left.next\n            self.remove(lru)\n            del self.cache[lru.key]",
+    "cppCode": "class LRUCache {\n    struct Node {\n        int key, val;\n        Node *prev, *next;\n        Node(int k, int v) : key(k), val(v), prev(nullptr), next(nullptr) {}\n    };\n    int cap;\n    unordered_map<int, Node*> cache;\n    Node *head, *tail;\n    \n    void remove(Node* node) {\n        node->prev->next = node->next;\n        node->next->prev = node->prev;\n    }\n    \n    void insert(Node* node) {\n        Node* prev = tail->prev;\n        prev->next = tail->prev = node;\n        node->prev = prev; node->next = tail;\n    }\npublic:\n    LRUCache(int capacity) : cap(capacity) {\n        head = new Node(0, 0); tail = new Node(0, 0);\n        head->next = tail; tail->prev = head;\n    }\n    int get(int key) {\n        if (!cache.count(key)) return -1;\n        remove(cache[key]);\n        insert(cache[key]);\n        return cache[key]->val;\n    }\n    void put(int key, int value) {\n        if (cache.count(key)) {\n            remove(cache[key]);\n            delete cache[key];\n        }\n        cache[key] = new Node(key, value);\n        insert(cache[key]);\n        if (cache.size() > cap) {\n            Node* lru = head->next;\n            remove(lru);\n            cache.erase(lru->key);\n            delete lru;\n        }\n    }\n};",
+    "pythonExplanation": [
+      {
+        "line": "self.left, self.right = Node(0, 0), Node(0, 0)",
+        "explanation": "Use sentinel dummy nodes to avoid boundary checks when editing pointers."
+      },
+      {
+        "line": "self.remove(self.cache[key])",
+        "explanation": "Remove node from DLL to update its position."
+      },
+      {
+        "line": "self.insert(self.cache[key])",
+        "explanation": "Re-insert node at tail to mark it as most recently used."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "head->next = tail; tail->prev = head;",
+        "explanation": "Set up boundary linkages for sentinel nodes."
+      }
+    ],
+    "timeComplexity": "O(1) - Constant time lookups and pointer swaps.",
+    "spaceComplexity": "O(Capacity) - Storing capacity elements inside the hash map and doubly linked list.",
+    "dryRun": [
+      "Input: capacity = 2, put(1, 1), put(2, 2), get(1), put(3, 3)",
+      "DLL: Head <-> 1 <-> 2 <-> Tail.",
+      "get(1) -> returns 1. Move 1 to tail: Head <-> 2 <-> 1 <-> Tail.",
+      "put(3, 3) -> capacity exceeded (3 > 2). Evict head->next (Node 2): Head <-> 1 <-> 3 <-> Tail."
+    ],
+    "edgeCases": [
+      "Null pointer references in DLL updates",
+      "Cache capacity is 1",
+      "Replacing value of existing key (does not count as new item)"
+    ],
+    "followUps": [
+      "Can you explain why we store key inside the Node structure? (Yes, because when we evict the LRU node from DLL, we must delete it from the hash map, so we need to know its key to delete it in O(1))"
+    ],
+    "relatedProblems": [
+      "LFU Cache",
+      "Design In-Memory File System"
+    ],
+    "visualization": "Head <-> [ LRU Node ] <-> [ MRU Node ] <-> Tail\n  Map maps keys -> Nodes for O(1) access and pointer swaps.",
+    "commonMistakes": [
+      "Omitting pointer updates or deleting incorrect nodes on eviction, causing corrupted lists."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "hashmap_8",
+    "title": "Insert Delete GetRandom - Duplicates",
+    "statement": "Design a data structure that supports insert, delete, and getRandom in O(1) time, allowing duplicates.",
+    "difficulty": "Hard",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Amazon"
+    ],
+    "pattern": "HashMap of Sets + List Swap",
+    "bruteForce": {
+      "description": "Use lists and search index positions sequentially. (O(N) deletion).",
+      "timeComplexity": "O(N)",
+      "spaceComplexity": "O(N)"
+    },
+    "optimized": {
+      "description": "Use a dynamic array (vector/list) to store elements. Use a hash map to map values to a set of their array indices. Insertion: append to list, insert index to map. Deletion: swap target element with the last element in list, update indices in map, pop last element in O(1).",
+      "timeComplexity": "O(1)",
+      "spaceComplexity": "O(N)"
+    },
+    "pythonCode": "import random\nclass RandomizedCollection:\n    def __init__(self):\n        self.lst = []\n        self.idx_map = {} # val -> set of indices\n        \n    def insert(self, val: int) -> bool:\n        not_present = val not in self.idx_map\n        if not_present:\n            self.idx_map[val] = set()\n        self.idx_map[val].add(len(self.lst))\n        self.lst.append(val)\n        return not_present\n        \n    def remove(self, val: int) -> bool:\n        if val not in self.idx_map or not self.idx_map[val]:\n            return False\n        # Get an index of the value\n        remove_idx = self.idx_map[val].pop()\n        last_val = self.lst[-1]\n        \n        # Swap with last element\n        self.lst[remove_idx] = last_val\n        self.idx_map[last_val].add(remove_idx)\n        self.idx_map[last_val].discard(len(self.lst) - 1)\n        \n        self.lst.pop()\n        if not self.idx_map[val]:\n            del self.idx_map[val]\n        return True\n        \n    def getRandom(self) -> int:\n        return random.choice(self.lst)",
+    "cppCode": "class RandomizedCollection {\n    vector<int> lst;\n    unordered_map<int, unordered_set<int>> idx_map;\npublic:\n    RandomizedCollection() {}\n    \n    bool insert(int val) {\n        bool not_present = idx_map[val].empty();\n        idx_map[val].insert(lst.size());\n        lst.push_back(val);\n        return not_present;\n    }\n    \n    bool remove(int val) {\n        if (idx_map[val].empty()) return false;\n        int remove_idx = *idx_map[val].begin();\n        idx_map[val].erase(remove_idx);\n        \n        int last_val = lst.back();\n        lst[remove_idx] = last_val;\n        \n        // Update indices\n        idx_map[last_val].insert(remove_idx);\n        idx_map[last_val].erase(lst.size() - 1);\n        \n        lst.pop_back();\n        return true;\n    }\n    \n    int getRandom() {\n        return lst[rand() % lst.size()];\n    }\n};",
+    "pythonExplanation": [
+      {
+        "line": "self.lst[remove_idx] = last_val",
+        "explanation": "Overwrite the target index with the last element of the list to keep list elements contiguous."
+      },
+      {
+        "line": "self.idx_map[last_val].add(remove_idx)",
+        "explanation": "Update the indices set of the swapped last value to its new index position."
+      },
+      {
+        "line": "self.lst.pop()",
+        "explanation": "Remove the last element in O(1) time."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "lst.pop_back();",
+        "explanation": "Pop the back element to delete in constant time after swap."
+      }
+    ],
+    "timeComplexity": "O(1) - Swap operations, dictionary inserts, and vector pops are constant time.",
+    "spaceComplexity": "O(N) - Storage for the elements vector and the indices set maps.",
+    "dryRun": [
+      "Input: Insert(1), Insert(1), Remove(1)",
+      "Insert(1) -> lst = [1], idx_map = {1: {0}}.",
+      "Insert(1) -> lst = [1, 1], idx_map = {1: {0, 1}}.",
+      "Remove(1) -> pops index 1. lst[1] = last_val(1). pop list -> lst = [1], map = {1: {0}}."
+    ],
+    "edgeCases": [
+      "Removing non-existent element",
+      "Array containing only one element"
+    ],
+    "followUps": [
+      "Can you explain why we swap with the last element? (Yes, because deleting from the middle of a dynamic array takes O(N) to shift elements, whereas swapping with the last element and popping takes O(1) time)"
+    ],
+    "relatedProblems": [
+      "Insert Delete GetRandom O(1)"
+    ],
+    "visualization": "List: [ 1,  1,  2 ]  -> Remove 1 at index 0\nSwap last element (2) to index 0 -> List: [ 2,  1 ]\nUpdate indices mapping -> 2 is now at index 0 -> pop list end",
+    "commonMistakes": [
+      "Forgetting to update the index mapping of the swapped last element, causing index corruption."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "hashmap_9",
+    "title": "Max Points on a Line",
+    "statement": "Given an array of points where `points[i] = [xi, yi]` represents a point on the X-Y plane, return the maximum number of points that lie on the same straight line.",
+    "difficulty": "Hard",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Amazon"
+    ],
+    "pattern": "HashMap of Slopes",
+    "bruteForce": {
+      "description": "Check all triplets of points for collinearity using nested loops.",
+      "timeComplexity": "O(N^3)",
+      "spaceComplexity": "O(1)"
+    },
+    "optimized": {
+      "description": "For each point `i`, compute the slope to all subsequent points `j`. Group these slopes in a hash map. The slope is represented as a normalized coprime fraction `(dy / gcd, dx / gcd)` to avoid floating-point inaccuracies. The maximum points on a line is `1 + max(slope_frequencies)`.",
+      "timeComplexity": "O(N^2)",
+      "spaceComplexity": "O(N)"
+    },
+    "pythonCode": "import math\ndef maxPoints(points):\n    n = len(points)\n    if n <= 2:\n        return n\n        \n    def get_slope(p1, p2):\n        dx = p2[0] - p1[0]\n        dy = p2[1] - p1[1]\n        if dx == 0: return (0, 1) # Vertical line\n        if dy == 0: return (1, 0) # Horizontal line\n        g = math.gcd(dx, dy)\n        return (dx // g, dy // g)\n        \n    res = 0\n    for i in range(n):\n        slopes = {}\n        for j in range(i + 1, n):\n            slope = get_slope(points[i], points[j])\n            slopes[slope] = slopes.get(slope, 0) + 1\n        res = max(res, max(slopes.values() or [0]) + 1)\n    return res",
+    "cppCode": "int maxPoints(vector<vector<int>>& points) {\n    int n = points.size();\n    if (n <= 2) return n;\n    int res = 0;\n    for (int i = 0; i < n; ++i) {\n        map<pair<int, int>, int> slopes;\n        for (int j = i + 1; j < n; ++j) {\n            int dx = points[j][0] - points[i][0];\n            int dy = points[j][1] - points[i][1];\n            int g = std::gcd(dx, dy);\n            slopes[{dx / g, dy / g}]++;\n        }\n        int local_max = 0;\n        for (auto p : slopes) local_max = max(local_max, p.second);\n        res = max(res, local_max + 1);\n    }\n    return res;\n}",
+    "pythonExplanation": [
+      {
+        "line": "g = math.gcd(dx, dy)",
+        "explanation": "Use greatest common divisor to normalize slope coordinate fractions."
+      },
+      {
+        "line": "if dx == 0: return (0, 1)",
+        "explanation": "Represent vertical slope direction with a unique sentinel fraction."
+      },
+      {
+        "line": "res = max(res, max(slopes.values() or [0]) + 1)",
+        "explanation": "Find the maximum collinear points linked to current anchor node i (+1 for the node itself)."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "int g = std::gcd(dx, dy);",
+        "explanation": "Simplify fractions in C++ using std::gcd (C++17)."
+      }
+    ],
+    "timeComplexity": "O(N^2) - For each of the N points, we compare it with all subsequent points.",
+    "spaceComplexity": "O(N) - Storing slopes in the hash map per iteration.",
+    "dryRun": [
+      "Input: points = [[1,1], [2,2], [3,3]]",
+      "i = 0: point [1,1].",
+      "  j = 1: [2,2] -> dx=1, dy=1. gcd=1 -> slope = (1, 1).",
+      "  j = 2: [3,3] -> dx=2, dy=2. gcd=2 -> slope = (1, 1).",
+      "  Map: {(1,1): 2}. max points = 2 + 1 = 3.",
+      "Result: 3"
+    ],
+    "edgeCases": [
+      "Identical points in input",
+      "Vertical/Horizontal slopes",
+      "Floating-point division errors"
+    ],
+    "followUps": [
+      "Can you explain why we don't use float divisions for slopes? (Yes, because floating-point representation has rounding inaccuracies, so `1/3` might not exactly match another calculated `1/3` slope, causing grouping mismatches)"
+    ],
+    "relatedProblems": [
+      "Collinear Points",
+      "Line Reflection"
+    ],
+    "visualization": "Point i ---> calculate normalized slope (dy/g, dx/g) ---> group in map\n  Max slope count + 1 = max points on a line.",
+    "commonMistakes": [
+      "Using floating-point divisions as hash keys, leading to grouping misses due to numeric precision limitations."
+    ],
+    "whenNotToUse": "None"
+  }
+]

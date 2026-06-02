@@ -1,0 +1,559 @@
+[
+  {
+    "id": "two_pointers_1",
+    "title": "Valid Palindrome",
+    "statement": "A phrase is a palindrome if, after converting all uppercase letters into lowercase letters and removing all non-alphanumeric characters, it reads the same forward and backward. Given a string `s`, return `true` if it is a palindrome, or `false` otherwise.",
+    "difficulty": "Easy",
+    "companies": [
+      "Infosys",
+      "TCS",
+      "Amazon"
+    ],
+    "pattern": "Two Pointers from Both Ends",
+    "bruteForce": {
+      "description": "Create a new string filtering out non-alphanumeric chars and reversing it. (O(N) space).",
+      "timeComplexity": "O(N)",
+      "spaceComplexity": "O(N)"
+    },
+    "optimized": {
+      "description": "Use two pointers, `left` (0) and `right` (N-1). While `left < right`: if `s[left]` is not alphanumeric, increment `left`. If `s[right]` is not alphanumeric, decrement `right`. If they are alphanumeric, compare their lowercase values. If they differ, return false. Otherwise, increment `left` and decrement `right`.",
+      "timeComplexity": "O(N)",
+      "spaceComplexity": "O(1)"
+    },
+    "pythonCode": "def isPalindrome(s):\n    l, r = 0, len(s) - 1\n    while l < r:\n        while l < r and not s[l].isalnum():\n            l += 1\n        while l < r and not s[r].isalnum():\n            r -= 1\n        if s[l].lower() != s[r].lower():\n            return False\n        l += 1\n        r -= 1\n    return True",
+    "cppCode": "bool isPalindrome(string s) {\n    int l = 0, r = s.size() - 1;\n    while (l < r) {\n        while (l < r && !isalnum(s[l])) l++;\n        while (l < r && !isalnum(s[r])) r--;\n        if (tolower(s[l]) != tolower(s[r])) return false;\n        l++;\n        r--;\n    }\n    return true;\n}",
+    "pythonExplanation": [
+      {
+        "line": "while l < r and not s[l].isalnum(): l += 1",
+        "explanation": "Skip non-alphanumeric characters from left boundary pointer."
+      },
+      {
+        "line": "if s[l].lower() != s[r].lower(): return False",
+        "explanation": "Compare character values case-insensitively, returning false on mismatch."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "while (l < r && !isalnum(s[l])) l++;",
+        "explanation": "Skip non-alphanumeric characters in C++."
+      }
+    ],
+    "timeComplexity": "O(N) - In the worst case, we traverse each character of string of size N at most twice.",
+    "spaceComplexity": "O(1) - Constant auxiliary space is used since we modify pointers in place.",
+    "dryRun": [
+      "Input: s = 'A man, a plan, a canal: Panama'",
+      "l = 0, r = 29. s[0]='A' is alnum. s[29]='a' is alnum. tolower('A') == tolower('a') -> l=1, r=28.",
+      "Matches and skips non-alphanumeric punctuation and spaces recursively.",
+      "Pointers meet in the middle. Result: True."
+    ],
+    "edgeCases": [
+      "String with only punctuation (returns True)",
+      "Empty string",
+      "Punctuation at boundaries"
+    ],
+    "followUps": [
+      "Can you write it using string slicing in Python? (Yes, `s == s[::-1]`, but that requires O(N) auxiliary space)"
+    ],
+    "relatedProblems": [
+      "Valid Palindrome II",
+      "Palindrome Linked List"
+    ],
+    "visualization": "s = 'A man, a plan, a canal: Panama'\n  L=0                               R=29 -> 'A' == 'a' -> shrink\n    L=1                           R=28   -> ' ' (not alnum) -> L=2\n      L=2('m')                  R=28('m')-> 'm' == 'm' -> shrink",
+    "commonMistakes": [
+      "Forgetting to check the `l < r` condition inside the inner while loops, leading to index-out-of-bounds crashes on strings like '...'."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "two_pointers_2",
+    "title": "Move Zeroes",
+    "statement": "Given an integer array `nums`, move all `0`'s to the end of it while maintaining the relative order of the non-zero elements. You must do this in-place.",
+    "difficulty": "Easy",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Amazon"
+    ],
+    "pattern": "Read / Write Two Pointers",
+    "bruteForce": {
+      "description": "Copy all non-zero elements to a new array, then fill the remainder with zeros. (O(N) space).",
+      "timeComplexity": "O(N)",
+      "spaceComplexity": "O(N)"
+    },
+    "optimized": {
+      "description": "Maintain a `write` pointer initialized to 0. Loop a `read` pointer through `nums`: when `nums[read]` is non-zero, swap it with `nums[write]` and increment `write`. This shifts all non-zero elements forward in order while pushing zeros back.",
+      "timeComplexity": "O(N)",
+      "spaceComplexity": "O(1)"
+    },
+    "pythonCode": "def moveZeroes(nums):\n    write = 0\n    for read in range(len(nums)):\n        if nums[read] != 0:\n            # Swap values\n            nums[write], nums[read] = nums[read], nums[write]\n            write += 1",
+    "cppCode": "void moveZeroes(vector<int>& nums) {\n    int write = 0;\n    for (int read = 0; read < nums.size(); ++read) {\n        if (nums[read] != 0) {\n            swap(nums[write++], nums[read]);\n        }\n    }\n}",
+    "pythonExplanation": [
+      {
+        "line": "if nums[read] != 0:",
+        "explanation": "Check if the current element is non-zero."
+      },
+      {
+        "line": "nums[write], nums[read] = nums[read], nums[write]",
+        "explanation": "Swap element at read index with element at write index to shift it forward in-place."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "if (nums[read] != 0) swap(nums[write++], nums[read]);",
+        "explanation": "Swap non-zero element with write index and increment write pointer."
+      }
+    ],
+    "timeComplexity": "O(N) - Single pass loop over array of size N.",
+    "spaceComplexity": "O(1) - Swap modifications are done in-place.",
+    "dryRun": [
+      "nums = [0, 1, 0, 3, 12]",
+      "r=0: zero",
+      "r=1: non-zero, swap with l=0 -> [1, 0, 0, 3, 12], l=1",
+      "returns [1, 3, 12, 0, 0]"
+    ],
+    "edgeCases": [
+      "Array with no zeroes",
+      "Array with all zeroes"
+    ],
+    "followUps": [
+      "Can we write it by overwriting non-zeroes first, then filling zeroes? (Yes, avoids swaps)"
+    ],
+    "relatedProblems": [
+      "Remove Element"
+    ],
+    "visualization": "L tracks position of next non-zero. R finds non-zeroes and swaps them to L.",
+    "commonMistakes": [
+      "Copying elements to another array (violates in-place requirement)."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "two_pointers_3",
+    "title": "Merge Sorted Array",
+    "statement": "You are given two integer arrays `nums1` and `nums2`, sorted in non-decreasing order, and two integers `m` and `n`, representing the number of elements in `nums1` and `nums2` respectively. Merge `nums2` into `nums1` as one sorted array in-place.",
+    "difficulty": "Easy",
+    "companies": [
+      "Infosys",
+      "Microsoft",
+      "Amazon"
+    ],
+    "pattern": "Two Pointers from the Back",
+    "bruteForce": {
+      "description": "Copy nums2 to the end of nums1 and run sort. (O((M+N) log(M+N)) time).",
+      "timeComplexity": "O((M + N) log(M + N))",
+      "spaceComplexity": "O(1)"
+    },
+    "optimized": {
+      "description": "Start filling `nums1` from the back (at index `m + n - 1`) to avoid overwriting elements. Maintain three pointers: `p1 = m - 1` (end of active nums1), `p2 = n - 1` (end of nums2), and `p = m + n - 1` (write pointer). Compare elements and place the larger one, shifting pointers backwards. Copy leftover elements of nums2.",
+      "timeComplexity": "O(M + N)",
+      "spaceComplexity": "O(1)"
+    },
+    "pythonCode": "def merge(nums1, m, nums2, n):\n    p1, p2, p = m - 1, n - 1, m + n - 1\n    while p1 >= 0 and p2 >= 0:\n        if nums1[p1] > nums2[p2]:\n            nums1[p] = nums1[p1]\n            p1 -= 1\n        else:\n            nums1[p] = nums2[p2]\n            p2 -= 1\n        p -= 1\n    # Copy remainder of nums2\n    nums1[:p2 + 1] = nums2[:p2 + 1]",
+    "cppCode": "void merge(vector<int>& nums1, int m, vector<int>& nums2, int n) {\n    int p1 = m - 1, p2 = n - 1, p = m + n - 1;\n    while (p1 >= 0 && p2 >= 0) {\n        if (nums1[p1] > nums2[p2]) {\n            nums1[p--] = nums1[p1--];\n        } else {\n            nums1[p--] = nums2[p2--];\n        }\n    }\n    while (p2 >= 0) {\n        nums1[p--] = nums2[p2--];\n    }\n}",
+    "pythonExplanation": [
+      {
+        "line": "p1, p2, p = m - 1, n - 1, m + n - 1",
+        "explanation": "Initialize pointers at the active ends of the arrays, and the write index at the end of nums1."
+      },
+      {
+        "line": "if nums1[p1] > nums2[p2]:",
+        "explanation": "Compare elements from the back; place the larger element at the write pointer index to keep it sorted."
+      },
+      {
+        "line": "nums1[:p2 + 1] = nums2[:p2 + 1]",
+        "explanation": "If nums2 elements are left over, copy them to the beginning of nums1. (If nums1 elements are left over, they are already in correct position)."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "while (p2 >= 0) nums1[p--] = nums2[p2--];",
+        "explanation": "Link remainder elements of nums2 to nums1 if any."
+      }
+    ],
+    "timeComplexity": "O(M + N) - We perform exactly M + N comparisons and writes.",
+    "spaceComplexity": "O(1) - Constant auxiliary space.",
+    "dryRun": [
+      "nums1 = [1,2,3,0,0,0], m=3, nums2 = [2,5,6], n=3",
+      "Compare 3 and 6 -> write 6 to end",
+      "Compare 3 and 5 -> write 5",
+      "Returns [1, 2, 2, 3, 5, 6]"
+    ],
+    "edgeCases": [
+      "M or N is 0"
+    ],
+    "followUps": [
+      "Can we merge from start? (Requires O(M) auxiliary space)"
+    ],
+    "relatedProblems": [
+      "Merge Two Sorted Lists"
+    ],
+    "visualization": "nums1: [ 1, 2, 3, _ , _ , _ ] (p1 at 3, p at end)\nnums2: [ 2, 5, 6 ] (p2 at 6)\nCompare and merge from right to left.",
+    "commonMistakes": [
+      "Merging from start, which overwrites values in nums1 before comparison."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "two_pointers_4",
+    "title": "Two Sum II - Input Array Is Sorted",
+    "statement": "Given a 1-indexed array of integers `numbers` that is already sorted in non-decreasing order, find two numbers such that they add up to a specific `target` number.",
+    "difficulty": "Medium",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Amazon"
+    ],
+    "pattern": "Two Pointers from Both Ends",
+    "bruteForce": {
+      "description": "Nested loop search. (O(N^2) time).",
+      "timeComplexity": "O(N^2)",
+      "spaceComplexity": "O(1)"
+    },
+    "optimized": {
+      "description": "Use two pointers, `left` at 1st element and `right` at last element. Calculate `sum = nums[left] + nums[right]`. If `sum == target`, return indices (1-indexed). If `sum < target`, increment `left`. If `sum > target`, decrement `right`.",
+      "timeComplexity": "O(N)",
+      "spaceComplexity": "O(1)"
+    },
+    "pythonCode": "def twoSum(numbers, target):\n    l, r = 0, len(numbers) - 1\n    while l < r:\n        s = numbers[l] + numbers[r]\n        if s == target:\n            return [l + 1, r + 1] # 1-indexed\n        elif s < target:\n            l += 1\n        else:\n            r -= 1\n    return []",
+    "cppCode": "vector<int> twoSum(vector<int>& numbers, int target) {\n    int l = 0, r = numbers.size() - 1;\n    while (l < r) {\n        int s = numbers[l] + numbers[r];\n        if (s == target) {\n            return {l + 1, r + 1};\n        } else if (s < target) {\n            l++;\n        } else {\n            r--;\n        }\n    }\n    return {};\n}",
+    "pythonExplanation": [
+      {
+        "line": "return [l + 1, r + 1]",
+        "explanation": "Convert 0-indexed values to 1-indexed indices per problem requirements."
+      },
+      {
+        "line": "elif s < target: l += 1",
+        "explanation": "If sum is too small, increase sum by advancing the left pointer to larger values."
+      },
+      {
+        "line": "else: r -= 1",
+        "explanation": "If sum is too large, decrease sum by decrementing the right pointer to smaller values."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "return {l + 1, r + 1};",
+        "explanation": "Return indices offset by 1."
+      }
+    ],
+    "timeComplexity": "O(N) - Pointers scan elements of the array at most once.",
+    "spaceComplexity": "O(1) - Constant auxiliary space.",
+    "dryRun": [
+      "numbers = [2, 7, 11, 15], target = 9 -> returns [1, 2]"
+    ],
+    "edgeCases": [
+      "No solution exists"
+    ],
+    "followUps": [
+      "Binary search solution O(N log N)"
+    ],
+    "relatedProblems": [
+      "Two Sum"
+    ],
+    "visualization": "L --------------------> <-------------------- R\nIf sum is low, shift L right. If sum is high, shift R left.",
+    "commonMistakes": [
+      "Not returning 1-based indices as requested by problem spec."
+    ],
+    "whenNotToUse": "If array is not sorted, this two pointer logic fails (must use HashMap)."
+  },
+  {
+    "id": "two_pointers_5",
+    "title": "Container With Most Water",
+    "statement": "You are given an integer array `height` of length `n`. Find two lines that together with the x-axis form a container, such that the container contains the most water. Return the maximum amount of water.",
+    "difficulty": "Medium",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Amazon"
+    ],
+    "pattern": "Two Pointers Max Width Bounded Height",
+    "bruteForce": {
+      "description": "Compare all possible pairs of lines. (O(N^2) time).",
+      "timeComplexity": "O(N^2)",
+      "spaceComplexity": "O(1)"
+    },
+    "optimized": {
+      "description": "Use two pointers, `left` (0) and `right` (N-1). Calculate area as `(right - left) * min(height[left], height[right])` and track the maximum. Move the pointer pointing to the shorter line inwards, since the shorter line restricts the container's height limit.",
+      "timeComplexity": "O(N)",
+      "spaceComplexity": "O(1)"
+    },
+    "pythonCode": "def maxArea(height):\n    l, r = 0, len(height) - 1\n    res = 0\n    while l < r:\n        w = r - l\n        h = min(height[l], height[r])\n        res = max(res, w * h)\n        if height[l] < height[r]:\n            l += 1\n        else:\n            r -= 1\n    return res",
+    "cppCode": "int maxArea(vector<int>& height) {\n    int l = 0, r = height.size() - 1, res = 0;\n    while (l < r) {\n        res = max(res, (r - l) * min(height[l], height[r]));\n        if (height[l] < height[r]) {\n            l++;\n        } else {\n            r--;\n        }\n    }\n    return res;\n}",
+    "pythonExplanation": [
+      {
+        "line": "res = max(res, w * h)",
+        "explanation": "Record area: width times limiting boundary height."
+      },
+      {
+        "line": "if height[l] < height[r]: l += 1",
+        "explanation": "Move the shorter pointer inwards. Keeping the shorter line limits capacity; we must search for a taller boundary."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "res = max(res, (r - l) * min(height[l], height[r]));",
+        "explanation": "Calculate and update maximum area in-place."
+      }
+    ],
+    "timeComplexity": "O(N) - Pointers meet in the middle in a single pass.",
+    "spaceComplexity": "O(1) - Constant auxiliary space.",
+    "dryRun": [
+      "height = [1,8,6,2,5,4,8,3,7] -> returns 49"
+    ],
+    "edgeCases": [
+      "Two elements in array (minimal boundary)"
+    ],
+    "followUps": [
+      "Can we solve this using dynamic programming? (No, state transitions are too complex)"
+    ],
+    "relatedProblems": [
+      "Trapping Rain Water"
+    ],
+    "visualization": "L at 0, R at end. Move pointer with smaller height inward.",
+    "commonMistakes": [
+      "Moving pointers inward randomly instead of comparing their heights."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "two_pointers_6",
+    "title": "3Sum Closest",
+    "statement": "Given an integer array `nums` of length `n` and an integer `target`, find three integers in `nums` such that the sum is closest to `target`. Return the sum of the three integers.",
+    "difficulty": "Medium",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Amazon"
+    ],
+    "pattern": "Sort and Two Pointers Search",
+    "bruteForce": {
+      "description": "Check all triplets sums using three nested loops. (O(N^3) time).",
+      "timeComplexity": "O(N^3)",
+      "spaceComplexity": "O(1)"
+    },
+    "optimized": {
+      "description": "Sort the array first. Loop `i` to fix the first element. Use two pointers (`left` and `right`) to find pairs that sum closest to `target - nums[i]`. Update the closest sum whenever the absolute difference `|target - current_sum|` is smaller than the previous min difference.",
+      "timeComplexity": "O(N^2)",
+      "spaceComplexity": "O(log N) sorting space"
+    },
+    "pythonCode": "def threeSumClosest(nums, target):\n    nums.sort()\n    diff = float('inf')\n    res = 0\n    n = len(nums)\n    for i in range(n):\n        l, r = i + 1, n - 1\n        while l < r:\n            s = nums[i] + nums[l] + nums[r]\n            if abs(target - s) < diff:\n                diff = abs(target - s)\n                res = s\n            if s < target:\n                l += 1\n            elif s > target:\n                r -= 1\n            else:\n                return s # Exact match found\n    return res",
+    "cppCode": "int threeSumClosest(vector<int>& nums, int target) {\n    sort(nums.begin(), nums.end());\n    int diff = INT_MAX;\n    int res = 0;\n    int n = nums.size();\n    for (int i = 0; i < n; ++i) {\n        int l = i + 1, r = n - 1;\n        while (l < r) {\n            int s = nums[i] + nums[l] + nums[r];\n            if (abs(target - s) < diff) {\n                diff = abs(target - s);\n                res = s;\n            }\n            if (s < target) {\n                l++;\n            } else if (s > target) {\n                r--;\n            } else {\n                return s;\n            }\n        }\n    }\n    return res;\n}",
+    "pythonExplanation": [
+      {
+        "line": "if abs(target - s) < diff:",
+        "explanation": "Update closest sum tracking if current triplet sum is closer to target than prior configurations."
+      },
+      {
+        "line": "if s < target: l += 1",
+        "explanation": "If sum is smaller than target, increment left pointer to increase sum values."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "if (s < target) l++;",
+        "explanation": "Move left pointer to increase values."
+      },
+      {
+        "line": "else return s;",
+        "explanation": "If sum equals target, return immediately since difference is 0 (closest possible)."
+      }
+    ],
+    "timeComplexity": "O(N^2) - Outer loop sweeps N items; inner two-pointer search runs in O(N).",
+    "spaceComplexity": "O(log N) - Space for sorting.",
+    "dryRun": [
+      "nums = [-1,2,1,-4], target = 1 -> returns 2 (sum of [-1, 2, 1])"
+    ],
+    "edgeCases": [
+      "Array size is exactly 3"
+    ],
+    "followUps": [
+      "Can we optimize this by skipping duplicate numbers? (Yes, speeds up runtime)"
+    ],
+    "relatedProblems": [
+      "3Sum",
+      "4Sum"
+    ],
+    "visualization": "Sort array -> fix element i -> adjust L and R pointers to target",
+    "commonMistakes": [
+      "Not taking absolute value when calculating differences."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "two_pointers_7",
+    "title": "Trapping Rain Water",
+    "statement": "Given `n` non-negative integers representing an elevation map where the width of each bar is 1, compute how much water it can trap after raining.",
+    "difficulty": "Hard",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Amazon"
+    ],
+    "pattern": "Two Pointers Max Boundaries",
+    "bruteForce": {
+      "description": "Calculate left max and right max heights for each index using two arrays. (O(N) space).",
+      "timeComplexity": "O(N)",
+      "spaceComplexity": "O(N)"
+    },
+    "optimized": {
+      "description": "Use two pointers, `left` (0) and `right` (n-1), and two variables to track maximum heights: `left_max` and `right_max`. Move the pointer pointing to the lower height inwards. Update the max variable, and add `max_height - current_height` to the water sum.",
+      "timeComplexity": "O(N)",
+      "spaceComplexity": "O(1)"
+    },
+    "pythonCode": "def trap(height):\n    if not height: return 0\n    l, r = 0, len(height) - 1\n    l_max, r_max = height[l], height[r]\n    water = 0\n    while l < r:\n        if l_max < r_max:\n            l += 1\n            l_max = max(l_max, height[l])\n            water += l_max - height[l]\n        else:\n            r -= 1\n            r_max = max(r_max, height[r])\n            water += r_max - height[r]\n    return water",
+    "cppCode": "int trap(vector<int>& height) {\n    if (height.empty()) return 0;\n    int l = 0, r = height.size() - 1;\n    int l_max = height[l], r_max = height[r];\n    int water = 0;\n    while (l < r) {\n        if (l_max < r_max) {\n            l++;\n            l_max = max(l_max, height[l]);\n            water += l_max - height[l];\n        } else {\n            r--;\n            r_max = max(r_max, height[r]);\n            water += r_max - height[r];\n        }\n    }\n    return water;\n}",
+    "pythonExplanation": [
+      {
+        "line": "if l_max < r_max:",
+        "explanation": "Determine which pointer to move based on the smaller bounding height."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "water += l_max - height[l];",
+        "explanation": "Water trapped is the difference between max limit and current bar height."
+      }
+    ],
+    "timeComplexity": "O(N) - Single pass with two pointers.",
+    "spaceComplexity": "O(1) - Constant space.",
+    "dryRun": [
+      "height = [0,1,0,2,1,0,1,3,2,1,2,1] -> returns 6"
+    ],
+    "edgeCases": [
+      "Decreasing heights only",
+      "Single height bar"
+    ],
+    "followUps": [
+      "Monotonic Stack solution O(N) time and space"
+    ],
+    "relatedProblems": [
+      "Container With Most Water"
+    ],
+    "visualization": "Shifting pointers towards center while accumulating difference to bounds.",
+    "commonMistakes": [
+      "Incorrect boundary pointer advancements, causing missed valleys."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "two_pointers_8",
+    "title": "Sort List",
+    "statement": "Given the head of a linked list, return the list after sorting it in ascending order. Solve in O(N log N) time and O(1) auxiliary space.",
+    "difficulty": "Hard",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Amazon"
+    ],
+    "pattern": "Fast & Slow Pointers + Merge Sort",
+    "bruteForce": {
+      "description": "Copy node values to an array, sort the array, and write values back. (O(N) space).",
+      "timeComplexity": "O(N log N)",
+      "spaceComplexity": "O(N)"
+    },
+    "optimized": {
+      "description": "Use Merge Sort recursively on the linked list. 1. Find midpoint using fast/slow pointers. 2. Sever lists and recurse. 3. Merge two sorted lists using standard dummy node logic.",
+      "timeComplexity": "O(N log N)",
+      "spaceComplexity": "O(log N) recursion depth"
+    },
+    "pythonCode": "def sortList(head):\n    if not head or not head.next:\n        return head\n        \n    # Split list using fast & slow pointers\n    prev, slow, fast = None, head, head\n    while fast and fast.next:\n        prev = slow\n        slow = slow.next\n        fast = fast.next.next\n    prev.next = None # Sever connection\n    \n    # Recurse\n    l1 = sortList(head)\n    l2 = sortList(slow)\n    \n    # Merge\n    return merge(l1, l2)\n\ndef merge(l1, l2):\n    dummy = ListNode(0)\n    curr = dummy\n    while l1 and l2:\n        if l1.val < l2.val:\n            curr.next = l1\n            l1 = l1.next\n        else:\n            curr.next = l2\n            l2 = l2.next\n        curr = curr.next\n    curr.next = l1 or l2\n    return dummy.next",
+    "cppCode": "ListNode* sortList(ListNode* head) {\n    if (!head || !head->next) return head;\n    ListNode* prev = nullptr;\n    ListNode* slow = head;\n    ListNode* fast = head;\n    while (fast && fast->next) {\n        prev = slow;\n        slow = slow->next;\n        fast = fast->next->next;\n    }\n    prev->next = nullptr;\n    ListNode* l1 = sortList(head);\n    ListNode* l2 = sortList(slow);\n    return merge(l1, l2);\n}\n\nListNode* merge(ListNode* l1, ListNode* l2) {\n    ListNode dummy(0);\n    ListNode* curr = &dummy;\n    while (l1 && l2) {\n        if (l1->val < l2->val) {\n            curr->next = l1; l1 = l1->next;\n        } else {\n            curr->next = l2; l2 = l2->next;\n        }\n        curr = curr->next;\n    }\n    curr->next = l1 ? l1 : l2;\n    return dummy.next;\n}",
+    "pythonExplanation": [
+      {
+        "line": "prev.next = None",
+        "explanation": "Sever the linked list at the midpoint into two independent sublists."
+      },
+      {
+        "line": "l1 = sortList(head)",
+        "explanation": "Recursively sort the first half of the linked list."
+      },
+      {
+        "line": "curr.next = l1 or l2",
+        "explanation": "Link remaining elements from the sorted sublists."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "prev->next = nullptr;",
+        "explanation": "Sever connections to split list in half."
+      }
+    ],
+    "timeComplexity": "O(N log N) - Standard merge sort splitting tree height (log N) times, merging takes O(N) at each level.",
+    "spaceComplexity": "O(log N) - Space to store recursion call stack frames.",
+    "dryRun": [
+      "list = 4 -> 2 -> 1 -> 3",
+      "Split to [4,2] and [1,3]",
+      "Sorted: [2,4] and [1,3] -> merge -> [1,2,3,4]"
+    ],
+    "edgeCases": [
+      "Empty list",
+      "Single node"
+    ],
+    "followUps": [
+      "Bottom-up iterative merge sort to achieve O(1) physical memory space"
+    ],
+    "relatedProblems": [
+      "Merge Sort"
+    ],
+    "visualization": "Find middle (fast/slow) -> sever lists -> sort recursively -> merge pointers",
+    "commonMistakes": [
+      "Forgetting to sever the connection (`slow.next = None`), causing infinite recursion loops."
+    ],
+    "whenNotToUse": "None"
+  },
+  {
+    "id": "two_pointers_9",
+    "title": "Minimum Window Substring",
+    "statement": "Given two strings `s` and `t`, return the minimum window substring of `s` such that every character in `t` (including duplicates) is included. If no such substring exists, return `\"\"`.",
+    "difficulty": "Hard",
+    "companies": [
+      "Infosys",
+      "Google",
+      "Amazon"
+    ],
+    "pattern": "HashMap Sliding Window Matching",
+    "bruteForce": {
+      "description": "Verify all substring combinations sequentially. (O(M^3) time).",
+      "timeComplexity": "O(M^3)",
+      "spaceComplexity": "O(1)"
+    },
+    "optimized": {
+      "description": "Use two pointers, `left` and `right`. Maintain a hash map of character counts in `t` and another for characters in the active window. Move `right` to expand the window. While all characters are satisfied, record the minimum length, and increment `left` to shrink the window.",
+      "timeComplexity": "O(M + N)",
+      "spaceComplexity": "O(M + N)"
+    },
+    "pythonCode": "def minWindow(s, t):\n    if not t or not s: return \"\"\n    dictT = {}\n    for c in t: dictT[c] = dictT.get(c, 0) + 1\n    window = {}\n    have, need = 0, len(dictT)\n    res, res_len = [-1, -1], float('inf')\n    l = 0\n    for r, char in enumerate(s):\n        if char in dictT:\n            window[char] = window.get(char, 0) + 1\n            if window[char] == dictT[char]: have += 1\n        while have == need:\n            if (r - l + 1) < res_len:\n                res = [l, r]\n                res_len = r - l + 1\n            left_char = s[l]\n            if left_char in dictT:\n                window[left_char] -= 1\n                if window[left_char] < dictT[left_char]: have -= 1\n            l += 1\n    l, r = res\n    return s[l:r+1] if res_len != float('inf') else \"\"",
+    "cppCode": "string minWindow(string s, string t) {\n    if (s.empty() || t.empty()) return \"\";\n    vector<int> dictT(128, 0);\n    for (char c : t) dictT[c]++;\n    vector<int> window(128, 0);\n    int have = 0, need = 0;\n    for (int count : dictT) if (count > 0) need++;\n    int l = 0, min_l = 0, min_len = INT_MAX;\n    for (int r = 0; r < s.size(); ++r) {\n        char c = s[r];\n        if (dictT[c] > 0) {\n            window[c]++;\n            if (window[c] == dictT[c]) have++;\n        }\n        while (have == need) {\n            if (r - l + 1 < min_len) {\n                min_len = r - l + 1;\n                min_l = l;\n            }\n            char left_char = s[l];\n            if (dictT[left_char] > 0) {\n                window[left_char]--;\n                if (window[left_char] < dictT[left_char]) have--;\n            }\n            l++;\n        }\n    }\n    return min_len == INT_MAX ? \"\" : s.substr(min_l, min_len);\n}",
+    "pythonExplanation": [
+      {
+        "line": "if window[char] == dictT[char]: have += 1",
+        "explanation": "If character frequency matches target count, increment matching counter."
+      }
+    ],
+    "cppExplanation": [
+      {
+        "line": "window[left_char]--; if (window[left_char] < dictT[left_char]) have--;",
+        "explanation": "Update match constraints when shrinking left pointer."
+      }
+    ],
+    "timeComplexity": "O(M + N) - Traversal and initialization checks are linear.",
+    "spaceComplexity": "O(1) - Fixed mapping tables are size 128.",
+    "dryRun": [
+      "s = 'ADOBECODEBANC', t = 'ABC' -> returns 'BANC'"
+    ],
+    "edgeCases": [
+      "T characters missing"
+    ],
+    "followUps": [
+      "Sliding window methods"
+    ],
+    "relatedProblems": [
+      "Longest Substring Without Repeating Characters"
+    ],
+    "visualization": "Adjusting pointers to scan min ranges containing target characters.",
+    "commonMistakes": [
+      "Incorrect count checks on characters."
+    ],
+    "whenNotToUse": "None"
+  }
+]

@@ -13,14 +13,17 @@ export default defineConfig({
     chunkSizeWarningLimit: 1000,
     rollupOptions: {
       output: {
-        // Manual chunk splitting for better caching
-        manualChunks: {
-          // React core — changes rarely
-          'vendor-react': ['react', 'react-dom'],
-          // Animation lib — heavy, isolate it
-          'vendor-framer': ['framer-motion'],
-          // Icon lib
-          'vendor-icons': ['lucide-react'],
+        // Manual chunk splitting — function form required by Rolldown types
+        manualChunks(id) {
+          if (id.includes('node_modules/react') || id.includes('node_modules/react-dom')) {
+            return 'vendor-react';
+          }
+          if (id.includes('node_modules/framer-motion')) {
+            return 'vendor-framer';
+          }
+          if (id.includes('node_modules/lucide-react')) {
+            return 'vendor-icons';
+          }
         },
         // Asset file naming with content hash for long-term caching
         chunkFileNames: 'assets/[name]-[hash].js',
@@ -30,8 +33,8 @@ export default defineConfig({
     },
     // CSS code splitting
     cssCodeSplit: true,
-    // Minify with esbuild (default, fast)
-    minify: 'esbuild',
+    // Use Oxc minifier (Vite 8 default — esbuild no longer bundled)
+    minify: 'oxc',
   },
   // Optimize deps during dev
   optimizeDeps: {
